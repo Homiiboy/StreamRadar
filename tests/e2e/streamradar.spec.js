@@ -13,8 +13,11 @@ async function boot(page, storage = {}) {
   await page.route(/^https?:\/\/(?!127\.0\.0\.1:4173)/, route => route.abort());
   await page.addInitScript(entries => {
     try {
-      localStorage.clear();
-      Object.entries(entries).forEach(([key, value]) => localStorage.setItem(key, value));
+      if (sessionStorage.getItem('__streamradar_test_seeded') !== '1') {
+        localStorage.clear();
+        Object.entries(entries).forEach(([key, value]) => localStorage.setItem(key, value));
+        sessionStorage.setItem('__streamradar_test_seeded', '1');
+      }
     } catch {}
   }, storage);
   await page.goto('/', { waitUntil: 'domcontentloaded' });
@@ -29,7 +32,7 @@ function configuredStorage(extra = {}) {
 test('first run can finish with no providers and stays completed', async ({ page }) => {
   const errors = await boot(page);
   await expect(page.locator('#onboardingOverlay')).toBeVisible();
-  await expect(page.getByRole('heading', { name: /Dein Radar/i })).toBeVisible();
+  await expect(page.locator('#onboardingOverlay h1')).toContainText('Dein Radar');
 
   await page.locator('#onboardingNext').click();
   await page.locator('#onboardingNext').click();
@@ -110,7 +113,7 @@ test('backup excludes the token and restore normalizes personal data', async ({ 
   await page.locator('#streamRadarBackupFile').setInputFiles({
     name: 'streamradar-test-backup.json', mimeType: 'application/json', buffer: Buffer.from(JSON.stringify(restore))
   });
-  await expect(page.locator('.radar-toast')).toContainText('Backup erfolgreich wiederhergestellt');
+  await expect(page.locator('.radar-toast').filter({ hasText: 'Backup erfolgreich wiederhergestellt' })).toBeVisible();
   await expect(page.locator('body')).toHaveAttribute('data-density', 'compact');
   const restored = await page.evaluate(({ tokenKey, watchlistKey }) => ({
     token: localStorage.getItem(tokenKey),
