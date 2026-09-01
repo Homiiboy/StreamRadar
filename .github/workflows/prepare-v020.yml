@@ -36,7 +36,7 @@ jobs:
           test ! -d dist/OldUi
           grep -q "StreamRadar v0.2.0 — Personalization & Settings" ui.js
           grep -q "StreamRadar v0.2.0 — Personalization & Settings" styles.css
-          grep -q "Personalization Center" ui.js
+          grep -q "PERSONALIZATION CENTER" ui.js
           grep -q "0.2.0" VERSION
           git diff --check
 
