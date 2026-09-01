@@ -2,224 +2,217 @@
 
 Alle relevanten Änderungen an StreamRadar werden hier ab der ersten Version nach Semantic Versioning dokumentiert.
 
+## [0.0.10] - 2026-09-01
+
+### Fixed
+- Filter für Medientyp, Release-Typ, Zeitraum, Herkunft und Originals wieder an die aktuelle Render-/Personalisierungsschicht gebunden.
+- Dadurch kann der v0.0.9-Filter **Meine Anbieter** beim Ändern anderer Filter nicht mehr umgangen werden.
+- Schutz gegen parallele bzw. doppelte TMDB-/TVmaze-Synchronisierungen ergänzt.
+- Refresh-Button wird während einer laufenden Synchronisierung gesperrt und zeigt einen Busy-State.
+- Beschädigte oder strukturell ungültige Radar-Caches werden erkannt und verworfen.
+- Cache-Einträge ohne stabile Identität, Titel oder Releasedatum werden beim Bereinigen entfernt.
+- Cache-Duplikate werden vor dem Speichern zusammengeführt.
+- Fremde/inkompatible Regions-Caches werden nicht weiterverwendet.
+- Gespeicherte Provider-Präferenzen werden gegen die aktuell unterstützte Providerliste bereinigt.
+- Merkliste-Import zählt nun nur tatsächlich neu hinzugefügte Einträge.
+- Ungültige Merkliste-Dateien liefern einen klareren Fehlerzustand.
+- Defekte Poster-/Logo-Bilder werden sauber ausgeblendet und durch einen visuellen Fallback ersetzt.
+- Kalender zeigt in Tag-, Wochen- und 90-Tage-Modus nicht mehr parallel ein irreführendes Monatsraster.
+
+### Changed
+- Radar-Cache wird kompakter serialisiert und Beschreibungen werden für den Snapshot begrenzt.
+- Bei knappem `localStorage`-Budget reduziert StreamRadar die Cache-Größe stufenweise, statt den gesamten neuen Snapshot zu verlieren.
+- Tag/Woche/90 Tage verwenden eine stärker fokussierte Timeline-Darstellung; der Monatsmodus behält Monatsraster + Timeline.
+- Sichtbare Versionsoberflächen werden auf v0.0.10 synchronisiert.
+- Filter-, Kalender- und Statusinteraktionen wurden für Mobile nachpoliert.
+- Tastatur-Fokuszustände wurden verbessert.
+- `prefers-reduced-motion` wird berücksichtigt.
+- Große Karten-/Timeline-Bereiche verwenden Browser-Rendering-Optimierungen (`content-visibility`).
+
+### Added
+- Neues Runtime-Modul `polish.js` für Cache-Härtung, Sync-Lock, Filter-Rebinding, Bild-Fallbacks und Kalender-Polish.
+- Neues Styling `v0010.css`.
+- Zusätzliche Accessibility-Hinweise über `aria-busy`, `aria-live` und deutlichere `focus-visible`-Zustände.
+- CI-Prüfungen für v0.0.10 sowie zusätzliche Repository-Hygiene-Checks.
+
+### Notes
+- v0.0.10 ist bewusst ein Bugfix-/Polish-Release vor dem ersten größeren Meilenstein v0.1.0.
+- Keine neue externe Datenquelle wurde eingeführt; TMDB, JustWatch via TMDB und TVmaze bleiben unverändert die Datenbasis.
+
 ## [0.0.9] - 2026-09-01
 
 ### Added
-- Lokaler Radar-Snapshot-Cache mit einer normalen TTL von sechs Stunden.
-- **Stale-while-revalidate**: ein frischer Cache wird beim Start sofort dargestellt, während TMDB und TVmaze im Hintergrund aktualisiert werden.
-- Offline-/Netzwerkfehler-Fallback auf den letzten gespeicherten Radar statt Rückfall auf Demo-Inhalte.
-- Sichtbare Online-/Offline- und Cache-Altersanzeige in der Statusleiste.
+- Lokaler Radar-Snapshot-Cache mit sechs Stunden TTL.
+- **Stale-while-revalidate**: Cache sofort anzeigen, Live-Daten anschließend aktualisieren.
+- Offline-/Netzwerkfehler-Fallback auf den letzten gespeicherten Radar.
+- Online-/Offline- und Cache-Altersanzeige.
 - Persistenter Multi-Provider-Filter **Meine Anbieter**.
 - Provider-Auswahl in den Einstellungen mit „Alle wählen“ und „Keine wählen“.
-- Persönliche Provider-Auswahl wirkt auch in Kalender und Timeline.
-- Persistente Sortierung nach Relevanz, Datum, TMDB-Popularität oder TMDB-Wertung.
-- Merkliste-Export als JSON-Datei.
-- Merkliste-Import mit Normalisierung, Deduplizierung und Merge mit bestehenden Einträgen.
-- Toast-Hinweise für Offline-Modus, Wiederverbindung, Cache-Aktionen und Merkliste-Import.
-- Cache-Status und lokale Datenstatistiken in den Einstellungen.
-- Neues Runtime-Modul `stability.js`.
-- Neues Styling in `v009.css` für Provider-Präferenzen, Statusanzeige, Toasts und mobile Einstellungen.
+- Persönliche Provider-Auswahl für Feed, Kalender und Timeline.
+- Persistente Sortierung nach Relevanz, Datum, Popularität und TMDB-Wertung.
+- Merkliste-Export und -Import als JSON.
+- Toast-Hinweise für Offline-Modus, Wiederverbindung, Cache und Import.
+- Neues Runtime-Modul `stability.js` und Styling `v009.css`.
 
 ### Changed
-- Der Such-Handler wird leicht verzögert ausgeführt, um unnötige Feed-Neuberechnungen während des Tippens zu reduzieren.
-- Die gespeicherte Merkliste wird beim Start auf String-IDs normalisiert und dedupliziert.
-- Bis zu 350 Release-Events sowie Provider- und Schedule-Metadaten können lokal als letzter vollständiger Radar-Stand gespeichert werden.
-- Der Cache enthält ausdrücklich keinen TMDB API Read Access Token.
-- Die sichtbare Oberfläche und zentrale `VERSION`-Datei wurden auf v0.0.9 aktualisiert.
-- Die CI prüft ab dieser Version zusätzlich die Runtime-Version von `stability.js` und die zentralen v0.0.9-Stabilitätsfunktionen.
-
-### Fixed
-- Versionsstrategie gehärtet: v0.0.8 hatte in `app.js` noch eine ältere interne `APP_VERSION`-Konstante, obwohl die zentrale und sichtbare Version bereits 0.0.8 war. Ab v0.0.9 ist `VERSION` die maßgebliche Release-Referenz; die CI prüft die jeweils release-spezifische Runtime-Datei zusätzlich.
-- Bei einem temporären Live-Sync-Ausfall bleiben vorhandene lokale Radar-Daten sichtbar.
-
-### Notes
-- `localStorage` ist in v0.0.9 bewusst nur eine Zwischenstufe. Für spätere Desktop-/Server-Releases ist eine lokale Datenbank vorgesehen.
-- Ein älterer Cache kann im Fehlerfall auch nach Ablauf der normalen sechs Stunden als Offline-Fallback benutzt werden.
+- Suche wird leicht verzögert neu gerendert.
+- Merkliste wird beim Start normalisiert und dedupliziert.
+- Einstellungen zeigen lokale Cache-/Merkliste-/Provider-Statistiken.
 
 ## [0.0.8] - 2026-09-01
 
 ### Added
-- Neue Hauptansicht **Kalender**.
-- Tages-, Wochen-, Monats- und 90-Tage-Ansicht für Release-Events.
-- Monatsraster mit Release-Anzahl und kompakten Provider-/Titelhinweisen pro Tag.
-- Chronologische Release-Timeline unterhalb des Kalenders.
+- Hauptansicht **Kalender**.
+- Tag-, Woche-, Monat- und 90-Tage-Zeiträume.
+- Monatsraster mit Release-Anzahl und kompakten Vorschauen.
+- Chronologische Release-Timeline.
 - Tagesgruppierung für Film-Premieren, Serienstarts, Staffelstarts und Episoden.
 - Markierung besonders voller Release-Tage.
-- Kalender-Zusammenfassung für Gesamt-Releases, Staffelstarts, Episoden und Premieren im aktiven Zeitraum.
-- Navigation mit vorherigem Zeitraum, nächstem Zeitraum und direktem Sprung zu **Heute**.
+- Kalender-Zusammenfassung für Releases, Staffelstarts, Episoden und Premieren.
+- Navigation für vorherigen/nächsten Zeitraum und **Heute**.
 - Kalenderfilter **Nur Merkliste**.
-- Bestehende Provider-, Medien-, Event-, Herkunfts- und Originals-Filter wirken auch auf die Kalenderansicht.
-- Provider- und Herkunftslogos in Monatsraster und Timeline, sofern Metadaten vorhanden sind.
-- Klickbare Timeline-Einträge, die die bestehende StreamRadar-Detailansicht öffnen.
-- Echter `.ics`-/iCalendar-Export für alle aktuell sichtbaren Events im gewählten Zeitraum.
-- Neues Modul `calendar.js`.
-- Neues Styling in `v008.css` für Kalender, Timeline und responsive Darstellung.
+- Provider-, Medien-, Event-, Herkunfts- und Originals-Filter im Kalender.
+- Provider-/Herkunftslogos in Kalender und Timeline.
+- Klickbare Timeline-Einträge mit bestehender Detailansicht.
+- `.ics`-/iCalendar-Export für sichtbare Events.
+- Neues Modul `calendar.js` und Styling `v008.css`.
 
 ### Changed
-- StreamRadar ist zusätzlich zum Discovery-Feed ein persönlicher Streaming-Release-Kalender.
-- Release-Events aus TMDB und TVmaze werden direkt in Kalender und Timeline wiederverwendet.
-- Die 90-Tage-Ansicht verwendet dieselben Release-Klassifizierungen und Deduplizierungsregeln wie der Feed.
-- Die Kalenderansicht respektiert Merkliste und Origin Intelligence.
-- Versionsanzeige auf v0.0.8 aktualisiert.
-
-### Notes
-- Episoden im 90-Tage-Fenster können wegen des kürzeren TVmaze-Schedule-Horizonts weniger vollständig sein.
-- Der iCalendar-Export ist dateibasiert und keine Zwei-Wege-Synchronisierung.
+- StreamRadar wurde vom reinen Discovery-Feed zum persönlichen Release-Kalender erweitert.
+- Kalender verwendet dieselben deduplizierten TMDB-/TVmaze-Events wie der Feed.
 
 ## [0.0.7] - 2026-09-01
 
 ### Added
-- Gewichtete **Origin Intelligence** für Herkunfts- und Original-Zuordnungen.
-- Herkunfts-Score und nachvollziehbare Evidenz statt ausschließlich `high`/`medium`.
-- Trennung von Streaming-Plattform, Network/Broadcaster, Studio und Herkunfts-/Franchisemarke.
-- Erweiterte Network-/Markenabdeckung, darunter Showtime, CBS, NBC, ABC, FOX, Starz, CANAL+, ZDF und ARD.
-- Zusätzliche Studios/Herkunftsmarken wie Marvel Studios, Lucasfilm, Pixar, Warner Bros., Sony Pictures und A24.
-- Override-Schicht `original-overrides.js` für bekannte Sonderfälle.
-- Overrides können eine Herkunft erzwingen oder eine falsche Original-Zuordnung ausschließen.
-- Herkunftsbadges `ORIGINAL`, `NETWORK`, `STUDIO`, `BRAND` und `MANUELL`.
-- Detailansicht mit Herkunftstyp, Score, Evidenz und Override-Grund.
-- Neues Styling in `v007.css`.
+- Gewichtete **Origin Intelligence**.
+- Trennung in Streaming-Plattform, Network/Broadcaster, Studio und Herkunftsmarke.
+- Herkunfts-Score und nachvollziehbare Evidenz.
+- Erweiterte Networks/Brands wie Showtime, CBS, NBC, ABC, FOX, Starz und CANAL+.
+- Studios/Brands wie Marvel Studios, Lucasfilm, Pixar, Warner Bros., Sony Pictures und A24.
+- Manuelle Override-Schicht in `original-overrides.js`.
+- Detailanzeige für Herkunftstyp, Score, Evidenz und Override-Grund.
+- Herkunftsbadges `ORIGINAL`, `NETWORK`, `STUDIO`, `BRAND`, `MANUELL`.
+- Styling `v007.css`.
 
 ### Changed
-- Produktionsfirmen werden nicht mehr pauschal wie Streaming-Plattformen behandelt.
-- Marvel Studios, Lucasfilm oder Pixar gelten nicht automatisch als Disney+-Original.
-- Direkte Network-/Plattformtreffer haben Vorrang vor reinen Produktionsfirmen.
-- Der Original-Filter berücksichtigt nur tatsächlich als Original qualifizierte Titel.
-- Herkunftsmarken bleiben unabhängig vom österreichischen Streaming-Provider sichtbar.
-- Versionsanzeige auf v0.0.7 aktualisiert.
-
-### Notes
-- Die Override-Datei enthält standardmäßig keine erfundenen Titelkorrekturen; Regeln werden für konkrete Fehlfälle ergänzt.
+- Produktionsfirmen gelten nicht mehr automatisch als Streaming-Original.
+- Direkte Network-/Plattformtreffer haben Vorrang vor reinen Studio-Signalen.
+- Studios wie Marvel Studios, Lucasfilm oder Pixar werden nicht automatisch als Disney+-Original eingestuft.
 
 ## [0.0.6] - 2026-09-01
 
 ### Added
-- Globaler Staffel- und Episoden-Radar über den TVmaze Web-/Streaming-Schedule.
-- Schedule-Abfrage von gestern bis 14 Tage in die Zukunft.
-- Matching von TVmaze gegen österreichisch relevante TMDB-Kandidaten via IMDb-ID, TVDB-ID und Titel-Fallback.
-- Eigenständige Release-Events für kommende Episoden im Hauptfeed.
-- Serienpremieren-Erkennung bei S1E1 und Staffelstart-Erkennung bei Episode 1 einer Staffel > 1.
-- Maximal vier kommende TVmaze-Schedule-Events pro Serie.
-- Eigene Hauptnavigation für **Staffeln** und **Episoden**.
-- Radar-Zusammenfassung für Heute, Staffelstarts, Episoden und Premieren.
-- `TVMAZE ✓` auf Schedule-bestätigten Karten.
-- Web-Channel, Laufzeit, Sendezeit und direkter Episodenlink aus TVmaze.
+- Globaler Staffel-/Episoden-Radar über TVmaze Web Schedule.
+- Schedule von gestern bis 14 Tage in die Zukunft.
+- Matching über IMDb-ID, TVDB-ID und Titel-Fallback.
+- Eigenständige Episoden-/Staffel-Events im Hauptfeed.
+- S1E1-Erkennung als Serienpremiere.
+- Episode 1 höherer Staffeln als Staffelstart.
+- Hauptnavigation für **Staffeln** und **Episoden**.
+- Radar-Zähler für Heute, Staffelstarts, Episoden und Premieren.
+- `TVMAZE ✓`-Kennzeichnung.
+- Web-Channel, Laufzeit, Sendezeit und Episodenlink.
 - Retry-Behandlung für HTTP 429.
-- Neues Styling in `v006.css`.
+- Styling `v006.css`.
 
 ### Changed
-- TVmaze ist seit dieser Version aktive Feed-Datenquelle und nicht nur Detailanreicherung.
-- TVmaze-Schedule-Ereignisse werden nur mit bereits österreichisch relevanten TMDB-Serien zusammengeführt.
-- Identische TMDB-/TVmaze-Events werden dedupliziert und deren Metadaten kombiniert.
-- Statusleiste zeigt Staffel-, Episoden- und TVmaze-Eventzahlen.
-- Versionsanzeige auf v0.0.6 aktualisiert.
+- TVmaze wurde von einer Detaildatenquelle zu einer aktiven Feed-Datenquelle.
+- TMDB bleibt für österreichische Provider-Relevanz zuständig; TVmaze ergänzt konkrete Episodenereignisse.
 
 ## [0.0.5] - 2026-09-01
 
 ### Added
-- Release-Intelligence-Schicht für **Film-Premiere**, **Neue Serie**, **Neue Staffel** und **Neue Episode**.
-- Neuer Release-Typ-Filter.
-- Event-Badges und Release-Detailbox.
+- Release Intelligence mit getrennten Eventtypen:
+  - Film-Premiere
+  - Neue Serie
+  - Neue Staffel
+  - Neue Episode
+- Filter nach Release-Typ.
+- Event-Badges und konkrete Release-Detailbox.
 - Österreichische Film-Release-Klassifizierung über TMDB `release_dates`.
-- Bevorzugung von Digital-/TV-Releases für den Streaming-Radar, sofern regional vorhanden.
 - Staffelstart-Erkennung über TMDB-Staffeldaten.
-- Episodenklassifizierung über `next_episode_to_air` und `last_episode_to_air`.
-- Staffelspezifische Watch-Provider-Abfrage.
-- Zweistufige Event-Deduplizierung über TMDB-Event-Key und Titel-/Datum-/Staffel-/Episoden-Fingerprint.
-- Neues Styling in `v005.css`.
+- Episodenerkennung über `next_episode_to_air` / `last_episode_to_air`.
+- Staffelspezifische Watch-Provider.
+- Zweistufige Deduplizierung.
+- Styling `v005.css`.
 
 ### Changed
-- TV-Discovery nutzt Ausstrahlungsdaten im Radar-Zeitraum statt nur den historischen Serienstart.
-- Laufende ältere Serien können als aktuelle Staffel-/Episodenereignisse auftauchen.
-- Die Merkliste bleibt auf stabilen Film-/Serien-IDs verankert.
-- Provider-Treffer werden zusammengeführt, ohne unterschiedliche echte Release-Events zu verlieren.
-- Versionsanzeige auf v0.0.5 aktualisiert.
+- Laufende Serien werden anhand aktueller Ausstrahlungen statt nur ihres ursprünglichen Serienstarts bewertet.
+- Mehrere Provider eines Events werden zusammengeführt.
+- Merkliste bleibt an stabilen Film-/Serien-IDs verankert.
 
 ## [0.0.4] - 2026-09-01
 
 ### Added
-- Echte Original-Network-/Studio-Logos aus TMDB `logo_path`.
-- Logos auf Release-Karten, in der Detailansicht und in der Markenleiste.
-- Vollständige Original-Marken in der Markenleiste, inklusive eigenständiger HBO-/Sky-Einträge.
-- Neues Styling in `v004.css`.
+- Echte TMDB-Logos für erkannte Original-Networks/Studios.
+- Original-Logos auf Karten, in Details und Markenleiste.
+- Zusätzliche Herkunftsmarken wie HBO und Sky.
+- Styling `v004.css`.
 
 ### Changed
-- Original-Erkennung speichert Logo-Pfad und Logo-Quelle (`network` oder `production_company`).
-- Markenleiste verwendet nach Möglichkeit echte TMDB-Logos.
-- Logos werden während der Metadatenanreicherung dynamisch aktualisiert.
-- Versionsanzeige auf v0.0.4 aktualisiert.
+- Origin-Metadaten speichern Logo-Pfad und Logo-Quelle.
+- Text-Fallback bleibt aktiv, wenn TMDB kein Logo liefert.
 
 ### Documentation
-- Changelog rückwirkend um v0.0.1 und v0.0.2 ergänzt, damit die Historie ab der ersten Version vollständig dokumentiert ist.
+- Changelog rückwirkend für v0.0.1 und v0.0.2 vervollständigt.
 
 ## [0.0.3] - 2026-09-01
 
 ### Added
-- Original-Brand-Erkennung über TMDB Networks und Produktionsfirmen.
-- Erste unterstützte Marken: Netflix, HBO, HBO Max, Disney+, Hulu, FX, Prime Video, Apple TV+, Paramount+, Peacock, AMC+, Crunchyroll, BBC, Sky, Joyn, RTL+ und ORF.
-- Original-Filter und Original-Marken-Filter.
-- Erkennungssicherheit für Original-Zuordnungen.
+- Erste Original-Brand-Erkennung über TMDB Networks/Produktionsfirmen.
+- Marken u. a. Netflix, HBO, HBO Max, Disney+, Hulu, FX, Prime Video, Apple TV+, Paramount+, Peacock, AMC+, Crunchyroll, BBC, Sky, Joyn, RTL+ und ORF.
+- Original- und Brand-Filter.
+- Erkennungssicherheit.
 - TVmaze-Client ohne zusätzlichen API-Key.
-- Serien-Lookup via IMDb-/TVDB-ID mit Titel-Fallback.
-- Nächste Episode und Staffelstart-Hinweis in der Detailansicht.
-- `VERSION`-Datei als zentrale Versionsreferenz.
-- SemVer-Regeln in README und Changelog.
-- CI-Prüfung für JavaScript-Syntax und Versionskonsistenz.
+- Serien-Lookup über IMDb-/TVDB-ID und Titel-Fallback.
+- Nächste Episode und Staffelstart-Erkennung.
+- `VERSION`-Datei.
+- SemVer-Regeln und erste Versionskonsistenz-CI.
+- Styling `v003.css`.
 
 ### Changed
-- Streaming-Provider und Original-Ursprung werden getrennt dargestellt.
-- Ein Titel kann z. B. „Original von FX“ sein und gleichzeitig „läuft bei Disney+ AT“ anzeigen.
-- Originals-Schalter wurde nach Einführung der Herkunftserkennung aktiviert.
-- Versionsanzeige auf v0.0.3 aktualisiert.
+- Streaming-Verfügbarkeit und Original-Ursprung werden getrennt dargestellt.
 
 ## [0.0.2] - 2026-09-01
 
 ### Added
-- Erste Live-Datenanbindung über TMDB.
+- Erste Live-Datenanbindung an TMDB.
 - TMDB Discover für Filme und Serien.
-- Deutsche Metadaten über `de-DE` und österreichische Watch-Provider über `watch_region=AT`.
-- Reale TMDB-Poster und Backdrops.
-- Provider-Mapping für Netflix, Disney+, Prime Video, HBO Max, Apple TV+, Paramount+, Crunchyroll, Sky/WOW, Joyn, RTL+ und ORF.
+- Deutsche Metadaten (`de-DE`).
+- Österreichische Watch-Provider (`watch_region=AT`).
+- Reale Poster und Backdrops.
+- Provider-Mapping für wichtige Streaming-Dienste.
 - Echte Provider-Logos.
-- Zusammenführung identischer TMDB-Titel über mehrere Dienste.
-- Detailansicht mit Genres, Laufzeit/Staffelanzahl, TMDB-Wertung und österreichischen Streaming-Providern.
-- Radar-Fenster mit ca. 35 Tagen Rückblick und 90 Tagen Vorschau.
-- Demnächst-Ansicht für 30 Tage.
-- Lokale TMDB-Token-Konfiguration.
-- Refresh-/Synchronisieren-Schaltfläche.
-- Demo-Fallback bei fehlendem/ungültigem Token oder nicht erreichbarem TMDB.
-- JustWatch-Attribution für Providerdaten.
+- Zusammenführung identischer Titel über mehrere Provider.
+- Detailansicht mit Genres, Laufzeit/Staffeln, Rating und Watch-Providern.
+- Radar-Zeitraum mit Rückblick und Zukunftsfenster.
+- Demnächst-Ansicht.
+- Lokaler TMDB API Read Access Token.
+- Refresh/Synchronisierung.
+- Demo-Fallback.
+- JustWatch-Attribution.
 - Erste GitHub-Actions-Syntaxprüfung.
 
 ### Changed
-- Demo-Karten werden bei gültigem Token durch echte TMDB-Daten ersetzt.
-- Provider-Matching gegen falsche Namensübereinstimmungen gehärtet.
-- Fortschrittsanzeige und Discovery-Sortierung verbessert.
-- Merkliste und Filter für Live-Daten beibehalten.
-- Versionsanzeige auf v0.0.2 aktualisiert.
-
-### Notes
-- Original-Erkennung war absichtlich noch deaktiviert, weil TMDB keinen universellen Original-Schalter besitzt.
+- Demo-Daten werden bei gültigem Token durch echte TMDB-Daten ersetzt.
+- Provider-Matching wurde gegen ungenaue Namensmatches gehärtet.
 
 ## [0.0.1] - 2026-09-01
 
 ### Added
-- Erstes statisches Frontend-MVP von StreamRadar.
+- Erstes statisches StreamRadar-MVP.
 - Responsive Dark-Mode-Oberfläche mit Radar-Design.
-- Hero-Bereich mit animierter Radar-Darstellung.
-- Marken-/Providerleiste als Filterbasis.
-- Ausgangsmarken: Netflix, Disney+, Prime Video, HBO Max, Apple TV+, Paramount+, Crunchyroll, FX, Hulu, Peacock, AMC+, BBC, Sky/WOW, Joyn, RTL+ und ORF.
+- Hero/Radar-Visualisierung.
+- Provider-/Markenleiste als Filterbasis.
 - Freitextsuche.
-- Medientypfilter für Serie, Film und Anime.
-- Zeitraumfilter für Heute, Woche, Monat und Demnächst.
-- Vorbereitung des Originals-Filters.
+- Film-/Serien-/Anime-Filter.
+- Zeitraumfilter.
 - Ansichten Entdecken, Demnächst und Merkliste.
 - Lokale Merkliste über `localStorage`.
 - Detaildialog.
-- Responsive Desktop-/Tablet-/Smartphone-Darstellung.
-- Demo-Datensatz vor der ersten API-Anbindung.
-- Statischer Betrieb ohne Build-Schritt.
-- README mit erster Projektstruktur und Datenquellen-Konzept.
+- Responsive Desktop-/Tablet-/Mobile-Darstellung.
+- Demo-Datensatz vor der API-Anbindung.
+- Betrieb ohne Build-Schritt über einen einfachen HTTP-Server.
 
 ### Notes
 - v0.0.1 war bewusst eine reine Frontend-/UX-Grundlage ohne externe API-Abhängigkeiten.
