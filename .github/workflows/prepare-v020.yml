@@ -23,6 +23,15 @@ jobs:
       - name: Prepare v0.2.0
         run: python scripts/prepare-v020.py
 
+      - name: Normalize generated text files
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+          for name in ['styles.css','ui.js']:
+              p = Path(name)
+              p.write_text(p.read_text(encoding='utf-8').rstrip() + '\n', encoding='utf-8')
+          PY
+
       - name: Preflight
         run: |
           node --check ui.js
