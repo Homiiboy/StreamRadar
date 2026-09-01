@@ -2,6 +2,33 @@
 
 Alle relevanten Änderungen an StreamRadar werden hier ab der ersten Version nach Semantic Versioning dokumentiert.
 
+## [0.0.7] - 2026-09-01
+
+### Added
+- Neue gewichtete **Origin Intelligence** für Herkunfts- und Original-Zuordnungen.
+- Herkunfts-Score und nachvollziehbare Evidenz statt einer reinen `high`/`medium`-Heuristik.
+- Trennung der Herkunftstypen in Streaming-Plattform, Network/Broadcaster, Studio und Herkunfts-/Franchisemarke.
+- Erweiterte Marken- und Network-Abdeckung, darunter Showtime, CBS, NBC, ABC, FOX, Starz, CANAL+, ZDF und ARD.
+- Zusätzliche Studio-/Herkunftsmarken wie Marvel Studios, Lucasfilm, Pixar, Warner Bros., Sony Pictures und A24.
+- Neue Override-Schicht in `original-overrides.js` für bekannte Sonderfälle und Fehlzuordnungen.
+- Overrides können eine konkrete Herkunft erzwingen oder eine falsche Original-Klassifizierung explizit ausschließen.
+- Herkunftsbadges in der UI für `ORIGINAL`, `NETWORK`, `STUDIO`, `BRAND` und `MANUELL`.
+- Detailansicht zeigt Herkunftstyp, Score, Evidenz und Override-Grund.
+- Neues Styling in `v007.css`.
+
+### Changed
+- Produktionsfirmen werden nicht mehr pauschal wie Streaming-Plattformen behandelt.
+- Studios wie Marvel Studios, Lucasfilm oder Pixar können als Herkunft erkannt werden, gelten aber nicht automatisch als Disney+-Original.
+- Direkte Network-/Plattformtreffer haben im Scoring Vorrang vor reinen Produktionsfirmen.
+- Original-Filter berücksichtigt nur Titel, die nach Scoring/Override tatsächlich als Original klassifiziert wurden.
+- Herkunftsmarken bleiben unabhängig vom österreichischen Streaming-Provider sichtbar.
+- Bestehende TMDB-/TVmaze-Release- und Episodenlogik aus v0.0.6 bleibt erhalten.
+- Versionsanzeige auf v0.0.7 aktualisiert.
+
+### Notes
+- Die Override-Datei enthält bewusst nur die Infrastruktur; konkrete Titelkorrekturen können bei real beobachteten Fehlzuordnungen ergänzt werden.
+- Rechteketten können komplex sein: ursprüngliches Network, Produktionsstudio, Franchise-Marke und aktueller Streaming-Anbieter können voneinander abweichen.
+
 ## [0.0.6] - 2026-09-01
 
 ### Added
