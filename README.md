@@ -2,25 +2,47 @@
 
 StreamRadar ist ein persönlicher Streaming-Release-Radar für Filme, Serien, Anime, Originals, neue Staffeln und Episoden – optimiert für Österreich.
 
-## Aktuelle Version: v0.1.0
+## Aktuelle Version: v0.1.1
 
-**v0.1.0 – First Complete Radar** ist der erste größere Meilenstein und zugleich die erste installierbare Windows-Desktop-Version.
+**v0.1.1 – Desktop UI/UX Redesign** baut auf dem vollständigen v0.1.0-Radar auf und gestaltet StreamRadar erstmals konsequent wie eine Desktop-Media-App statt wie ein klassisches Web-Dashboard.
 
 ## Download
 
 ### Windows x64
 
-[**StreamRadar v0.1.0 als MSI herunterladen**](downloads/StreamRadar_0.1.0_x64_de-DE.msi)
+[**StreamRadar v0.1.1 als MSI herunterladen**](downloads/StreamRadar_0.1.1_x64_de-DE.msi)
 
-Weitere Hinweise, Prüfsumme und zukünftige Installer liegen im Ordner [`downloads/`](downloads/).
+Weitere Builds und die SHA-256-Prüfsumme liegen im Ordner [`downloads/`](downloads/).
 
-Der Installer ist noch nicht code-signiert. Windows kann deshalb beim Öffnen einen Hinweis auf einen unbekannten Herausgeber anzeigen.
+Der Installer ist für die persönliche Nutzung weiterhin nicht code-signiert. Windows kann deshalb beim Öffnen einen Hinweis auf einen unbekannten Herausgeber anzeigen.
 
-### Was v0.1.0 zusammenführt
+## Neu in v0.1.1
+
+- neue permanente **Desktop-Sidebar** für Entdecken, Kalender, Staffeln, Episoden, Demnächst und Merkliste
+- kompaktere Topbar mit Seitentitel, globaler Suche, Refresh und Einstellungen
+- neuer Home-/Discover-Bereich mit Begrüßung, Datum und Radar-Schnellstatistiken
+- streamingartige horizontale **Content-Rows** für:
+  - Heute
+  - neue Staffeln
+  - Filme & Serien der nächsten 30 Tage
+  - Originals
+  - neue Episoden
+- Home-Rows respektieren **Meine Anbieter** und den aktiven Provider-/Herkunftsfilter
+- kompakter Filter-Drawer statt dauerhaft sichtbarer Filterwand
+- sichtbare Anzahl aktiver Filter
+- responsive Off-Canvas-Sidebar auf kleineren Fenstern
+- dichteres Postergrid und optimierte Desktop-Flächennutzung
+- klarere Statusanzeige direkt in der Sidebar
+- Detail-, Kalender-, Cache-, Merkliste-, Provider- und Origin-Logik aus v0.1.0 bleiben erhalten
+- neue UI-Schicht `ui011.js` und Styling `v011.css`
+
+## Funktionsumfang
+
+StreamRadar kombiniert:
 
 - TMDB-Live-Daten mit österreichischen Watch-Providern
 - TVmaze Web Schedule für neue Episoden und Staffelstarts
-- Release Intelligence für Film-Premieren, neue Serien, neue Staffeln und neue Episoden
+- Release Intelligence für Film-Premieren, Serienstarts, Staffelstarts und Episoden
 - Origin Intelligence für Original, Network, Studio und Herkunftsmarke
 - Provider-/Network-/Studio-Logos
 - Kalender mit Tag, Woche, Monat und 90 Tagen
@@ -29,36 +51,25 @@ Der Installer ist noch nicht code-signiert. Windows kann deshalb beim Öffnen ei
 - persönliche Anbieter über **Meine Anbieter**
 - persistente Sortierung
 - lokale Merkliste mit JSON-Backup/-Import
-- lokaler Radar-Cache mit Offline-Fallback
-- Deduplizierung und Cache-Härtung aus v0.0.10
-- responsive Web-Oberfläche
-- **Tauri-v2-Desktop-App für Windows**
-- **MSI-Installer für Windows x64**
-- eigenes StreamRadar-App-Icon
+- lokalen Radar-Cache mit Offline-Fallback
+- Tauri-v2-Desktop-App für Windows
+- MSI-Installer für Windows x64
 
 ## Windows Desktop / MSI
 
-StreamRadar v0.1.0 verwendet Tauri v2. Die bestehende HTML/CSS/JavaScript-Oberfläche wird als native Windows-Anwendung verpackt; Windows rendert die Oberfläche über WebView2.
+StreamRadar verwendet Tauri v2. Die HTML/CSS/JavaScript-Oberfläche wird als native Windows-Anwendung verpackt und über WebView2 dargestellt.
 
-Der GitHub-Workflow **Build StreamRadar Windows MSI** läuft auf `windows-latest` und erstellt:
-
-```text
-StreamRadar_0.1.0_x64_de-DE.msi
-```
-
-sowie die kompilierte Windows-Anwendung.
-
-Nach einem erfolgreichen Build wird der Installer sowohl als GitHub-Actions-Artefakt als auch dauerhaft unter folgendem Pfad im Repository veröffentlicht:
+Der GitHub-Workflow **Build StreamRadar Windows MSI** läuft auf `windows-latest`, baut die Anwendung, verifiziert die MSI und veröffentlicht sie danach unter:
 
 ```text
-downloads/StreamRadar_0.1.0_x64_de-DE.msi
+downloads/StreamRadar_0.1.1_x64_de-DE.msi
 ```
 
-Der Installer ist in v0.1.0 noch **nicht code-signiert**. Windows SmartScreen kann deshalb bei einem heruntergeladenen Installer eine Warnung anzeigen. Code Signing ist für einen späteren Release vorgesehen.
+Beim finalen Main-Build wird außerdem automatisch die SHA-256-Prüfsumme in `downloads/README.md` eingetragen.
 
 ### Desktop-App selbst bauen
 
-Voraussetzungen für einen MSI-Build:
+Voraussetzungen:
 
 - Windows
 - Node.js 22+
@@ -74,17 +85,7 @@ npm install
 npm run desktop:build
 ```
 
-Das Skript erzeugt zuerst die Icon-Sets aus `assets/streamradar-icon.svg`, baut anschließend das statische Frontend nach `dist/` und lässt Tauri das MSI erzeugen.
-
-## Desktop Icon
-
-Die editierbare Icon-Quelle liegt unter:
-
-```text
-assets/streamradar-icon.svg
-```
-
-Tauri generiert daraus beim Desktop-Build die benötigten Windows-Icons (`.ico` und PNG-Größen). Das Design kombiniert Radar, Play-Symbol und Film-/Streaming-Elemente im cyan/blauen StreamRadar-Look.
+Das Build-Skript packt die statische Oberfläche nach `dist/`, generiert die Windows-Icons aus `assets/streamradar-icon.svg` und erzeugt anschließend das MSI.
 
 ## Datenquellen
 
@@ -92,29 +93,20 @@ Tauri generiert daraus beim Desktop-Build die benötigten Windows-Icons (`.ico` 
 - **JustWatch via TMDB** – Streaming-Verfügbarkeit in Österreich
 - **TVmaze** – Web-/Streaming-Schedule und Episodeninformationen
 
-Der TMDB API Read Access Token wird lokal gespeichert und nicht in das GitHub-Repository geschrieben.
+Der TMDB API Read Access Token wird ausschließlich lokal gespeichert und niemals in das Repository geschrieben.
 
-## Release Intelligence
+## Navigation in v0.1.1
 
-StreamRadar behandelt Inhalte als konkrete Release-Events:
+```text
+Entdecken
+Kalender
+Staffeln
+Episoden
+Demnächst
+Merkliste
+```
 
-- **Film-Premiere** / Digital- oder TV-Premiere
-- **Neue Serie**
-- **Neue Staffel**
-- **Neue Episode**
-
-TMDB bestimmt die österreichische Provider-Relevanz. TVmaze ergänzt aktuelle und kommende Streaming-Episoden.
-
-## Origin Intelligence
-
-StreamRadar trennt:
-
-- Streaming-Original
-- Network/Broadcaster
-- Studio
-- Herkunfts-/Franchisemarke
-
-Dadurch wird beispielsweise Marvel Studios nicht automatisch zu einem Disney+-Original. Bekannte Sonderfälle können über `original-overrides.js` korrigiert werden.
+Die Desktop-Version verwendet dafür eine linke Sidebar. Auf kleineren Fenstern wird sie als Off-Canvas-Navigation eingeblendet.
 
 ## Kalender
 
@@ -127,21 +119,13 @@ Monat
 90 Tage
 ```
 
-Die Monatsansicht kombiniert Monatsraster und Timeline. Die übrigen Modi fokussieren stärker auf eine chronologische Timeline. Aktive Provider-, Herkunfts- und Merkliste-Filter gelten auch für den Kalender.
+Die Monatsansicht kombiniert Monatsraster und Timeline. Die übrigen Modi fokussieren stärker auf die chronologische Timeline. Aktive Provider-, Herkunfts-, Originals- und Merkliste-Filter gelten auch dort.
 
 ## Personalisierung und Offline-Nutzung
 
-Unter ⚙ können persönliche Anbieter ausgewählt werden. **Meine Anbieter** filtert Feed, Kalender und Timeline auf diese Dienste.
+Unter ⚙ können persönliche Anbieter ausgewählt werden. **Meine Anbieter** filtert Feed, Home-Rows, Kalender und Timeline auf diese Dienste.
 
-Der letzte vollständige Radar wird lokal gepuffert. Ein frischer Cache wird beim Start sofort angezeigt und anschließend mit TMDB/TVmaze aktualisiert. Bei Netzwerk- oder API-Problemen kann der letzte gespeicherte Datenstand weiterverwendet werden.
-
-## Web-Version starten
-
-```bash
-python -m http.server 8080
-```
-
-Danach `http://localhost:8080` öffnen.
+Der letzte vollständige Radar wird lokal gepuffert. Ein frischer Cache wird beim Start sofort angezeigt und danach mit TMDB/TVmaze aktualisiert. Bei Netzwerk- oder API-Problemen kann der letzte gespeicherte Datenstand weiterverwendet werden.
 
 ## Projektstruktur
 
@@ -152,7 +136,8 @@ StreamRadar/
 │   └── build-msi.yml
 ├── downloads/
 │   ├── README.md
-│   └── StreamRadar_0.1.0_x64_de-DE.msi
+│   ├── StreamRadar_0.1.0_x64_de-DE.msi
+│   └── StreamRadar_0.1.1_x64_de-DE.msi
 ├── assets/
 │   └── streamradar-icon.svg
 ├── scripts/
@@ -166,7 +151,7 @@ StreamRadar/
 │   └── tauri.conf.json
 ├── index.html
 ├── styles.css
-├── v003.css … v0100.css
+├── v003.css … v011.css
 ├── original-overrides.js
 ├── tmdb.js
 ├── tvmaze.js
@@ -175,6 +160,7 @@ StreamRadar/
 ├── stability.js
 ├── polish.js
 ├── desktop.js
+├── ui011.js
 ├── package.json
 ├── VERSION
 ├── CHANGELOG.md
@@ -183,26 +169,16 @@ StreamRadar/
 
 ## Versionierung
 
-StreamRadar verwendet Semantic Versioning:
+StreamRadar verwendet Semantic Versioning (`MAJOR.MINOR.PATCH`). v0.1.1 ist ein kompatibler UI/UX-Patch auf dem ersten vollständigen v0.1.0-Desktop-Meilenstein.
 
-```text
-MAJOR.MINOR.PATCH
-```
+## Grenzen von v0.1.1
 
-- `PATCH`: Fehlerbehebungen und kleine kompatible Verbesserungen
-- `MINOR`: größere rückwärtskompatible Feature-Pakete
-- `MAJOR`: Breaking Changes / grundlegende Neustrukturierung
-
-Mit `0.1.0` beginnt der erste vollständige Produkt-Meilenstein nach der `0.0.x`-Aufbauphase.
-
-## Grenzen von v0.1.0
-
-- TMDB-Token, Einstellungen, Cache und Merkliste sind weiterhin lokal und werden nicht zwischen Geräten synchronisiert.
-- Die Desktop-App verwendet in v0.1.0 weiterhin `localStorage`; SQLite ist für eine spätere Desktop-Ausbaustufe vorgesehen.
-- Episoden im 90-Tage-Fenster können aufgrund des kürzeren TVmaze-Schedule-Horizonts weniger vollständig sein.
-- Der MSI-Installer ist noch nicht mit einem Windows-Code-Signing-Zertifikat signiert.
+- Einstellungen, Cache und Merkliste bleiben lokal und werden nicht zwischen Geräten synchronisiert.
+- Persistenz läuft weiterhin über `localStorage`; SQLite ist für eine spätere Desktop-Ausbaustufe vorgesehen.
+- Episoden im 90-Tage-Fenster können wegen des kürzeren TVmaze-Schedule-Horizonts weniger vollständig sein.
+- Der MSI-Installer ist nicht code-signiert.
 - Automatische App-Updates sind noch nicht aktiviert.
 
 ## Status
 
-`v0.1.0` – First Complete Radar & Windows Desktop MSI
+`v0.1.1` – Desktop UI/UX Redesign
