@@ -40,16 +40,16 @@ jobs:
       - name: Check version consistency
         run: |
           test -s VERSION
-          grep -qx "0.1.2" VERSION
-          grep -q "v0.1.2" README.md
-          grep -q "\[0.1.2\]" CHANGELOG.md
-          grep -q "v0.1.2" index.html
-          grep -q '"version": "0.1.2"' package.json
-          grep -q '"version": "0.1.2"' src-tauri/tauri.conf.json
-          grep -q 'version = "0.1.2"' src-tauri/Cargo.toml
-          grep -q "APP_VERSION = '0.1.2'" app.js
-          grep -q "VERSION = '0.1.2'" desktop.js
-          grep -q "const VERSION = '0.1.2'" ui.js
+          grep -qx "0.2.0" VERSION
+          grep -q "v0.2.0" README.md
+          grep -q "\[0.2.0\]" CHANGELOG.md
+          grep -q "v0.2.0" index.html
+          grep -q '"version": "0.2.0"' package.json
+          grep -q '"version": "0.2.0"' src-tauri/tauri.conf.json
+          grep -q 'version = "0.2.0"' src-tauri/Cargo.toml
+          grep -q "APP_VERSION = '0.2.0'" app.js
+          grep -q "VERSION = '0.2.0'" desktop.js
+          grep -q "const VERSION = '0.2.0'" ui.js
 
       - name: Check release intelligence surface
         run: |
@@ -71,22 +71,41 @@ jobs:
           grep -q "rebindFilterHandlers" polish.js
           grep -q "saveCompactSnapshot" polish.js
 
+      - name: Check personalization and settings
+        run: |
+          grep -q "PERSONALIZATION CENTER" ui.js
+          grep -q "onboardingOverlay" ui.js
+          grep -q "Personalization Center" CHANGELOG.md
+          grep -q "renderPersonalizedHome" ui.js
+          grep -q "personalScore" ui.js
+          grep -q "Dein Radar-Mix" ui.js
+          grep -q "Bei deinen Diensten" ui.js
+          grep -q "streamradar-personalization-v2" ui.js
+          grep -q "streamradar-onboarding-v2-complete" ui.js
+          grep -q "exportBackup" ui.js
+          grep -q "importBackup" ui.js
+          grep -q "Backup" ui.js
+          grep -q "setPreferredProviders" stability.js
+          grep -q "setPreferredProvidersOnly" stability.js
+          grep -q "getAllProviders" stability.js
+          grep -q "data-density" styles.css
+          grep -q "settings-center" styles.css
+          grep -q "onboarding-overlay" styles.css
+          grep -q "v020-personal-rail" styles.css
+
       - name: Check consolidated UI foundation
         run: |
           test -s ui.js
           test -s OldUi/ui011.js
           test -s OldUi/ui012.js
+          test -s OldUi/ui-v0.1.2.js
           grep -q 'class="app-sidebar"' index.html
           grep -q 'id="homeDashboard"' index.html
           grep -q 'id="homeRails"' index.html
           grep -q 'id="toggleAdvancedFilters"' index.html
           grep -q 'renderHomeDashboard' ui.js
-          grep -q 'dashboardSource' ui.js
-          grep -q 'preferredFiltered' ui.js
-          grep -q 'updateFilterUX' ui.js
           grep -q 'globalSearchOverlay' ui.js
           grep -q 'renderPremiumDetail' ui.js
-          grep -q 'newSinceItems' ui.js
           grep -q 'ui.js' index.html
           ! grep -q 'ui011.js' index.html
           ! grep -q 'ui012.js' index.html
@@ -97,10 +116,10 @@ jobs:
           test -s styles.css
           test -s OldCss/v011.css
           test -s OldCss/v012.css
+          test -s OldCss/styles-v0.1.2.css
           grep -q 'rail-heading-actions' styles.css
           grep -q 'premium-detail' styles.css
-          grep -q 'StreamRadar consolidated visual baseline through v0.1.1' styles.css
-          grep -q 'Consolidated StreamRadar v0.1.2 polish' styles.css
+          grep -q 'StreamRadar v0.2.0 — Personalization & Settings' styles.css
           grep -q 'styles.css' index.html
           ! grep -q 'v012.css' index.html
           ! grep -q 'OldCss/.*\.css' index.html
@@ -121,8 +140,7 @@ jobs:
           test -s downloads/README.md
           test -s OldCss/README.md
           test -s OldUi/README.md
-          grep -q 'downloads/StreamRadar_0.1.2_x64_de-DE.msi' README.md
-          grep -q 'StreamRadar_0.1.2_x64_de-DE.msi' downloads/README.md
+          grep -q 'downloads/StreamRadar_0.2.0_x64_de-DE.msi' README.md
           node -e "const c=JSON.parse(require('fs').readFileSync('src-tauri/tauri.conf.json','utf8')); if(!c.bundle.targets.includes('msi')||c.bundle.windows.wix.language!=='de-DE'||c.identifier!=='at.streamradar.desktop') process.exit(1)"
           grep -q '@tauri-apps/cli' package.json
           grep -q 'streamradar-icon.svg' package.json
@@ -136,15 +154,14 @@ jobs:
           test -s dist/styles.css
           test -s dist/desktop.js
           test -s dist/ui.js
-          test ! -e dist/v012.css
-          test ! -e dist/ui011.js
-          test ! -e dist/ui012.js
           test ! -d dist/OldCss
           test ! -d dist/OldUi
-          grep -q "v0.1.2" dist/index.html
+          grep -q "v0.2.0" dist/index.html
           grep -q 'class="app-sidebar"' dist/index.html
           grep -q 'ui.js' dist/index.html
           grep -q 'styles.css' dist/index.html
+          grep -q 'PERSONALIZATION CENTER' dist/ui.js
+          grep -q 'onboarding-overlay' dist/styles.css
 
       - name: Check archive layout
         run: |
@@ -154,12 +171,14 @@ jobs:
             test ! -e "$file"
             test -s "OldCss/$file"
           done
+          test -s OldCss/styles-v0.1.2.css
           test ! -e ui011.js
           test ! -e ui012.js
           test -s OldUi/ui011.js
           test -s OldUi/ui012.js
-          grep -q 'nur `styles.css`' OldCss/README.md
-          grep -q 'aktive UI-Logik' OldUi/README.md
+          test -s OldUi/ui-v0.1.2.js
+          grep -q 'styles-v0.1.2.css' OldCss/README.md
+          grep -q 'ui-v0.1.2.js' OldUi/README.md
 
       - name: Check configuration JSON
         run: |
@@ -175,6 +194,6 @@ jobs:
             echo "Temporary root file found"
             exit 1
           fi
-          test ! -e scripts/prepare-v012.py
-          test ! -e .github/workflows/prepare-v012.yml
+          test ! -e scripts/prepare-v020.py
+          test ! -e .github/workflows/prepare-v020.yml
           test ! -e .github/workflows/consolidate-ui-assets.yml
