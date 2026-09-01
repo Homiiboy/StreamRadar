@@ -31,7 +31,7 @@ jobs:
           from pathlib import Path
 
           legacy = ['v003.css','v004.css','v005.css','v006.css','v007.css','v008.css','v009.css','v0010.css','v0100.css']
-          for filename in ['index.html', 'scripts/build-desktop.mjs', '.github/workflows/validate.yml', 'README.md']:
+          for filename in ['index.html', 'scripts/build-desktop.mjs', 'README.md']:
               path = Path(filename)
               text = path.read_text(encoding='utf-8')
               for css in legacy:
@@ -46,8 +46,7 @@ jobs:
               raise SystemExit('Desktop copy loop not found')
           build.write_text(text.replace(old, new), encoding='utf-8')
 
-          readme = Path('OldCss/README.md')
-          readme.write_text('''# OldCss\n\nHier liegen die historischen versionsbezogenen CSS-Patches von StreamRadar.\n\nRegel: Die CSS-Datei der aktuellen Version bleibt im Repository-Root. Sobald eine neue Version erscheint, wird die bisher aktuelle Versions-CSS in diesen Ordner verschoben. `styles.css` bleibt als gemeinsame Basis dauerhaft im Root.\n\nAktuell archiviert: v0.0.3 bis v0.1.0. Die aktuelle `v011.css` für v0.1.1 bleibt im Root.\n''', encoding='utf-8')
+          Path('OldCss/README.md').write_text('''# OldCss\n\nHier liegen die historischen versionsbezogenen CSS-Patches von StreamRadar.\n\nRegel: Die CSS-Datei der aktuellen Version bleibt im Repository-Root. Sobald eine neue Version erscheint, wird die bisher aktuelle Versions-CSS in diesen Ordner verschoben. `styles.css` bleibt als gemeinsame Basis dauerhaft im Root.\n\nAktuell archiviert: v0.0.3 bis v0.1.0. Die aktuelle `v011.css` für v0.1.1 bleibt im Root.\n''', encoding='utf-8')
           PY
 
           git status --short
