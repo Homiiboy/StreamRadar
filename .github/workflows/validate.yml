@@ -46,7 +46,7 @@ jobs:
         run: |
           test -s v007.css
           test -s original-overrides.js
-          grep -q "ORIGIN_OVERRIDES" original-overrides.js
+          grep -q "StreamRadarOriginalOverrides" original-overrides.js
           grep -q "originalScore" tmdb.js
           grep -q "originType" tmdb.js
           grep -q "override" tmdb.js
