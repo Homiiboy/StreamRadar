@@ -104,7 +104,7 @@
       releaseDate: date || '', posterPath: item.poster_path || null, backdropPath: item.backdrop_path || null,
       rating: Number(item.vote_average || 0), popularity: Number(item.popularity || 0), genreIds: item.genre_ids || [], originalLanguage: item.original_language || '',
       services: [service.name], serviceLogos: service.logoPath ? { [service.name]: service.logoPath } : {},
-      original: null, originalBrand: null, originalConfidence: null, source: 'tmdb'
+      original: null, originalBrand: null, originalConfidence: null, originalLogoPath: null, originalLogoSource: null, source: 'tmdb'
     };
   }
 
@@ -148,16 +148,18 @@
     return { releases: mergeReleases(groups), providers: providerMap };
   }
 
-  function inferOriginalBrand(details, mediaType) {
-    const networks = (details.networks || []).map(item => item.name).filter(Boolean);
-    const companies = (details.production_companies || []).map(item => item.name).filter(Boolean);
+  function inferOriginalBrand(details) {
+    const networks = details.networks || [];
+    const companies = details.production_companies || [];
     for (const brand of ORIGINAL_BRANDS) {
-      if (networks.some(name => matchesAlias(name, brand.network))) return { brand: brand.name, confidence: 'high', evidence: networks.find(name => matchesAlias(name, brand.network)) };
+      const network = networks.find(item => matchesAlias(item.name || '', brand.network));
+      if (network) return { brand: brand.name, confidence: 'high', evidence: network.name, logoPath: network.logo_path || null, logoSource: 'network' };
     }
     for (const brand of ORIGINAL_BRANDS) {
-      if (companies.some(name => matchesAlias(name, brand.company))) return { brand: brand.name, confidence: 'medium', evidence: companies.find(name => matchesAlias(name, brand.company)) };
+      const company = companies.find(item => matchesAlias(item.name || '', brand.company));
+      if (company) return { brand: brand.name, confidence: 'medium', evidence: company.name, logoPath: company.logo_path || null, logoSource: 'production_company' };
     }
-    return { brand: null, confidence: null, evidence: null };
+    return { brand: null, confidence: null, evidence: null, logoPath: null, logoSource: null };
   }
 
   async function getCoreDetails(mediaType, id, token) {
@@ -172,10 +174,12 @@
         const item = queue.shift();
         try {
           const details = await getCoreDetails(item.mediaType, item.tmdbId, token);
-          const original = inferOriginalBrand(details, item.mediaType);
+          const original = inferOriginalBrand(details);
           item.originalBrand = original.brand;
           item.originalConfidence = original.confidence;
           item.originalEvidence = original.evidence;
+          item.originalLogoPath = original.logoPath;
+          item.originalLogoSource = original.logoSource;
           item.original = Boolean(original.brand);
           item.externalIds = details.external_ids || {};
           item.networks = (details.networks || []).map(network => network.name);
@@ -196,8 +200,17 @@
     const at = providerData.results?.[REGION] || {};
     const streaming = [...(at.flatrate || []), ...(at.free || []), ...(at.ads || [])];
     const uniqueStreaming = [...new Map(streaming.map(provider => [provider.provider_id, provider])).values()];
-    const original = inferOriginalBrand(details, mediaType);
-    return { ...details, providers: uniqueStreaming, watchLink: at.link || null, inferredOriginalBrand: original.brand, originalConfidence: original.confidence, originalEvidence: original.evidence };
+    const original = inferOriginalBrand(details);
+    return {
+      ...details,
+      providers: uniqueStreaming,
+      watchLink: at.link || null,
+      inferredOriginalBrand: original.brand,
+      originalConfidence: original.confidence,
+      originalEvidence: original.evidence,
+      inferredOriginalLogoPath: original.logoPath,
+      originalLogoSource: original.logoSource
+    };
   }
 
   const image = (path, size = 'w500') => path ? `${IMAGE_BASE}/${size}${path}` : '';
