@@ -1,7 +1,12 @@
 # OldCss
 
-Hier liegen die historischen versionsbezogenen CSS-Patches von StreamRadar.
+Hier liegen historische CSS-Versionen und frühere versionsbezogene CSS-Patches von StreamRadar.
 
-Regel: Die CSS-Datei der aktuellen Version bleibt im Repository-Root. Sobald eine neue Version erscheint, wird die bisher aktuelle Versions-CSS in diesen Ordner verschoben. `styles.css` ist die konsolidierte aktive Basis und lädt die Archive nicht mehr zur Laufzeit.
+## Aktive Regel ab v0.1.2
 
-Aktuell archiviert: v0.0.3 bis v0.1.1. Die aktuelle `v012.css` für v0.1.2 bleibt im Root.
+- Zur Laufzeit wird **nur `styles.css` im Repository-Root** geladen.
+- `OldCss/` ist reines Archiv und wird weder von `index.html` geladen noch in den Desktop-Build gepackt.
+- Neue Releases ändern `styles.css` direkt.
+- Vor größeren UI-Änderungen kann der bisherige Stand optional als Versions-Snapshot in `OldCss/` gesichert werden.
+
+Aktuell archiviert sind die historischen Patches von v0.0.3 bis v0.1.2.
