@@ -2,6 +2,33 @@
 
 Alle relevanten Änderungen an StreamRadar werden hier ab der ersten Version nach Semantic Versioning dokumentiert.
 
+## [0.0.5] - 2026-09-01
+
+### Added
+- Neue Release-Intelligence-Schicht mit getrennten Ereignistypen für **Film-Premiere**, **Neue Serie**, **Neue Staffel** und **Neue Episode**.
+- Neuer Filter nach Release-Typ in der Hauptansicht.
+- Eigene Event-Badges auf Release-Karten mit visueller Unterscheidung der Release-Arten.
+- Release-Detailbox in der Detailansicht mit konkretem Ereignis, Staffel/Episode und Datum.
+- Österreichische Film-Release-Klassifizierung über TMDB `release_dates`.
+- Bevorzugung von Digital- und TV-Releases für den Streaming-Radar, sofern TMDB entsprechende österreichische Daten liefert.
+- Staffelstart-Erkennung über TMDB-Staffeldaten.
+- Episodenklassifizierung über `next_episode_to_air` und `last_episode_to_air`.
+- Staffelspezifische Watch-Provider-Abfrage über den TMDB-Season-Watch-Provider-Endpunkt.
+- Zweistufige Deduplizierung über stabile TMDB-Event-Keys und einen sekundären Titel-/Datum-/Staffel-/Episoden-Fingerprint.
+- Neues Styling in `v005.css`.
+
+### Changed
+- TV-Discovery verwendet für den Radar nun Ausstrahlungsdaten im aktuellen Zeitfenster (`air_date`) statt nur das ursprüngliche `first_air_date` einer Serie.
+- Laufende ältere Serien können dadurch als aktuelle Staffel- oder Episodenereignisse erkannt werden.
+- Neue Serien werden weiterhin bevorzugt als **Neue Serie** dargestellt; Staffelstarts haben gegenüber normalen Episoden Priorität.
+- Der Radar zählt und zeigt nun Release-Events statt lediglich Medientitel.
+- Die Merkliste bleibt auf der stabilen Film-/Serien-ID verankert, damit Staffel-/Episodenklassifizierung bestehende gespeicherte Titel nicht ungültig macht.
+- Doppelte Provider-Treffer werden zusammengeführt, ohne unterschiedliche echte Release-Ereignisse fälschlich zu verschmelzen.
+- Versionsanzeige auf v0.0.5 aktualisiert.
+
+### Notes
+- Der vollständig globale Staffel-/Episoden-Kalender über alle relevanten Serien ist weiterhin für v0.0.6 vorgesehen. v0.0.5 verbessert zunächst die Klassifizierung der durch Provider-/TMDB-Discovery gefundenen Titel.
+
 ## [0.0.4] - 2026-09-01
 
 ### Added
