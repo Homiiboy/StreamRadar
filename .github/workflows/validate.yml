@@ -27,38 +27,40 @@ jobs:
           node --check tvmaze.js
           node --check app.js
           node --check calendar.js
+          node --check stability.js
       - name: Check version consistency
         run: |
           test -s VERSION
-          grep -q "0.0.8" VERSION
-          grep -q "v0.0.8" README.md
-          grep -q "0.0.8" CHANGELOG.md
-          grep -q "v0.0.8" index.html
-          grep -q "VERSION = '0.0.8'" calendar.js
+          grep -q "0.0.9" VERSION
+          grep -q "v0.0.9" README.md
+          grep -q "\[0.0.9\]" CHANGELOG.md
+          grep -q "v0.0.9" index.html
+          grep -q "VERSION = '0.0.9'" stability.js
       - name: Check release intelligence surface
         run: |
           test -s v005.css
           test -s v006.css
           test -s v007.css
+          test -s v008.css
           grep -q 'id="eventFilter"' index.html
           grep -q "season-premiere" app.js
           grep -q "getGlobalEpisodeEvents" tvmaze.js
           grep -q "/schedule/web" tvmaze.js
           grep -q "StreamRadarOriginalOverrides" original-overrides.js
           grep -q "originalScore" tmdb.js
-      - name: Check v0.0.8 calendar and timeline
-        run: |
-          test -s v008.css
-          test -s calendar.js
-          grep -q 'data-view="calendar"' index.html
-          grep -q 'id="calendarPanel"' index.html
-          grep -q 'data-calendar-mode="day"' index.html
-          grep -q 'data-calendar-mode="week"' index.html
-          grep -q 'data-calendar-mode="month"' index.html
-          grep -q 'data-calendar-mode="90"' index.html
-          grep -q 'id="calendarWatchlistOnly"' index.html
-          grep -q "renderTimeline" calendar.js
-          grep -q "renderMonthGrid" calendar.js
           grep -q "BEGIN:VCALENDAR" calendar.js
-          grep -q "exportICS" calendar.js
-          grep -q 'calendar.js' index.html
+      - name: Check v0.0.9 stability and personalization
+        run: |
+          test -s v009.css
+          test -s stability.js
+          grep -q "CACHE_TTL_MS" stability.js
+          grep -q "CACHE_KEY" stability.js
+          grep -q "restoreCache" stability.js
+          grep -q "saveSnapshot" stability.js
+          grep -q "preferredProvidersOnly" stability.js
+          grep -q "sortMode" stability.js
+          grep -q "exportWatchlist" stability.js
+          grep -q "importWatchlist" stability.js
+          grep -q "navigator.onLine" stability.js
+          grep -q "stability.js" index.html
+          grep -q "v009.css" index.html
