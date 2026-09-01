@@ -52,7 +52,7 @@ jobs:
       - name: Upload MSI installer
         uses: actions/upload-artifact@v4
         with:
-          name: StreamRadar-v0.1.0-Windows-x64-MSI
+          name: StreamRadar-v0.1.1-Windows-x64-MSI
           path: src-tauri/target/release/bundle/msi/*.msi
           if-no-files-found: error
           retention-days: 30
@@ -60,7 +60,7 @@ jobs:
       - name: Upload Windows executable
         uses: actions/upload-artifact@v4
         with:
-          name: StreamRadar-v0.1.0-Windows-x64-EXE
+          name: StreamRadar-v0.1.1-Windows-x64-EXE
           path: src-tauri/target/release/streamradar.exe
           if-no-files-found: error
           retention-days: 30
@@ -72,13 +72,13 @@ jobs:
           New-Item -ItemType Directory -Force -Path "downloads" | Out-Null
           $msi = Get-ChildItem -Path "src-tauri/target/release/bundle/msi" -Filter "*.msi" -File | Select-Object -First 1
           if (-not $msi) { throw "No MSI found for repository publishing." }
-          Copy-Item $msi.FullName "downloads/StreamRadar_0.1.0_x64_de-DE.msi" -Force
+          Copy-Item $msi.FullName "downloads/StreamRadar_0.1.1_x64_de-DE.msi" -Force
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git add "downloads/StreamRadar_0.1.0_x64_de-DE.msi"
+          git add "downloads/StreamRadar_0.1.1_x64_de-DE.msi"
           if (git diff --cached --quiet) {
             Write-Host "Repository MSI is already current."
             exit 0
           }
-          git commit -m "chore: publish StreamRadar v0.1.0 MSI [skip ci]"
+          git commit -m "chore: publish StreamRadar v0.1.1 MSI [skip ci]"
           git push origin HEAD:main
