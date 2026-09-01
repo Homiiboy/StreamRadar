@@ -32,7 +32,7 @@ function configuredStorage(extra = {}) {
 test('first run can finish with no providers and stays completed', async ({ page }) => {
   const errors = await boot(page);
   await expect(page.locator('#onboardingOverlay')).toBeVisible();
-  await expect(page.locator('#onboardingOverlay h1')).toContainText('Dein Radar');
+  await expect(page.locator('[data-onboarding-step="0"].active h1')).toContainText('Dein Radar');
 
   await page.locator('#onboardingNext').click();
   await page.locator('#onboardingNext').click();
