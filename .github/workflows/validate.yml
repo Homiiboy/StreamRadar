@@ -95,7 +95,7 @@ jobs:
           grep -q 'newSinceItems' ui012.js
           grep -q 'rail-heading-actions' v012.css
           grep -q 'premium-detail' v012.css
-          grep -q 'Ctrl K' CHANGELOG.md
+          grep -q 'Ctrl+K' CHANGELOG.md
           grep -q 'ui012.js' index.html
           grep -q 'v012.css' index.html
           ! grep -q 'OldCss/.*\.css' index.html
