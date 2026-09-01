@@ -4,7 +4,7 @@ StreamRadar ist ein persönlicher Streaming-Release-Radar für Filme, Serien, An
 
 ## Aktuelle Version: v0.1.2
 
-**v0.1.2 – UI/UX Polish** verfeinert das v0.1.1-Desktop-Redesign mit einer Premium-Detailansicht, globaler Suche, besser navigierbaren Content-Rows, „Neu seit deinem letzten Besuch“ und einer konsolidierten CSS-Basis.
+**v0.1.2 – UI/UX Polish** verfeinert das v0.1.1-Desktop-Redesign mit einer Premium-Detailansicht, globaler Suche, besser navigierbaren Content-Rows, „Neu seit deinem letzten Besuch“ und einer konsolidierten UI-/CSS-Basis.
 
 ## Download
 
@@ -23,9 +23,9 @@ Der Installer ist für die persönliche Nutzung weiterhin nicht code-signiert. W
 - einheitliche SVG-Icons statt gemischter Text-/Unicode-Symbole
 - Pfeilnavigation und sauberer Scroll-Zustand für horizontale Content-Rows
 - neuer Bereich **Neu seit deinem letzten Besuch** auf Basis lokal gespeicherter Radar-Event-IDs
-- `styles.css` konsolidiert alle historischen visuellen Patches bis v0.1.1
-- `OldCss/` ist jetzt ein echtes Archiv und wird nicht mehr zur Laufzeit geladen
-- aktuelle UI-Schicht `ui.js` und Styling `styles.css`
+- `styles.css` enthält die komplette aktive Oberfläche
+- `ui.js` enthält die komplette aktive UI-Logik
+- `OldCss/` und `OldUi/` sind reine Archive und werden nicht zur Laufzeit geladen
 - zentraler sichtbarer App-/Desktop-Versionsstand auf `0.1.2`
 
 ## Funktionsumfang
@@ -87,7 +87,7 @@ Das Build-Skript packt die statische Oberfläche nach `dist/`, generiert die Win
 
 Der TMDB API Read Access Token wird ausschließlich lokal gespeichert und niemals in das Repository geschrieben.
 
-## Navigation in v0.1.1
+## Navigation
 
 ```text
 Entdecken
@@ -129,9 +129,16 @@ StreamRadar/
 ├── downloads/
 │   ├── README.md
 │   ├── StreamRadar_0.1.0_x64_de-DE.msi
-│   └── StreamRadar_0.1.1_x64_de-DE.msi
+│   ├── StreamRadar_0.1.1_x64_de-DE.msi
+│   └── StreamRadar_0.1.2_x64_de-DE.msi
 ├── assets/
 │   └── streamradar-icon.svg
+├── OldCss/
+│   ├── README.md
+│   └── historische CSS-Snapshots
+├── OldUi/
+│   ├── README.md
+│   └── historische UI-JavaScript-Snapshots
 ├── scripts/
 │   └── build-desktop.mjs
 ├── src-tauri/
@@ -143,7 +150,7 @@ StreamRadar/
 │   └── tauri.conf.json
 ├── index.html
 ├── styles.css
-├── OldCss/v003.css … v011.css
+├── ui.js
 ├── original-overrides.js
 ├── tmdb.js
 ├── tvmaze.js
@@ -152,18 +159,31 @@ StreamRadar/
 ├── stability.js
 ├── polish.js
 ├── desktop.js
-├── ui011.js
 ├── package.json
 ├── VERSION
 ├── CHANGELOG.md
 └── README.md
 ```
 
+## Asset-Regel für weitere Updates
+
+Ab v0.1.2 gibt es keine versionsbezogenen Runtime-Dateien wie `v013.css` oder `ui013.js` mehr im Repository-Root.
+
+Für v0.1.3 und spätere Releases gilt:
+
+1. Die aktive Oberfläche wird direkt in `styles.css` weiterentwickelt.
+2. Die aktive UI-Logik wird direkt in `ui.js` weiterentwickelt.
+3. Vor größeren Änderungen kann der bisherige Stand optional als Snapshot in `OldCss/` bzw. `OldUi/` archiviert werden.
+4. `index.html` und der Desktop-Build laden weiterhin ausschließlich `styles.css` und `ui.js`.
+5. Die Archive werden niemals mitgeladen und beeinflussen die aktuelle App nicht.
+
+Damit bleiben die Runtime-Dateinamen stabil, während die Historie trotzdem nachvollziehbar bleibt.
+
 ## Versionierung
 
-StreamRadar verwendet Semantic Versioning (`MAJOR.MINOR.PATCH`). v0.1.1 ist ein kompatibler UI/UX-Patch auf dem ersten vollständigen v0.1.0-Desktop-Meilenstein.
+StreamRadar verwendet Semantic Versioning (`MAJOR.MINOR.PATCH`). v0.1.2 ist ein kompatibler UI/UX-Patch auf dem ersten vollständigen v0.1.0-Desktop-Meilenstein.
 
-## Grenzen von v0.1.1
+## Grenzen von v0.1.2
 
 - Einstellungen, Cache und Merkliste bleiben lokal und werden nicht zwischen Geräten synchronisiert.
 - Persistenz läuft weiterhin über `localStorage`; SQLite ist für eine spätere Desktop-Ausbaustufe vorgesehen.
@@ -173,4 +193,4 @@ StreamRadar verwendet Semantic Versioning (`MAJOR.MINOR.PATCH`). v0.1.1 ist ein 
 
 ## Status
 
-`v0.1.1` – Desktop UI/UX Redesign
+`v0.1.2` – UI/UX Polish
