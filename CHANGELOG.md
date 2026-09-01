@@ -2,6 +2,28 @@
 
 Alle relevanten Änderungen an StreamRadar werden hier ab der ersten Version nach Semantic Versioning dokumentiert.
 
+## [0.1.2] - 2026-09-01
+
+### Added
+- Premium-Detailansicht mit großem Backdrop, Poster, Release Intelligence, Herkunft, Provider-Kacheln und nächster Episode.
+- Globale Suche mit eigenem Ergebnis-Overlay und `Ctrl+K`-Shortcut.
+- Einheitliches Inline-SVG-Iconset für Navigation und zentrale Desktop-Aktionen.
+- Rail-Navigation mit Vor-/Zurück-Pfeilen und Scroll-Zuständen.
+- Lokaler Bereich **Neu seit deinem letzten Besuch** über persistierte Event-Fingerprints.
+- Neue UI-Schicht `ui012.js` und Styling `v012.css`.
+
+### Changed
+- Historische CSS-Patches bis einschließlich v0.1.1 wurden in `styles.css` konsolidiert.
+- `OldCss/` dient nur noch als Archiv; historische Styles werden nicht mehr einzeln im Browser oder MSI geladen.
+- Desktop-Packaging liefert nur noch `styles.css` plus die aktuelle `v012.css` aus.
+- Der bisher veraltete interne `APP_VERSION`-Wert wurde auf den aktuellen Stand gebracht.
+- Desktop-, Tauri- und MSI-Version wurden auf `0.1.2` angehoben.
+
+### Desktop
+- Tauri-MSI und EXE werden als v0.1.2 gebaut.
+- Der finale Main-Build veröffentlicht `downloads/StreamRadar_0.1.2_x64_de-DE.msi` automatisch im Repository.
+- Der Installer bleibt für die persönliche Nutzung unsigniert.
+
 ## [0.1.1] - 2026-09-01
 
 ### Added

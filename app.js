@@ -1,6 +1,6 @@
 const tmdb = window.StreamRadarTMDB;
 const tvmaze = window.StreamRadarTVMaze;
-const APP_VERSION = '0.0.7';
+const APP_VERSION = '0.1.2';
 const TOKEN_KEY = 'streamradar-tmdb-token';
 const WATCHLIST_KEY = 'streamradar-watchlist';
 const brandNames = tmdb.ORIGINAL_BRANDS.map(brand => brand.name);

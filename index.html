@@ -11,16 +11,7 @@
   <link rel="preconnect" href="https://image.tmdb.org" />
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Space+Grotesk:wght@600;700&display=swap" rel="stylesheet" />
   <link rel="stylesheet" href="styles.css" />
-  <link rel="stylesheet" href="OldCss/v003.css" />
-  <link rel="stylesheet" href="OldCss/v004.css" />
-  <link rel="stylesheet" href="OldCss/v005.css" />
-  <link rel="stylesheet" href="OldCss/v006.css" />
-  <link rel="stylesheet" href="OldCss/v007.css" />
-  <link rel="stylesheet" href="OldCss/v008.css" />
-  <link rel="stylesheet" href="OldCss/v009.css" />
-  <link rel="stylesheet" href="OldCss/v0010.css" />
-  <link rel="stylesheet" href="OldCss/v0100.css" />
-  <link rel="stylesheet" href="v011.css" />
+  <link rel="stylesheet" href="v012.css" />
 </head>
 <body data-streamradar-view="discover">
   <div class="ambient ambient-one"></div><div class="ambient ambient-two"></div>
@@ -74,13 +65,13 @@
       <section class="hero shell">
         <div class="hero-copy">
           <div class="welcome-meta"><strong id="welcomeGreeting">Willkommen</strong><span>·</span><span id="welcomeDate">StreamRadar</span></div>
-          <div class="eyebrow"><span class="live-dot"></span> V0.1.1 · DESKTOP UI/UX</div>
+          <div class="eyebrow"><span class="live-dot"></span> V0.1.2 · DESKTOP UI/UX</div>
           <h1>Was kommt als<br /><span>Nächstes?</span></h1>
           <p>Dein persönlicher Überblick für neue Filme, Serien, Staffeln und Episoden – nach deinen Anbietern sortiert und mit Release Intelligence für Österreich.</p>
           <div class="hero-actions"><button class="primary-button" data-jump="releases">Gesamten Radar öffnen <span>→</span></button><button class="ghost-button" id="showUpcoming">Nächste 30 Tage</button></div>
           <div class="home-quick-stats" id="homeQuickStats" aria-label="Radar Schnellübersicht"></div>
         </div>
-        <div class="radar-card" aria-label="StreamRadar Übersicht"><div class="radar-grid"><span class="ring ring-1"></span><span class="ring ring-2"></span><span class="ring ring-3"></span><span class="cross x"></span><span class="cross y"></span><span class="sweep"></span><span class="blip b1"></span><span class="blip b2"></span><span class="blip b3"></span><span class="blip b4"></span><div class="radar-center"><strong id="heroReleaseCount">0</strong><small>EVENTS</small></div></div><div class="radar-footer"><span><i></i> <span id="radarState">Radar aktiv</span></span><span>v0.1.1</span></div></div>
+        <div class="radar-card" aria-label="StreamRadar Übersicht"><div class="radar-grid"><span class="ring ring-1"></span><span class="ring ring-2"></span><span class="ring ring-3"></span><span class="cross x"></span><span class="cross y"></span><span class="sweep"></span><span class="blip b1"></span><span class="blip b2"></span><span class="blip b3"></span><span class="blip b4"></span><div class="radar-center"><strong id="heroReleaseCount">0</strong><small>EVENTS</small></div></div><div class="radar-footer"><span><i></i> <span id="radarState">Radar aktiv</span></span><span>v0.1.2</span></div></div>
       </section>
 
       <section class="home-dashboard shell" id="homeDashboard" aria-label="Entdecken Dashboard"><div id="homeRails"></div></section>
@@ -118,12 +109,12 @@
       </section>
     </main>
 
-    <footer class="shell footer"><div><strong>StreamRadar</strong><span>Personal streaming release tracker.</span></div><div class="footer-meta"><span>Region: AT</span><span>Version 0.1.1</span><span>Daten: TMDB · JustWatch · TVmaze Web Schedule</span></div></footer>
+    <footer class="shell footer"><div><strong>StreamRadar</strong><span>Personal streaming release tracker.</span></div><div class="footer-meta"><span>Region: AT</span><span>Version 0.1.2</span><span>Daten: TMDB · JustWatch · TVmaze Web Schedule</span></div></footer>
   </div>
 
   <dialog id="detailDialog" class="detail-dialog"><button class="dialog-close" id="dialogClose" aria-label="Detailansicht schließen">×</button><div id="dialogContent"></div></dialog>
-  <dialog id="settingsDialog" class="settings-dialog"><button class="dialog-close" id="settingsClose" aria-label="Einstellungen schließen">×</button><div class="settings-content"><span class="section-kicker">DATENQUELLE</span><h2>TMDB verbinden</h2><p>Trage deinen <strong>API Read Access Token</strong> von TMDB ein. Er wird ausschließlich lokal gespeichert und niemals in dieses GitHub-Repository geschrieben.</p><label class="token-field"><span>API Read Access Token</span><input type="password" id="tmdbToken" placeholder="eyJhbGciOiJIUzI1NiJ9…" autocomplete="off" spellcheck="false" /></label><div class="settings-status" id="settingsStatus">Noch nicht verbunden.</div><div class="settings-actions"><button class="primary-button" id="saveToken">Verbinden & laden</button><button class="ghost-button" id="clearToken">Token entfernen</button></div><div class="settings-note"><strong>v0.1.1:</strong> Desktop UI/UX Redesign mit Sidebar, kompakter Startseite, Streaming-Rows, fokussierter Filteroberfläche und optimierter Informationshierarchie. Radar-, Kalender-, Cache- und Personalisierungslogik bleiben erhalten.</div></div></dialog>
+  <dialog id="settingsDialog" class="settings-dialog"><button class="dialog-close" id="settingsClose" aria-label="Einstellungen schließen">×</button><div class="settings-content"><span class="section-kicker">DATENQUELLE</span><h2>TMDB verbinden</h2><p>Trage deinen <strong>API Read Access Token</strong> von TMDB ein. Er wird ausschließlich lokal gespeichert und niemals in dieses GitHub-Repository geschrieben.</p><label class="token-field"><span>API Read Access Token</span><input type="password" id="tmdbToken" placeholder="eyJhbGciOiJIUzI1NiJ9…" autocomplete="off" spellcheck="false" /></label><div class="settings-status" id="settingsStatus">Noch nicht verbunden.</div><div class="settings-actions"><button class="primary-button" id="saveToken">Verbinden & laden</button><button class="ghost-button" id="clearToken">Token entfernen</button></div><div class="settings-note"><strong>v0.1.2:</strong> Desktop UI/UX Redesign mit Sidebar, kompakter Startseite, Streaming-Rows, fokussierter Filteroberfläche und optimierter Informationshierarchie. Radar-, Kalender-, Cache- und Personalisierungslogik bleiben erhalten.</div></div></dialog>
 
-  <script src="original-overrides.js" defer></script><script src="tmdb.js" defer></script><script src="tvmaze.js" defer></script><script src="app.js" defer></script><script src="calendar.js" defer></script><script src="stability.js" defer></script><script src="polish.js" defer></script><script src="desktop.js" defer></script><script src="ui011.js" defer></script>
+  <script src="original-overrides.js" defer></script><script src="tmdb.js" defer></script><script src="tvmaze.js" defer></script><script src="app.js" defer></script><script src="calendar.js" defer></script><script src="stability.js" defer></script><script src="polish.js" defer></script><script src="desktop.js" defer></script><script src="ui011.js" defer></script><script src="ui012.js" defer></script>
 </body>
 </html>
