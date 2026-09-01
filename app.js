@@ -1,6 +1,6 @@
 const tmdb = window.StreamRadarTMDB;
 const tvmaze = window.StreamRadarTVMaze;
-const APP_VERSION = '0.0.5';
+const APP_VERSION = '0.0.6';
 const TOKEN_KEY = 'streamradar-tmdb-token';
 const WATCHLIST_KEY = 'streamradar-watchlist';
 const brandNames = tmdb.ORIGINAL_BRANDS.map(brand => brand.name);
@@ -16,11 +16,11 @@ const demoReleases = [
   { id:'demo-1', entityId:'demo-1', title:'Neon District', services:['Netflix'], type:'series', mediaType:'tv', releaseDate:todayISO(), eventKind:'series-premiere', eventLabel:'Neue Serie', eventSeason:1, eventEpisode:1, radarEligible:true, original:true, originalBrand:'Netflix', originalConfidence:'high', studio:'Netflix Original', accent:'#ff3158', description:'Demo-Inhalt: Eine düstere Tech-Thriller-Serie über Macht, Erinnerung und eine Stadt, die niemals offline geht.', source:'demo' },
   { id:'demo-2', entityId:'demo-2', title:'Ashes of Europa', services:['HBO Max'], type:'series', mediaType:'tv', releaseDate:addDaysISO(3), eventKind:'season-premiere', eventLabel:'Neue Staffel 2', eventSeason:2, eventEpisode:1, radarEligible:true, original:true, originalBrand:'HBO', originalConfidence:'high', studio:'HBO Original', accent:'#7c6dff', description:'Demo-Inhalt: Staffel 2 der Prestige-Sci-Fi-Serie startet in wenigen Tagen.', source:'demo' },
   { id:'demo-3', entityId:'demo-3', title:'Red Horizon', services:['Prime Video'], type:'movie', mediaType:'movie', releaseDate:addDaysISO(11), eventKind:'movie-premiere', eventLabel:'Digital-Premiere', radarEligible:true, original:true, originalBrand:'Prime Video', originalConfidence:'medium', studio:'Amazon MGM', accent:'#39a8ff', description:'Demo-Inhalt: Ein Survival-Thriller über die erste bemannte Mars-Mission und ein Signal aus dem Nichts.', source:'demo' },
-  { id:'demo-4', entityId:'demo-4', title:'Moonblade', services:['Crunchyroll'], type:'anime', mediaType:'tv', releaseDate:addDaysISO(1), eventKind:'episode', eventLabel:'Neue Episode', eventSeason:1, eventEpisode:7, eventEpisodeName:'Moonlit Gate', radarEligible:true, original:true, originalBrand:'Crunchyroll', originalConfidence:'high', studio:'Crunchyroll', accent:'#ff8c31', description:'Demo-Inhalt: Morgen erscheint eine neue Episode.', source:'demo' },
+  { id:'demo-4', entityId:'demo-4', title:'Moonblade', services:['Crunchyroll'], type:'anime', mediaType:'tv', releaseDate:addDaysISO(1), eventKind:'episode', eventLabel:'Neue Episode', eventSeason:1, eventEpisode:7, eventEpisodeName:'Moonlit Gate', eventChannel:'Crunchyroll', eventRuntime:24, radarEligible:true, original:true, originalBrand:'Crunchyroll', originalConfidence:'high', studio:'Crunchyroll', accent:'#ff8c31', description:'Demo-Inhalt: Morgen erscheint eine neue Episode.', source:'demo' },
   { id:'demo-5', entityId:'demo-5', title:'The Quiet Room', services:['Apple TV+'], type:'series', mediaType:'tv', releaseDate:addDaysISO(18), eventKind:'series-premiere', eventLabel:'Neue Serie', eventSeason:1, eventEpisode:1, radarEligible:true, original:true, originalBrand:'Apple TV+', originalConfidence:'high', studio:'Apple Original', accent:'#d9e2ef', description:'Demo-Inhalt: Psychologisches Mystery-Drama über einen Raum, in dem niemand länger als 17 Minuten bleiben kann.', source:'demo' },
-  { id:'demo-6', entityId:'demo-6', title:'Blackwater', services:['Paramount+'], type:'series', mediaType:'tv', releaseDate:addDaysISO(22), eventKind:'season-premiere', eventLabel:'Neue Staffel 3', eventSeason:3, eventEpisode:1, radarEligible:true, original:true, originalBrand:'Paramount+', originalConfidence:'high', studio:'Paramount+ Original', accent:'#4386ff', description:'Demo-Inhalt: Die dritte Staffel der Crime-Serie startet.', source:'demo' },
+  { id:'demo-6', entityId:'demo-6', title:'Blackwater', services:['Paramount+'], type:'series', mediaType:'tv', releaseDate:addDaysISO(7), eventKind:'episode', eventLabel:'Neue Episode', eventSeason:3, eventEpisode:2, eventEpisodeName:'Low Tide', eventChannel:'Paramount+', eventRuntime:52, radarEligible:true, original:true, originalBrand:'Paramount+', originalConfidence:'high', studio:'Paramount+ Original', accent:'#4386ff', description:'Demo-Inhalt: Eine weitere Episode der dritten Staffel erscheint.', source:'demo' },
   { id:'demo-7', entityId:'demo-7', title:'Glass Cities', services:['Disney+'], type:'movie', mediaType:'movie', releaseDate:addDaysISO(27), eventKind:'movie-premiere', eventLabel:'Film-Premiere', radarEligible:true, original:true, originalBrand:'Disney+', originalConfidence:'medium', studio:'Disney+ Original', accent:'#2a7cff', description:'Demo-Inhalt: Visuell opulentes Abenteuer über zwei Geschwister in einer Stadt aus lebendem Glas.', source:'demo' },
-  { id:'demo-8', entityId:'demo-8', title:'Signal Fire', services:['Disney+'], type:'series', mediaType:'tv', releaseDate:addDaysISO(5), eventKind:'episode', eventLabel:'Neue Episode', eventSeason:2, eventEpisode:4, eventEpisodeName:'The Beacon', radarEligible:true, original:true, originalBrand:'FX', originalConfidence:'high', studio:'FX Original', accent:'#ff7a59', description:'Demo-Inhalt: Ein FX Original, das in Österreich über Disney+ verfügbar ist.', source:'demo' }
+  { id:'demo-8', entityId:'demo-8', title:'Signal Fire', services:['Disney+'], type:'series', mediaType:'tv', releaseDate:addDaysISO(5), eventKind:'episode', eventLabel:'Neue Episode', eventSeason:2, eventEpisode:4, eventEpisodeName:'The Beacon', eventChannel:'FX', eventRuntime:46, radarEligible:true, original:true, originalBrand:'FX', originalConfidence:'high', studio:'FX Original', accent:'#ff7a59', description:'Demo-Inhalt: Ein FX Original, das in Österreich über Disney+ verfügbar ist.', source:'demo' }
 ];
 
 const state = {
@@ -31,6 +31,8 @@ const state = {
   providerMap: [],
   loading: false,
   enriching: false,
+  scheduleSyncing: false,
+  scheduleStats: { days:0, matchedShows:0, events:0, errors:0 },
   watchlist: new Set(safeJSON(localStorage.getItem(WATCHLIST_KEY) || '[]', []).map(String)),
   detailCache: new Map(),
   tvmazeCache: new Map()
@@ -95,9 +97,11 @@ function eventLabel(item) {
 function eventDetail(item) {
   if (item.eventKind === 'season-premiere' && item.eventSeason) return `Staffel ${item.eventSeason}`;
   if (item.eventKind === 'episode' && (item.eventSeason || item.eventEpisode)) return `S${item.eventSeason || '?'}E${item.eventEpisode || '?'}`;
+  if (item.eventKind === 'series-premiere') return 'S1E1';
   return labelType(item.type);
 }
 function watchKey(item) { return String(item.entityId || item.id); }
+function isTVMazeEvent(item) { return String(item.eventSource || '').startsWith('tvmaze-'); }
 function sortByRadarRelevance(a, b) {
   const score = days => Math.abs(days) + (days < 0 ? 4 : 0);
   const eventPriority = { 'series-premiere':0, 'season-premiere':1, 'movie-premiere':2, episode:3 };
@@ -118,6 +122,16 @@ function mergeDuplicate(existing, incoming) {
   preferred.description ||= other.description;
   preferred.posterPath ||= other.posterPath;
   preferred.backdropPath ||= other.backdropPath;
+  preferred.eventEpisodeName ||= other.eventEpisodeName;
+  preferred.eventRuntime ||= other.eventRuntime;
+  preferred.eventAirtime ||= other.eventAirtime;
+  preferred.eventAirstamp ||= other.eventAirstamp;
+  preferred.eventChannel ||= other.eventChannel;
+  preferred.tvmazeEpisodeId ||= other.tvmazeEpisodeId;
+  preferred.tvmazeShowId ||= other.tvmazeShowId;
+  preferred.tvmazeUrl ||= other.tvmazeUrl;
+  if (isTVMazeEvent(other) && !isTVMazeEvent(preferred)) preferred.scheduleConfirmed = true;
+  if (isTVMazeEvent(preferred)) preferred.scheduleConfirmed = true;
   return preferred;
 }
 
@@ -147,7 +161,7 @@ function setDataStatus(kind, label, text) {
   $('#dataStatus').dataset.state = kind;
   $('#dataStatusLabel').textContent = label;
   $('#dataStatusText').textContent = text;
-  $('#radarState').textContent = kind === 'live' ? 'Release Intelligence' : kind === 'loading' ? 'Synchronisiere …' : 'Radar aktiv';
+  $('#radarState').textContent = kind === 'live' ? 'Global Episode Radar' : kind === 'loading' ? 'Synchronisiere …' : 'Radar aktiv';
   $('#statusAction').textContent = kind === 'live' ? 'Einstellungen' : 'TMDB verbinden';
 }
 function setLoading(value) {
@@ -164,6 +178,8 @@ function useDemo(message = 'TMDB noch nicht verbunden.') {
   state.mode = 'demo';
   state.releases = demoReleases.map(enrichRelease);
   state.providerMap = [];
+  state.scheduleSyncing = false;
+  state.scheduleStats = { days:0, matchedShows:0, events:0, errors:0 };
   state.detailCache.clear();
   state.tvmazeCache.clear();
   setDataStatus('demo', 'Demo-Modus', message);
@@ -192,13 +208,42 @@ function renderServices() {
     renderReleases();
   });
 }
+
 function matchesView(item) {
+  if (state.view === 'today') return dayDistance(item.releaseDate) === 0;
+  if (state.view === 'seasons') return item.eventKind === 'season-premiere';
+  if (state.view === 'episodes') return item.eventKind === 'episode';
+  if (state.view === 'premieres') return item.eventKind === 'series-premiere' || item.eventKind === 'movie-premiere';
   if (state.view === 'upcoming') {
     const days = dayDistance(item.releaseDate);
     return days >= 0 && days <= 30;
   }
   if (state.view === 'watchlist') return state.watchlist.has(watchKey(item));
   return true;
+}
+
+function radarCounts() {
+  const eligible = state.releases.filter(item => item.radarEligible !== false);
+  return {
+    today: eligible.filter(item => dayDistance(item.releaseDate) === 0).length,
+    seasons: eligible.filter(item => item.eventKind === 'season-premiere').length,
+    episodes: eligible.filter(item => item.eventKind === 'episode' && dayDistance(item.releaseDate) >= 0 && dayDistance(item.releaseDate) <= 14).length,
+    premieres: eligible.filter(item => (item.eventKind === 'series-premiere' || item.eventKind === 'movie-premiere') && dayDistance(item.releaseDate) >= 0 && dayDistance(item.releaseDate) <= 30).length
+  };
+}
+
+function renderRadarSummary() {
+  const root = $('#radarSummary');
+  if (!root) return;
+  const counts = radarCounts();
+  const cards = [
+    ['today', 'Heute', counts.today, 'Events heute'],
+    ['seasons', 'Staffelstarts', counts.seasons, 'im Radar'],
+    ['episodes', 'Episoden', counts.episodes, 'nächste 14 Tage'],
+    ['premieres', 'Premieren', counts.premieres, 'nächste 30 Tage']
+  ];
+  root.innerHTML = cards.map(([view, label, count, copy]) => `<button class="radar-summary-card ${state.view === view ? 'active' : ''}" data-summary-view="${view}"><span>${escapeHTML(label)}</span><strong>${count}</strong><small>${escapeHTML(copy)}</small></button>`).join('');
+  $$('[data-summary-view]').forEach(button => button.onclick = () => setView(button.dataset.summaryView));
 }
 
 function renderReleases() {
@@ -211,7 +256,7 @@ function renderReleases() {
 
   const filtered = state.releases.filter(item => {
     if (item.radarEligible === false) return false;
-    const haystack = `${item.title} ${item.originalTitle || ''} ${(item.services || []).join(' ')} ${item.originalBrand || ''} ${item.studio || ''} ${eventLabel(item)} ${item.eventEpisodeName || ''}`.toLowerCase();
+    const haystack = `${item.title} ${item.originalTitle || ''} ${(item.services || []).join(' ')} ${item.originalBrand || ''} ${item.studio || ''} ${eventLabel(item)} ${item.eventEpisodeName || ''} ${item.eventChannel || ''}`.toLowerCase();
     return matchesView(item)
       && (state.service === 'all' || item.services?.includes(state.service) || item.originalBrand === state.service)
       && (type === 'all' || item.type === type)
@@ -227,9 +272,10 @@ function renderReleases() {
   $('#watchlistCount').textContent = state.watchlist.size;
   $('#resultSummary').textContent = state.loading
     ? 'TMDB-Daten werden geladen …'
-    : `${filtered.length} Release-Events ${state.mode === 'live' ? 'für Österreich' : 'im Demo-Modus'}${state.enriching ? ' · Klassifizierung läuft …' : ''}`;
+    : `${filtered.length} Release-Events ${state.mode === 'live' ? 'für Österreich' : 'im Demo-Modus'}${state.enriching ? ' · TMDB-Klassifizierung läuft …' : ''}${state.scheduleSyncing ? ' · TVmaze-Schedule wird synchronisiert …' : ''}`;
   $('#releaseGrid').innerHTML = filtered.map(cardTemplate).join('');
-  $('#emptyState').hidden = filtered.length > 0 || state.loading || state.enriching;
+  $('#emptyState').hidden = filtered.length > 0 || state.loading || state.enriching || state.scheduleSyncing;
+  renderRadarSummary();
 
   $$('.release-card').forEach(card => card.onclick = eventClick => {
     if (!eventClick.target.closest('.save-button')) openDetails(card.dataset.id);
@@ -253,10 +299,12 @@ function cardTemplate(item) {
     ? `<span class="badge original-brand" title="Original-Erkennung: ${escapeHTML(item.originalConfidence || '')}">${brandLogo}<span>${escapeHTML(item.originalBrand)} ORIGINAL</span></span>`
     : (state.mode === 'demo' ? '<span class="badge demo">DEMO</span>' : '');
   const episodeCopy = item.eventKind === 'episode' && item.eventEpisodeName ? ` · ${escapeHTML(item.eventEpisodeName)}` : '';
+  const sourceChip = isTVMazeEvent(item) || item.scheduleConfirmed ? '<span class="schedule-source">TVMAZE ✓</span>' : '';
+  const channelCopy = item.eventChannel ? ` · ${escapeHTML(item.eventChannel)}` : '';
   return `<article class="release-card" data-id="${escapeHTML(item.id)}" style="--card-accent:${item.accent}">
-    <div class="poster">${poster}<div class="poster-shade"></div><div class="badge-row"><span class="badge">${escapeHTML(primary)}${extra ? ` +${extra}` : ''}</span>${rightBadge}</div>${rating}<span class="event-ribbon event-${escapeHTML(item.eventKind || 'unknown')}">${escapeHTML(eventLabel(item))}</span></div>
+    <div class="poster">${poster}<div class="poster-shade"></div><div class="badge-row"><span class="badge">${escapeHTML(primary)}${extra ? ` +${extra}` : ''}</span>${rightBadge}</div>${rating}<span class="event-ribbon event-${escapeHTML(item.eventKind || 'unknown')}">${escapeHTML(eventLabel(item))}</span>${sourceChip}</div>
     <button class="save-button ${saved ? 'saved' : ''}" data-watch-key="${escapeHTML(watchKey(item))}" aria-label="${saved ? 'Von Merkliste entfernen' : 'Zur Merkliste hinzufügen'}">${saved ? '✓' : '+'}</button>
-    <div class="card-body"><div class="card-meta"><span>${escapeHTML(eventDetail(item))}</span><span>${escapeHTML(item.date)}</span></div><h3>${escapeHTML(item.title)}</h3><p>${item.originalBrand ? `Original: ${escapeHTML(item.originalBrand)} · ` : ''}${escapeHTML(item.services?.join(' · ') || 'Streaming')}${episodeCopy}</p></div>
+    <div class="card-body"><div class="card-meta"><span>${escapeHTML(eventDetail(item))}</span><span>${escapeHTML(item.date)}</span></div><h3>${escapeHTML(item.title)}</h3><p>${item.originalBrand ? `Original: ${escapeHTML(item.originalBrand)} · ` : ''}${escapeHTML(item.services?.join(' · ') || 'Streaming')}${channelCopy}${episodeCopy}</p></div>
   </article>`;
 }
 
@@ -265,6 +313,23 @@ function toggleWatchlist(key) {
   state.watchlist.has(value) ? state.watchlist.delete(value) : state.watchlist.add(value);
   localStorage.setItem(WATCHLIST_KEY, JSON.stringify([...state.watchlist]));
   renderReleases();
+}
+
+async function syncGlobalEpisodeRadar() {
+  state.scheduleSyncing = true;
+  renderReleases();
+  try {
+    const result = await tvmaze.getGlobalEpisodeEvents(state.releases, (done, total) => {
+      setDataStatus('live', 'TVmaze Schedule', `Globale Streaming-Episoden ${done}/${total} Tage …`);
+    }, { pastDays:1, futureDays:14, maxPerSeries:4 });
+    state.scheduleStats = result.stats;
+    state.releases = dedupeReleaseEvents([...state.releases, ...result.events]);
+  } catch (error) {
+    console.warn('StreamRadar: globaler TVmaze-Episodenradar konnte nicht vollständig geladen werden.', error);
+    state.scheduleStats = { days:0, matchedShows:0, events:0, errors:1 };
+  } finally {
+    state.scheduleSyncing = false;
+  }
 }
 
 async function enrichRadarMetadata(token) {
@@ -280,11 +345,15 @@ async function enrichRadarMetadata(token) {
         renderReleases();
       }
     });
+    state.enriching = false;
+    await syncGlobalEpisodeRadar();
   } finally {
     state.releases = dedupeReleaseEvents(state.releases);
     state.enriching = false;
+    state.scheduleSyncing = false;
     const counts = state.releases.reduce((acc, item) => { acc[item.eventKind] = (acc[item.eventKind] || 0) + 1; return acc; }, {});
-    setDataStatus('live', 'TMDB + TVmaze', `${state.releases.length} Events · ${counts['season-premiere'] || 0} Staffeln · ${counts['movie-premiere'] || 0} Filme · Region Österreich.`);
+    const scheduleText = state.scheduleStats.events ? ` · ${state.scheduleStats.events} TVmaze-Events` : '';
+    setDataStatus('live', 'TMDB + TVmaze', `${state.releases.length} Events · ${counts['season-premiere'] || 0} Staffeln · ${counts.episode || 0} Episoden${scheduleText} · Region Österreich.`);
     renderServices();
     renderReleases();
   }
@@ -301,6 +370,7 @@ async function loadLiveData({ closeSettings = false } = {}) {
     state.mode = 'live';
     state.providerMap = result.providers;
     state.releases = result.releases.map(enrichRelease).filter(item => item.title).sort(sortByRadarRelevance);
+    state.scheduleStats = { days:0, matchedShows:0, events:0, errors:0 };
     state.detailCache.clear();
     state.tvmazeCache.clear();
     setDataStatus('live', 'TMDB live', `${state.releases.length} Kandidaten · Release-Klassifizierung startet …`);
@@ -343,7 +413,7 @@ async function openDetails(id) {
         item.originalLogoPath = details.inferredOriginalLogoPath || item.originalLogoPath;
         item.originalLogoSource = details.originalLogoSource || item.originalLogoSource;
       }
-      if (details.classification?.radarEligible) Object.assign(item, enrichRelease({ ...item, ...details.classification }));
+      if (!isTVMazeEvent(item) && details.classification?.radarEligible) Object.assign(item, enrichRelease({ ...item, ...details.classification }));
       renderServices();
       renderReleases();
     }
@@ -368,7 +438,7 @@ async function openDetails(id) {
 function renderDetail(item, details, maze, loading) {
   const backdrop = item.backdropPath ? tmdb.image(item.backdropPath, 'w1280') : '';
   const genres = details?.genres?.map(genre => genre.name) || [];
-  const runtime = item.mediaType === 'movie' ? details?.runtime : details?.episode_run_time?.[0];
+  const runtime = item.eventRuntime || (item.mediaType === 'movie' ? details?.runtime : details?.episode_run_time?.[0]);
   const seasonProviders = details?.seasonProviders?.providers || [];
   const providers = seasonProviders.length ? seasonProviders : (details?.providers || []);
   const providerPills = providers.slice(0, 8).map(provider => `<span class="provider-pill">${provider.logo_path ? `<img src="${tmdb.image(provider.logo_path, 'w92')}" alt=""/>` : ''}${escapeHTML(provider.provider_name)}</span>`).join('');
@@ -380,24 +450,31 @@ function renderDetail(item, details, maze, loading) {
   const originLogo = brand && originalLogo ? `<div class="origin-logo-wrap">${logoMarkup(originalLogo, 'origin-logo')}</div>` : '';
   const eventInfo = item.eventKind === 'episode'
     ? `S${item.eventSeason || '?'}E${item.eventEpisode || '?'}${item.eventEpisodeName ? ` · ${escapeHTML(item.eventEpisodeName)}` : ''}`
-    : item.eventKind === 'season-premiere' ? `Staffel ${item.eventSeason || '?'}` : labelType(item.type);
-  const eventPanel = `<div class="release-event-panel event-${escapeHTML(item.eventKind || 'unknown')}"><span class="section-kicker">RELEASE-TYP</span><div><strong>${escapeHTML(eventLabel(item))}</strong><span>${escapeHTML(eventInfo)} · ${escapeHTML(item.date)}</span></div></div>`;
+    : item.eventKind === 'season-premiere' ? `Staffel ${item.eventSeason || '?'}` : item.eventKind === 'series-premiere' ? 'S1E1' : labelType(item.type);
+  const eventExtras = [item.eventChannel, runtime ? `${runtime} Min.` : null, item.eventAirtime ? `${item.eventAirtime} Uhr` : null].filter(Boolean).map(escapeHTML).join(' · ');
+  const scheduleConfirmed = isTVMazeEvent(item) || item.scheduleConfirmed ? '<span class="schedule-confirmed">TVmaze Schedule bestätigt</span>' : '';
+  const eventPanel = `<div class="release-event-panel event-${escapeHTML(item.eventKind || 'unknown')}"><span class="section-kicker">RELEASE-TYP</span><div><strong>${escapeHTML(eventLabel(item))}</strong><span>${escapeHTML(eventInfo)} · ${escapeHTML(item.date)}${eventExtras ? ` · ${eventExtras}` : ''}</span>${scheduleConfirmed}</div></div>`;
 
   const episode = maze?.nextEpisode;
-  const episodePanel = episode
+  const sameEpisode = episode && item.eventEpisode && Number(episode.season) === Number(item.eventSeason) && Number(episode.number) === Number(item.eventEpisode) && episode.airdate === item.releaseDate;
+  const episodePanel = episode && !sameEpisode
     ? `<div class="tvmaze-panel"><div><span class="section-kicker">${maze.nextIsNewSeason ? 'KOMMENDER STAFFELSTART' : 'NÄCHSTE EPISODE'} · TVMAZE</span><h3>${maze.nextIsNewSeason ? `Staffel ${episode.season} startet` : `S${episode.season || '?'}E${episode.number || '?'} · ${escapeHTML(episode.name)}`}</h3><p>${escapeHTML(formatReleaseDate(episode.airdate))}${episode.runtime ? ` · ${episode.runtime} Min.` : ''}${maze.network ? ` · ${escapeHTML(maze.network)}` : ''}</p></div>${episode.image ? `<img src="${escapeHTML(episode.image)}" alt=""/>` : ''}</div>`
-    : (maze && !maze.loadError ? '<div class="tvmaze-panel compact">Keine kommende Episode in den nächsten 120 Tagen bei TVmaze hinterlegt.</div>' : '');
+    : (maze && !maze.loadError && !sameEpisode ? '<div class="tvmaze-panel compact">Keine weitere kommende Episode in den nächsten 120 Tagen bei TVmaze hinterlegt.</div>' : '');
 
   const providerHeading = seasonProviders.length && item.eventSeason ? `Staffel ${item.eventSeason} läuft in Österreich bei` : 'Läuft in Österreich bei';
   const watchLink = details?.seasonProviders?.watchLink || details?.watchLink;
 
-  $('#dialogContent').innerHTML = `<div class="detail-hero ${backdrop ? 'has-backdrop' : ''}" style="${style}"><div><span class="section-kicker">${escapeHTML(item.services?.join(' · ') || 'STREAMRADAR')}</span><h2>${escapeHTML(item.title)}</h2><span>${escapeHTML(eventLabel(item))} · ${escapeHTML(item.date)}</span></div></div><div class="detail-content"><p>${escapeHTML(details?.overview || item.description || 'Keine Beschreibung verfügbar.')}</p>${eventPanel}${brand ? `<div class="origin-line">${originLogo}<div class="origin-copy"><strong>Original von ${escapeHTML(brand)}</strong><span>${confidence === 'high' ? 'hohe' : 'mittlere'} Erkennungssicherheit${details?.originalEvidence ? ` · ${escapeHTML(details.originalEvidence)}` : ''}</span></div></div>` : ''}<div class="detail-facts">${item.rating > 0 ? `<span>★ ${item.rating.toFixed(1)} TMDB</span>` : ''}${runtime ? `<span>${runtime} Min.</span>` : ''}${details?.number_of_seasons ? `<span>${details.number_of_seasons} Staffeln</span>` : ''}${genres.slice(0, 3).map(genre => `<span>${escapeHTML(genre)}</span>`).join('')}<span>Region AT</span></div>${episodePanel}${providerPills ? `<div class="provider-list"><strong>${escapeHTML(providerHeading)}</strong><div>${providerPills}</div></div>` : `<div class="provider-list"><strong>${escapeHTML(providerHeading)}</strong><p>Keine aktuellen Providerdaten gefunden.</p></div>`}${loading ? '<div class="inline-loading">Release-, Serien- und Episodendaten werden geladen …</div>' : ''}${maze?.loadError ? '<div class="inline-error">TVmaze-Zusatzdaten konnten nicht geladen werden.</div>' : ''}<div class="detail-actions">${tmdbUrl ? `<a class="ghost-button link-button" href="${tmdbUrl}" target="_blank" rel="noopener">Auf TMDB ansehen ↗</a>` : ''}${watchLink ? `<a class="primary-button link-button" href="${escapeHTML(watchLink)}" target="_blank" rel="noopener">Streamingoptionen ↗</a>` : ''}${maze?.url ? `<a class="ghost-button link-button" href="${escapeHTML(maze.url)}" target="_blank" rel="noopener">TVmaze ↗</a>` : ''}</div><p class="attribution">Release-Klassifizierung, Metadaten & Network-/Studio-Logos: TMDB · Streaming-Verfügbarkeit: JustWatch via TMDB · Episodendaten: TVmaze. Original-Zuordnung bleibt heuristisch und zeigt die Erkennungssicherheit an.</p></div>`;
+  $('#dialogContent').innerHTML = `<div class="detail-hero ${backdrop ? 'has-backdrop' : ''}" style="${style}"><div><span class="section-kicker">${escapeHTML(item.services?.join(' · ') || 'STREAMRADAR')}</span><h2>${escapeHTML(item.title)}</h2><span>${escapeHTML(eventLabel(item))} · ${escapeHTML(item.date)}</span></div></div><div class="detail-content"><p>${escapeHTML(details?.overview || item.description || 'Keine Beschreibung verfügbar.')}</p>${eventPanel}${brand ? `<div class="origin-line">${originLogo}<div class="origin-copy"><strong>Original von ${escapeHTML(brand)}</strong><span>${confidence === 'high' ? 'hohe' : 'mittlere'} Erkennungssicherheit${details?.originalEvidence ? ` · ${escapeHTML(details.originalEvidence)}` : ''}</span></div></div>` : ''}<div class="detail-facts">${item.rating > 0 ? `<span>★ ${item.rating.toFixed(1)} TMDB</span>` : ''}${runtime ? `<span>${runtime} Min.</span>` : ''}${details?.number_of_seasons ? `<span>${details.number_of_seasons} Staffeln</span>` : ''}${genres.slice(0, 3).map(genre => `<span>${escapeHTML(genre)}</span>`).join('')}<span>Region AT</span></div>${episodePanel}${providerPills ? `<div class="provider-list"><strong>${escapeHTML(providerHeading)}</strong><div>${providerPills}</div></div>` : `<div class="provider-list"><strong>${escapeHTML(providerHeading)}</strong><p>Keine aktuellen Providerdaten gefunden.</p></div>`}${loading ? '<div class="inline-loading">Release-, Serien- und Episodendaten werden geladen …</div>' : ''}${maze?.loadError ? '<div class="inline-error">TVmaze-Zusatzdaten konnten nicht geladen werden.</div>' : ''}<div class="detail-actions">${tmdbUrl ? `<a class="ghost-button link-button" href="${tmdbUrl}" target="_blank" rel="noopener">Auf TMDB ansehen ↗</a>` : ''}${watchLink ? `<a class="primary-button link-button" href="${escapeHTML(watchLink)}" target="_blank" rel="noopener">Streamingoptionen ↗</a>` : ''}${item.tvmazeUrl ? `<a class="ghost-button link-button" href="${escapeHTML(item.tvmazeUrl)}" target="_blank" rel="noopener">Episode auf TVmaze ↗</a>` : ''}${maze?.url && maze.url !== item.tvmazeUrl ? `<a class="ghost-button link-button" href="${escapeHTML(maze.url)}" target="_blank" rel="noopener">Serie auf TVmaze ↗</a>` : ''}</div><p class="attribution">Release-Klassifizierung, Metadaten & Network-/Studio-Logos: TMDB · Streaming-Verfügbarkeit: JustWatch via TMDB · globaler Web-/Streaming-Episodenplan und Episodendaten: TVmaze. TVmaze-Events werden nur mit für Österreich relevanten TMDB-Kandidaten zusammengeführt.</p></div>`;
 }
 
 function setView(view) {
   state.view = view;
   $$('.nav-link').forEach(link => link.classList.toggle('active', link.dataset.view === view));
-  if (view === 'upcoming') { $('#viewKicker').textContent = 'KOMMENDE 30 TAGE'; $('#viewTitle').textContent = 'Demnächst'; }
+  if (view === 'today') { $('#viewKicker').textContent = 'HEUTE'; $('#viewTitle').textContent = 'Heute erschienen'; }
+  else if (view === 'seasons') { $('#viewKicker').textContent = 'STAFFEL-RADAR'; $('#viewTitle').textContent = 'Neue Staffeln'; }
+  else if (view === 'episodes') { $('#viewKicker').textContent = 'EPISODEN-RADAR'; $('#viewTitle').textContent = 'Neue Episoden'; }
+  else if (view === 'premieres') { $('#viewKicker').textContent = 'PREMIEREN'; $('#viewTitle').textContent = 'Neue Filme & Serien'; }
+  else if (view === 'upcoming') { $('#viewKicker').textContent = 'KOMMENDE 30 TAGE'; $('#viewTitle').textContent = 'Demnächst'; }
   else if (view === 'watchlist') { $('#viewKicker').textContent = 'GESPEICHERT'; $('#viewTitle').textContent = 'Deine Merkliste'; }
   else { $('#viewKicker').textContent = 'DEIN FEED'; $('#viewTitle').textContent = 'Neu & relevant'; }
   renderReleases();
@@ -405,12 +482,16 @@ function setView(view) {
 }
 function resetFilters() {
   state.service = 'all';
+  state.view = 'discover';
+  $$('.nav-link').forEach(link => link.classList.toggle('active', link.dataset.view === 'discover'));
   $('#searchInput').value = '';
   $('#typeFilter').value = 'all';
   $('#eventFilter').value = 'all';
   $('#periodFilter').value = 'all';
   $('#brandFilter').value = 'all';
   $('#originalsOnly').checked = false;
+  $('#viewKicker').textContent = 'DEIN FEED';
+  $('#viewTitle').textContent = 'Neu & relevant';
   renderServices();
   renderReleases();
 }
