@@ -1,5 +1,5 @@
 (() => {
-  const VERSION = '0.4.0';
+  const VERSION = '0.4.1';
   const TOKEN_KEY = 'streamradar-tmdb-token';
   const PROVIDERS_KEY = 'streamradar-preferred-providers';
   const CATALOG_META_KEY = 'streamradar-catalog-watchlist-v1';
@@ -122,11 +122,18 @@
     return provider?.logoPath ? `<img src="${tmdb.image(provider.logoPath,size)}" alt="" loading="lazy"/>` : `<strong>${escapeHTML(themeFor(provider?.name).label)}</strong>`;
   }
 
+  function sidebarProviders() {
+    const providers = [...preferredAvailableProviders()];
+    const crunchyroll = catalogState.providerMap.find(provider => provider.name === 'Crunchyroll' && provider.available);
+    if (crunchyroll && !providers.some(provider => provider.name === 'Crunchyroll')) providers.push(crunchyroll);
+    return providers;
+  }
+
   function buildProviderNav() {
     const root = $('#providerNav');
     if (!root) return;
-    const preferred = preferredAvailableProviders().slice(0,6);
-    root.innerHTML = preferred.map(provider => `<button class="nav-link sidebar-link provider-nav-link" data-view="provider-${slug(provider.name)}" data-provider-name="${escapeHTML(provider.name)}"><span class="provider-nav-logo">${providerLogo(provider,'w92')}</span><span>${escapeHTML(provider.name)}</span></button>`).join('');
+    const providers = sidebarProviders();
+    root.innerHTML = providers.map(provider => `<button class="nav-link sidebar-link provider-nav-link" data-view="provider-${slug(provider.name)}" data-provider-name="${escapeHTML(provider.name)}"><span class="provider-nav-logo">${providerLogo(provider,'w92')}</span><span>${escapeHTML(provider.name)}</span></button>`).join('');
     root.querySelectorAll('[data-provider-name]').forEach(button => button.onclick = () => setView(button.dataset.view));
   }
 
