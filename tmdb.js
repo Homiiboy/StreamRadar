@@ -12,7 +12,7 @@
     { name: 'Apple TV+', aliases: ['Apple TV Plus', 'Apple TV+'] },
     { name: 'Paramount+', aliases: ['Paramount Plus', 'Paramount+'] },
     { name: 'Crunchyroll', aliases: ['Crunchyroll'] },
-    { name: 'Sky / WOW', aliases: ['Sky X', 'Sky Go', 'WOW', 'Sky'] },
+    { name: 'Sky / WOW', aliases: ['Sky X', 'Sky Go', 'WOW'] },
     { name: 'Joyn', aliases: ['Joyn Plus', 'Joyn'] },
     { name: 'RTL+', aliases: ['RTL+', 'RTL Plus'] },
     { name: 'ORF', aliases: ['ORF ON', 'ORF'] }
@@ -45,10 +45,9 @@
 
   function matchesAlias(providerName, aliases) {
     const normalized = normalizeName(providerName);
-    return aliases.some(alias => {
-      const candidate = normalizeName(alias);
-      return normalized === candidate || normalized.includes(candidate) || candidate.includes(normalized);
-    });
+    const candidates = aliases.map(normalizeName);
+    if (candidates.includes(normalized)) return true;
+    return candidates.some(candidate => candidate.length >= 5 && (normalized.includes(candidate) || candidate.includes(normalized)));
   }
 
   function resolveProviderMap(movieProviders, tvProviders) {
@@ -91,12 +90,13 @@
       with_watch_providers: providerId,
       with_watch_monetization_types: 'flatrate|free|ads',
       include_adult: false,
-      page: 1
+      page: 1,
+      sort_by: 'popularity.desc'
     };
 
     const params = mediaType === 'movie'
-      ? { ...common, 'release_date.gte': from, 'release_date.lte': to, sort_by: 'release_date.desc' }
-      : { ...common, 'first_air_date.gte': from, 'first_air_date.lte': to, sort_by: 'first_air_date.desc' };
+      ? { ...common, region: REGION, 'release_date.gte': from, 'release_date.lte': to }
+      : { ...common, 'first_air_date.gte': from, 'first_air_date.lte': to };
 
     const data = await request(`/discover/${mediaType}`, token, params);
     return (data.results || []).map(item => normalizeRelease(item, mediaType, service));
@@ -166,9 +166,10 @@
       if (service.tvProviderId) jobs.push({ service, mediaType: 'tv' });
     });
 
+    const total = jobs.length;
     const groups = [];
     let completed = 0;
-    const workers = Array.from({ length: Math.min(5, jobs.length) }, async () => {
+    const workers = Array.from({ length: Math.min(5, total) }, async () => {
       while (jobs.length) {
         const job = jobs.shift();
         try {
@@ -177,7 +178,7 @@
           console.warn(`StreamRadar: ${job.service.name}/${job.mediaType} konnte nicht geladen werden.`, error);
         }
         completed += 1;
-        onProgress?.(completed, completed + jobs.length);
+        onProgress?.(completed, total);
       }
     });
 
@@ -192,9 +193,10 @@
     ]);
     const at = providerData.results?.[REGION] || {};
     const streaming = [...(at.flatrate || []), ...(at.free || []), ...(at.ads || [])];
+    const uniqueStreaming = [...new Map(streaming.map(provider => [provider.provider_id, provider])).values()];
     return {
       ...details,
-      providers: streaming,
+      providers: uniqueStreaming,
       watchLink: at.link || null
     };
   }
