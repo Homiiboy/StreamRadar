@@ -1,0 +1,34 @@
+name: Lock StreamRadar v0.2.1 dependencies
+
+on:
+  push:
+    branches: [dev/v0.2.1-security]
+    paths:
+      - 'package.json'
+      - '.github/workflows/lock-v021-deps.yml'
+
+permissions:
+  contents: write
+
+jobs:
+  lock:
+    if: github.actor != 'github-actions[bot]'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: dev/v0.2.1-security
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Generate lockfile
+        run: npm install --package-lock-only
+      - name: Audit high severity dependencies
+        run: npm audit --audit-level=high
+      - name: Commit lockfile
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add package-lock.json
+          git commit -m "chore: lock v0.2.1 dependencies"
+          git push origin HEAD:dev/v0.2.1-security
