@@ -2,6 +2,36 @@
 
 Alle relevanten Änderungen an StreamRadar werden hier ab der ersten Version nach Semantic Versioning dokumentiert.
 
+## [0.0.8] - 2026-09-01
+
+### Added
+- Neue Hauptansicht **Kalender**.
+- Tages-, Wochen-, Monats- und 90-Tage-Ansicht für Release-Events.
+- Monatsraster mit Release-Anzahl und kompakten Provider-/Titelhinweisen pro Tag.
+- Chronologische Release-Timeline unterhalb des Kalenders.
+- Tagesgruppierung für Film-Premieren, Serienstarts, Staffelstarts und Episoden.
+- Markierung besonders voller Release-Tage.
+- Kalender-Zusammenfassung für Gesamt-Releases, Staffelstarts, Episoden und Premieren im aktiven Zeitraum.
+- Navigation mit vorherigem Zeitraum, nächstem Zeitraum und direktem Sprung zu **Heute**.
+- Kalenderfilter **Nur Merkliste**.
+- Bestehende Provider-, Medien-, Event-, Herkunfts- und Originals-Filter wirken auch auf die Kalenderansicht.
+- Provider- und Herkunftslogos in Monatsraster und Timeline, sofern Metadaten vorhanden sind.
+- Klickbare Timeline-Einträge, die die bestehende StreamRadar-Detailansicht öffnen.
+- Echter `.ics`-/iCalendar-Export für alle aktuell sichtbaren Events im gewählten Zeitraum.
+- Neues Modul `calendar.js`.
+- Neues Styling in `v008.css` für Kalender, Timeline, responsive Tageszellen und mobile Darstellung.
+
+### Changed
+- StreamRadar ist nicht mehr nur Discovery-Feed, sondern zusätzlich ein persönlicher Streaming-Release-Kalender.
+- Release-Events aus TMDB und TVmaze werden ohne zweite Datenbasis direkt in Kalender und Timeline wiederverwendet.
+- Die 90-Tage-Ansicht verwendet dieselben Release-Klassifizierungen und Deduplizierungsregeln wie der normale Feed.
+- Die Kalenderansicht respektiert die Merkliste und vorhandene Herkunfts-/Original-Logik aus v0.0.7.
+- Versionsanzeige auf v0.0.8 aktualisiert.
+
+### Notes
+- Episoden im 90-Tage-Fenster können wegen des kürzeren TVmaze-Schedule-Horizonts weniger vollständig sein als Film- oder Staffel-Premieren.
+- Der iCalendar-Export ist dateibasiert und noch keine direkte Zwei-Wege-Synchronisierung mit externen Kalenderdiensten.
+
 ## [0.0.7] - 2026-09-01
 
 ### Added
