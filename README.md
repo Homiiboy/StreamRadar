@@ -1,39 +1,39 @@
 # StreamRadar
 
-StreamRadar ist ein persönlicher Streaming-Release-Radar für Filme, Serien, Anime, Originals, neue Staffeln und Episoden – optimiert für Österreich.
+StreamRadar ist ein persönlicher Streaming-Katalog und Release-Radar für Filme, Serien und Anime – mit anbieter-spezifischen Katalogen, Releases, Staffeln, Episoden und Kalender für Österreich.
 
-## Aktuelle Version: v0.3.0
+## Aktuelle Version: v0.4.0
 
-**v0.3.0 – Desktop Integration & Updates** macht StreamRadar zu einer deutlich eigenständigeren Windows-App: mit Update-Center, veröffentlichtem MSI-Versionscheck, nativer Link-Öffnung und gespeichertem Fensterzustand.
+**v0.4.0 – Streaming Catalog & Provider Experience** stellt das gesamte verfügbare Angebot deiner Streaming-Dienste in den Mittelpunkt. Release Intelligence, Kalender und Episoden-Radar bleiben als zusätzliche Ebene erhalten.
 
 ## Download
 
 ### Windows x64
 
-[**StreamRadar v0.3.0 als MSI herunterladen**](downloads/StreamRadar_0.3.0_x64_de-DE.msi)
+[**StreamRadar v0.4.0 als MSI herunterladen**](downloads/StreamRadar_0.4.0_x64_de-DE.msi)
 
 Weitere Builds und die SHA-256-Prüfsumme liegen im Ordner [`downloads/`](downloads/).
 
 Der Installer ist für die persönliche Nutzung weiterhin nicht code-signiert. Windows kann deshalb beim Öffnen einen Hinweis auf einen unbekannten Herausgeber anzeigen.
 
-## Neu in v0.3.0
+## Neu in v0.4.0
 
-- eigenes **Update-Center** im Personalization Center
-- manueller und optional täglicher Check der tatsächlich veröffentlichten MSI-Version im GitHub-Downloadordner
-- Update-Hinweis in der Sidebar, sobald eine neuere veröffentlichte Version verfügbar ist
-- direkter MSI-Download auf Benutzeraktion; keine automatische Installation
-- native Tauri-Integration zum Öffnen externer URLs im Windows-Standardbrowser
-- Fenstergröße, Position und Zustand werden über das Tauri Window-State-Plugin gespeichert und wiederhergestellt
-- echte Runtime-Metadaten für App- und Tauri-Version in der Desktop-Oberfläche
-- `withGlobalTauri` für die Vanilla-JavaScript-Desktop-Brücke, abgesichert über Tauri Capabilities
-- CSS-Snapshot des letzten v0.2.2-Zustands unter `OldCss/styles-v0.2.2.css`
-- automatisierter Browser-Test für Update-Erkennung zusätzlich zu den bestehenden Film-, Kalender-, First-Run-, Settings- und Backup-Tests
+- kompletter Streaming-Katalog für verfügbare Filme und Serien – unabhängig vom Erscheinungsdatum
+- Entdecken, Filme, Serien und Anime als eigene Katalogbereiche
+- Provider-First-Navigation mit Netflix, Prime Video, Disney+, Apple TV+ und weiteren verfügbaren Diensten
+- große anbieter-spezifische Provider-Header und deutlich sichtbarere Provider-Kennzeichnung auf Karten
+- Lazy Pagination über TMDB Discover für browsebares Gesamtangebot statt starrem Release-Zeitfenster
+- Release-Radar bleibt separat für Neu & aktuell, Staffeln, Episoden, Demnächst und Kalender
+- Katalog-Merkliste kann auch Titel speichern, die kein aktuelles Release-Event besitzen
+- neuer Runtime-Baustein `js/catalog.js`
+- v0.3.0 Snapshots unter `OldCss/styles-v0.3.0.css` und `OldUi/ui-v0.3.0.js`
 
 ## Funktionsumfang
 
 StreamRadar kombiniert:
 
-- TMDB-Live-Daten mit österreichischen Watch-Providern
+- vollständiger TMDB/JustWatch-Streaming-Katalog pro österreichischem Watch-Provider
+- TMDB-Live-Daten für zeitbasierte Release Intelligence
 - TVmaze Web Schedule für neue Episoden und Staffelstarts
 - Release Intelligence für Film-Premieren, Serienstarts, Staffelstarts und Episoden
 - Origin Intelligence für Original, Network, Studio und Herkunftsmarke
@@ -57,7 +57,7 @@ StreamRadar verwendet Tauri v2. Die HTML/CSS/JavaScript-Oberfläche wird als nat
 Der GitHub-Workflow **Build StreamRadar Windows MSI** läuft auf `windows-latest`, baut die Anwendung, verifiziert die MSI und veröffentlicht sie danach unter:
 
 ```text
-downloads/StreamRadar_0.3.0_x64_de-DE.msi
+downloads/StreamRadar_0.4.0_x64_de-DE.msi
 ```
 
 Beim finalen Main-Build wird außerdem automatisch die SHA-256-Prüfsumme in `downloads/README.md` eingetragen.
@@ -93,15 +93,27 @@ Der TMDB API Read Access Token wird ausschließlich lokal gespeichert und niemal
 ## Navigation
 
 ```text
-Entdecken
-Kalender
-Staffeln
-Episoden
-Demnächst
-Merkliste
+KATALOG
+  Entdecken
+  Filme
+  Serien
+  Anime
+
+ANBIETER
+  Netflix / Prime Video / Disney+ / Apple TV+ / ...
+
+RADAR
+  Neu & aktuell
+  Kalender
+  Staffeln
+  Episoden
+  Demnächst
+
+DEINE INHALTE
+  Merkliste
 ```
 
-Die Desktop-Version verwendet dafür eine linke Sidebar. Auf kleineren Fenstern wird sie als Off-Canvas-Navigation eingeblendet.
+Der Katalog und der Release-Radar verwenden getrennte Datenpfade: Katalogansichten besitzen **kein Release-Zeitfenster**. Der Radar bleibt zeitbasiert.
 
 ## Kalender
 
@@ -163,7 +175,8 @@ StreamRadar/
 │   ├── stability.js
 │   ├── polish.js
 │   ├── desktop.js
-│   └── ui.js
+│   ├── ui.js
+│   └── catalog.js
 ├── tests/
 │   ├── playwright.config.js
 │   └── e2e/streamradar.spec.js
@@ -191,7 +204,7 @@ Damit bleiben die Runtime-Dateinamen stabil, während die Historie trotzdem nach
 
 StreamRadar verwendet Semantic Versioning (`MAJOR.MINOR.PATCH`). v0.1.2 ist ein kompatibler UI/UX-Patch auf dem ersten vollständigen v0.1.0-Desktop-Meilenstein.
 
-## Grenzen von v0.1.2
+## Grenzen des aktuellen Builds
 
 - Einstellungen, Cache und Merkliste bleiben lokal und werden nicht zwischen Geräten synchronisiert.
 - Persistenz läuft weiterhin über `localStorage`; SQLite ist für eine spätere Desktop-Ausbaustufe vorgesehen.
@@ -201,7 +214,7 @@ StreamRadar verwendet Semantic Versioning (`MAJOR.MINOR.PATCH`). v0.1.2 ist ein 
 
 ## Status
 
-`v0.1.2` – UI/UX Polish
+`v0.4.0` – Streaming Catalog & Provider Experience
 
 
 ### Film-Radar

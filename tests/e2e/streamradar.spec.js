@@ -24,7 +24,7 @@ async function boot(page, storage = {}, options = {}) {
     } catch {}
   }, storage);
   await page.goto('/', { waitUntil: 'domcontentloaded' });
-  await page.waitForFunction(() => Boolean(window.StreamRadarPersonalization));
+  await page.waitForFunction(() => Boolean(window.StreamRadarPersonalization && window.StreamRadarCatalog));
   return errors;
 }
 
@@ -71,8 +71,8 @@ test('global search opens details and main navigation remains usable', async ({ 
 
   await page.locator('.sidebar-link[data-view="calendar"]').click();
   await expect(page.locator('#calendarPanel')).toBeVisible();
-  await page.locator('.sidebar-link[data-view="discover"]').click();
-  await expect(page.locator('#homeDashboard')).toBeVisible();
+  await page.locator('.sidebar-link[data-view="catalog-home"]').click();
+  await expect(page.locator('#catalogSurface')).toBeVisible();
   expect(errors).toEqual([]);
 });
 
@@ -109,8 +109,8 @@ test('backup excludes the token and restore normalizes personal data', async ({ 
   expect(exported).not.toHaveProperty('token');
 
   const restore = {
-    app: 'StreamRadar', format: 2, version: '0.3.0',
-    personalization: { density: 'compact', mediaPreferences: ['movie'], originalsBoost: false, showEpisodesHome: false, horizonDays: 14, rememberLastView: false, defaultView: 'discover' },
+    app: 'StreamRadar', format: 2, version: '0.4.0',
+    personalization: { density: 'compact', mediaPreferences: ['movie'], originalsBoost: false, showEpisodesHome: false, horizonDays: 14, rememberLastView: false, defaultView: 'catalog-home' },
     preferredProviders: [], preferredProvidersOnly: false, watchlist: ['demo-1']
   };
   await page.locator('#streamRadarBackupFile').setInputFiles({
@@ -134,16 +134,34 @@ test('corrupt local personalization data does not crash the app', async ({ page 
     [WATCHLIST_KEY]: '[broken'
   }));
   await expect(page.locator('.app-sidebar')).toBeVisible();
-  await expect(page.locator('#releaseGrid')).toBeVisible();
+  await expect(page.locator('#catalogSurface')).toBeVisible();
   const version = await page.evaluate(() => window.StreamRadarPersonalization?.VERSION);
-  expect(version).toBe('0.3.0');
+  expect(version).toBe('0.4.0');
   expect(errors).toEqual([]);
 });
 
 
-test('movies view and calendar include movie releases', async ({ page }) => {
+test('catalog exposes movies series and a provider-first Netflix experience', async ({ page }) => {
   const errors = await boot(page, configuredStorage());
-  await page.locator('.sidebar-link[data-view="movies"]').click();
+  await expect(page.locator('body')).toHaveAttribute('data-streamradar-view', 'catalog-home');
+  await expect(page.locator('#catalogSurface')).toBeVisible();
+  await expect(page.locator('#catalogSurface')).toContainText('Alles, was du');
+
+  await page.locator('.sidebar-link[data-view="catalog-movies"]').click();
+  await expect(page.locator('#catalogSurface')).toContainText('Filme aus deinen Streaming-Diensten');
+  await expect(page.locator('.catalog-card').filter({ hasText: 'Midnight Protocol' })).toBeVisible();
+  await expect(page.locator('.catalog-card').filter({ hasText: 'Terminal Zero' })).toHaveCount(0);
+
+  await page.locator('[data-provider-name="Netflix"]').click();
+  await expect(page.locator('.catalog-provider-hero')).toContainText('Netflix');
+  await expect(page.locator('#catalogSurface')).toContainText('JETZT AUF NETFLIX');
+  expect(errors).toEqual([]);
+});
+
+test('release radar still contains movie events and calendar coverage', async ({ page }) => {
+  const errors = await boot(page, configuredStorage());
+  await page.locator('.sidebar-link[data-view="discover"]').click();
+  await page.locator('[data-summary-view="movies"]').click();
   await expect(page.locator('body')).toHaveAttribute('data-streamradar-view', 'movies');
   await expect(page.locator('.release-card').filter({ hasText: 'Red Horizon' })).toBeVisible();
   await expect(page.locator('.release-card').filter({ hasText: 'Neon District' })).toHaveCount(0);
@@ -155,17 +173,17 @@ test('movies view and calendar include movie releases', async ({ page }) => {
 });
 
 test('update center detects a newer published MSI', async ({ page }) => {
-  const published = '# StreamRadar Downloads\n\n### StreamRadar v0.3.1 – Windows x64\n\n- Version: `0.3.1`\n';
+  const published = '# StreamRadar Downloads\n\n### StreamRadar v0.4.1 – Windows x64\n\n- Version: `0.4.1`\n';
   const errors = await boot(page, configuredStorage(), { publishedDownloads: published });
   await page.locator('#openSettings').click();
   await expect(page.locator('[data-settings-tab="updates"]')).toBeVisible();
   await page.locator('[data-settings-tab="updates"]').click();
   await page.locator('#checkStreamRadarUpdate').click();
-  await expect(page.locator('#settingsUpdatePage')).toContainText('Update v0.3.1 verfügbar');
-  await expect(page.locator('#downloadStreamRadarUpdate')).toContainText('v0.3.1 MSI herunterladen');
+  await expect(page.locator('#settingsUpdatePage')).toContainText('Update v0.4.1 verfügbar');
+  await expect(page.locator('#downloadStreamRadarUpdate')).toContainText('v0.4.1 MSI herunterladen');
   const state = await page.evaluate(() => window.StreamRadarDesktop.getUpdateState());
   expect(state.status).toBe('available');
-  expect(state.latest).toBe('0.3.1');
+  expect(state.latest).toBe('0.4.1');
   expect(errors).toEqual([]);
 });
 

@@ -2,6 +2,29 @@
 
 Alle relevanten Änderungen an StreamRadar werden hier ab der ersten Version nach Semantic Versioning dokumentiert.
 
+## [0.4.0] - 2026-09-01
+
+### Added
+- Vollständiger **Streaming-Katalog** zusätzlich zum bestehenden Release-Radar.
+- Eigene Katalogansichten für **Entdecken, Filme, Serien und Anime**.
+- Anbieter-spezifische Katalogseiten mit großem Provider-Branding und klarer „Jetzt auf …“-Kennzeichnung.
+- Lazy Pagination über TMDB Discover: weitere Katalogseiten werden erst auf Benutzeraktion nachgeladen.
+- Kombinierte Katalog-Merkliste mit lokal gespeicherten Metadaten für Titel außerhalb des Release-Fensters.
+- Eigene `js/catalog.js`-Runtime, getrennt von Release-, Kalender- und Episodenlogik.
+
+### Changed
+- StreamRadar ist ab v0.4.0 **Catalog First**: das verfügbare Angebot steht im Vordergrund; Release Intelligence bleibt als zusätzliche Radar-Ebene bestehen.
+- TMDB-Katalogabfragen haben kein 35-/90-Tage-Releasefenster mehr. Das Zeitfenster gilt nur noch für Release-Radar und Kalender.
+- Sidebar neu strukturiert in Katalog, Anbieter, Radar und persönliche Inhalte.
+- Provider-Darstellung auf Karten deutlich größer und anbieter-spezifisch gestaltet.
+- sichtbare Runtime-Version aus `polish.js` auf den echten Release-Stand korrigiert.
+- App-, Tauri-, Desktop- und MSI-Version auf `0.4.0` angehoben.
+
+### Quality
+- Browser-Test für Katalog, Filmansicht und Netflix-Provider-Experience.
+- Bestehende Release-Film- und Kalender-Abdeckung bleibt als separater Regressionstest erhalten.
+- v0.3.0 UI-/CSS-Stände vor dem Redesign archiviert.
+
 ## [0.3.0] - 2026-09-01
 
 ### Added

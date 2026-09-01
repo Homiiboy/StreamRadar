@@ -15,3 +15,5 @@ Die Ladereihenfolge in `index.html` ist absichtlich fest:
 9. `ui.js`
 
 `OldUi/` bleibt ausschließlich Archiv und wird nicht zur Laufzeit oder im Tauri-Desktop-Paket geladen.
+
+- `catalog.js` – v0.4.0 Streaming-Katalog, Provider-Ansichten und Lazy Pagination; wird bewusst nach `ui.js` geladen.
