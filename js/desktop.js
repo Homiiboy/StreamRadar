@@ -1,5 +1,5 @@
 (() => {
-  const VERSION = '0.4.0';
+  const VERSION = '0.4.1';
   const PUBLISHED_DOWNLOADS_URL = 'https://raw.githubusercontent.com/Homiiboy/StreamRadar/main/downloads/README.md';
   const DOWNLOADS_PAGE_URL = 'https://github.com/Homiiboy/StreamRadar/tree/main/downloads';
   const UPDATE_PREFS_KEY = 'streamradar-update-prefs-v1';

@@ -2,6 +2,17 @@
 
 Alle relevanten Änderungen an StreamRadar werden hier ab der ersten Version nach Semantic Versioning dokumentiert.
 
+## [0.4.1] - 2026-09-01
+
+### Added
+- **Crunchyroll** wird im Anbieterblock des Streaming-Katalogs zuverlässig ergänzt, wenn der Dienst in Österreich verfügbar ist.
+- Browser-Regressionstest für Crunchyroll in der Provider-Navigation und echtes vertikales Sidebar-Scrolling.
+
+### Changed
+- Anbieter-Navigation ist nicht mehr auf sechs Sidebar-Einträge begrenzt.
+- Linke Desktop-/Off-Canvas-Sidebar scrollt vertikal und nutzt eine dezente, zum Theme passende Scrollbar.
+- App-, Tauri-, Desktop- und MSI-Version auf `0.4.1` angehoben.
+
 ## [0.4.0] - 2026-09-01
 
 ### Added

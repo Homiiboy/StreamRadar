@@ -2,31 +2,27 @@
 
 StreamRadar ist ein persönlicher Streaming-Katalog und Release-Radar für Filme, Serien und Anime – mit anbieter-spezifischen Katalogen, Releases, Staffeln, Episoden und Kalender für Österreich.
 
-## Aktuelle Version: v0.4.0
+## Aktuelle Version: v0.4.1
 
-**v0.4.0 – Streaming Catalog & Provider Experience** stellt das gesamte verfügbare Angebot deiner Streaming-Dienste in den Mittelpunkt. Release Intelligence, Kalender und Episoden-Radar bleiben als zusätzliche Ebene erhalten.
+**v0.4.1 – Provider Sidebar Fixes** verbessert die Anbieter-Navigation des v0.4.0-Katalogs: Crunchyroll ist jetzt zuverlässig im Anbieterblock erreichbar und die linke Sidebar lässt sich vollständig vertikal scrollen.
 
 ## Download
 
 ### Windows x64
 
-[**StreamRadar v0.4.0 als MSI herunterladen**](downloads/StreamRadar_0.4.0_x64_de-DE.msi)
+[**StreamRadar v0.4.1 als MSI herunterladen**](downloads/StreamRadar_0.4.1_x64_de-DE.msi)
 
 Weitere Builds und die SHA-256-Prüfsumme liegen im Ordner [`downloads/`](downloads/).
 
 Der Installer ist für die persönliche Nutzung weiterhin nicht code-signiert. Windows kann deshalb beim Öffnen einen Hinweis auf einen unbekannten Herausgeber anzeigen.
 
-## Neu in v0.4.0
+## Neu in v0.4.1
 
-- kompletter Streaming-Katalog für verfügbare Filme und Serien – unabhängig vom Erscheinungsdatum
-- Entdecken, Filme, Serien und Anime als eigene Katalogbereiche
-- Provider-First-Navigation mit Netflix, Prime Video, Disney+, Apple TV+ und weiteren verfügbaren Diensten
-- große anbieter-spezifische Provider-Header und deutlich sichtbarere Provider-Kennzeichnung auf Karten
-- Lazy Pagination über TMDB Discover für browsebares Gesamtangebot statt starrem Release-Zeitfenster
-- Release-Radar bleibt separat für Neu & aktuell, Staffeln, Episoden, Demnächst und Kalender
-- Katalog-Merkliste kann auch Titel speichern, die kein aktuelles Release-Event besitzen
-- neuer Runtime-Baustein `js/catalog.js`
-- v0.3.0 Snapshots unter `OldCss/styles-v0.3.0.css` und `OldUi/ui-v0.3.0.js`
+- **Crunchyroll** wird in der Anbieter-Sidebar zusätzlich aufgenommen, sobald TMDB den Dienst für Österreich als verfügbar meldet
+- die bisherige Begrenzung der Anbieter-Sidebar auf sechs Einträge ist entfernt
+- die komplette linke Sidebar ist vertikal scrollbar und bleibt damit auch bei kleinen Fensterhöhen vollständig bedienbar
+- sichtbare Scrollbar ist dezent an das StreamRadar-Design angepasst
+- Browser-Regressionstest prüft Crunchyroll und echtes vertikales Sidebar-Scrolling
 
 ## Funktionsumfang
 
@@ -57,7 +53,7 @@ StreamRadar verwendet Tauri v2. Die HTML/CSS/JavaScript-Oberfläche wird als nat
 Der GitHub-Workflow **Build StreamRadar Windows MSI** läuft auf `windows-latest`, baut die Anwendung, verifiziert die MSI und veröffentlicht sie danach unter:
 
 ```text
-downloads/StreamRadar_0.4.0_x64_de-DE.msi
+downloads/StreamRadar_0.4.1_x64_de-DE.msi
 ```
 
 Beim finalen Main-Build wird außerdem automatisch die SHA-256-Prüfsumme in `downloads/README.md` eingetragen.
