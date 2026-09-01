@@ -28,7 +28,8 @@ jobs:
       - name: Check version consistency
         run: |
           test -s VERSION
-          grep -q "0.0.3" VERSION
-          grep -q "v0.0.3" README.md
-          grep -q "0.0.3" CHANGELOG.md
-          grep -q "v0.0.3" index.html
+          grep -q "0.0.4" VERSION
+          grep -q "v0.0.4" README.md
+          grep -q "0.0.4" CHANGELOG.md
+          grep -q "v0.0.4" index.html
+          grep -q "APP_VERSION = '0.0.4'" app.js
