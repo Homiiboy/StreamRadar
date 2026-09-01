@@ -72,10 +72,36 @@ jobs:
           New-Item -ItemType Directory -Force -Path "downloads" | Out-Null
           $msi = Get-ChildItem -Path "src-tauri/target/release/bundle/msi" -Filter "*.msi" -File | Select-Object -First 1
           if (-not $msi) { throw "No MSI found for repository publishing." }
-          Copy-Item $msi.FullName "downloads/StreamRadar_0.1.1_x64_de-DE.msi" -Force
+          $destination = "downloads/StreamRadar_0.1.1_x64_de-DE.msi"
+          Copy-Item $msi.FullName $destination -Force
+          $hash = (Get-FileHash $destination -Algorithm SHA256).Hash.ToLowerInvariant()
+          @"
+          # StreamRadar Downloads
+
+          Hier liegen die direkt installierbaren Windows-Builds von StreamRadar.
+
+          ## Aktuelle Windows-Version
+
+          ### StreamRadar v0.1.1 – Windows x64
+
+          [**StreamRadar_0.1.1_x64_de-DE.msi herunterladen**](StreamRadar_0.1.1_x64_de-DE.msi)
+
+          - Version: ``0.1.1``
+          - Plattform: Windows x64
+          - Installer: MSI (``de-DE``)
+          - SHA-256: ``$hash``
+
+          Der Installer ist aktuell nicht code-signiert. Windows kann deshalb beim Öffnen einen Hinweis auf einen unbekannten Herausgeber anzeigen.
+
+          ## Vorherige Version
+
+          - [StreamRadar v0.1.0 – Windows x64](StreamRadar_0.1.0_x64_de-DE.msi)
+
+          Die aktuelle MSI wird vom GitHub-Actions-Workflow **Build StreamRadar Windows MSI** auf einem Windows-Runner gebaut, geprüft und anschließend automatisch in diesen Ordner veröffentlicht.
+          "@ | Set-Content -Path "downloads/README.md" -Encoding utf8
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git add "downloads/StreamRadar_0.1.1_x64_de-DE.msi"
+          git add $destination "downloads/README.md"
           if (git diff --cached --quiet) {
             Write-Host "Repository MSI is already current."
             exit 0
