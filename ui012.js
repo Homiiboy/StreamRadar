@@ -145,7 +145,7 @@
     document.body.classList.remove('search-open');
     if (clear && $('#searchInput')) {
       $('#searchInput').value = '';
-      baseRenderReleases();
+      renderReleases();
     }
   }
 
