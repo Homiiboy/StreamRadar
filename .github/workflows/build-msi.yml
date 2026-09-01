@@ -25,6 +25,7 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: '22'
+          cache: npm
 
       - name: Setup Rust
         uses: dtolnay/rust-toolchain@stable
@@ -36,8 +37,11 @@ jobs:
         with:
           workspaces: src-tauri
 
-      - name: Install Tauri CLI
-        run: npm install
+      - name: Install locked dependencies
+        run: npm ci
+
+      - name: Audit high severity dependencies
+        run: npm audit --audit-level=high
 
       - name: Build StreamRadar MSI
         run: npm run desktop:build
@@ -52,7 +56,7 @@ jobs:
       - name: Upload MSI installer
         uses: actions/upload-artifact@v4
         with:
-          name: StreamRadar-v0.2.1-Windows-x64-MSI
+          name: StreamRadar-v0.2.2-Windows-x64-MSI
           path: src-tauri/target/release/bundle/msi/*.msi
           if-no-files-found: error
           retention-days: 30
@@ -60,7 +64,7 @@ jobs:
       - name: Upload Windows executable
         uses: actions/upload-artifact@v4
         with:
-          name: StreamRadar-v0.2.1-Windows-x64-EXE
+          name: StreamRadar-v0.2.2-Windows-x64-EXE
           path: src-tauri/target/release/streamradar.exe
           if-no-files-found: error
           retention-days: 30
@@ -72,7 +76,7 @@ jobs:
           New-Item -ItemType Directory -Force -Path "downloads" | Out-Null
           $msi = Get-ChildItem -Path "src-tauri/target/release/bundle/msi" -Filter "*.msi" -File | Select-Object -First 1
           if (-not $msi) { throw "No MSI found for repository publishing." }
-          $destination = "downloads/StreamRadar_0.2.1_x64_de-DE.msi"
+          $destination = "downloads/StreamRadar_0.2.2_x64_de-DE.msi"
           Copy-Item $msi.FullName $destination -Force
           $hash = (Get-FileHash $destination -Algorithm SHA256).Hash.ToLowerInvariant()
           @"
@@ -82,11 +86,11 @@ jobs:
 
           ## Aktuelle Windows-Version
 
-          ### StreamRadar v0.2.1 – Windows x64
+          ### StreamRadar v0.2.2 – Windows x64
 
-          [**StreamRadar_0.2.1_x64_de-DE.msi herunterladen**](StreamRadar_0.2.1_x64_de-DE.msi)
+          [**StreamRadar_0.2.2_x64_de-DE.msi herunterladen**](StreamRadar_0.2.2_x64_de-DE.msi)
 
-          - Version: ``0.2.1``
+          - Version: ``0.2.2``
           - Plattform: Windows x64
           - Installer: MSI (``de-DE``)
           - SHA-256: ``$hash``
@@ -95,7 +99,7 @@ jobs:
 
           ## Vorherige Version
 
-          - [StreamRadar v0.2.0 – Windows x64](StreamRadar_0.2.0_x64_de-DE.msi)
+          - [StreamRadar v0.2.1 – Windows x64](StreamRadar_0.2.1_x64_de-DE.msi)
 
           Die aktuelle MSI wird vom GitHub-Actions-Workflow **Build StreamRadar Windows MSI** auf einem Windows-Runner gebaut, geprüft und anschließend automatisch in diesen Ordner veröffentlicht.
           "@ | Set-Content -Path "downloads/README.md" -Encoding utf8
@@ -106,5 +110,5 @@ jobs:
             Write-Host "Repository MSI is already current."
             exit 0
           }
-          git commit -m "chore: publish StreamRadar v0.2.1 MSI [skip ci]"
+          git commit -m "chore: publish StreamRadar v0.2.2 MSI [skip ci]"
           git push origin HEAD:main
