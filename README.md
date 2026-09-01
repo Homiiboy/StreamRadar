@@ -25,7 +25,7 @@ Der Installer ist für die persönliche Nutzung weiterhin nicht code-signiert. W
 - neuer Bereich **Neu seit deinem letzten Besuch** auf Basis lokal gespeicherter Radar-Event-IDs
 - `styles.css` konsolidiert alle historischen visuellen Patches bis v0.1.1
 - `OldCss/` ist jetzt ein echtes Archiv und wird nicht mehr zur Laufzeit geladen
-- aktuelle UI-Schicht `ui012.js` und Styling `v012.css`
+- aktuelle UI-Schicht `ui.js` und Styling `styles.css`
 - zentraler sichtbarer App-/Desktop-Versionsstand auf `0.1.2`
 
 ## Funktionsumfang
