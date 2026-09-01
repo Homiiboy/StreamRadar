@@ -71,7 +71,7 @@ function accentFor(service) {
   })[service] || '#62f7c7';
 }
 function escapeHTML(value = '') {
-  return String(value).replace(/[&<>'\"]/g, char => ({ '&':'&amp;', '<':'&lt;', '>':'&gt;', "'":'&#39;', '\"':'&quot;' })[char]);
+  return String(value).replace(/[&<>'"]/g, char => ({ '&':'&amp;', '<':'&lt;', '>':'&gt;', "'":'&#39;', '"':'&quot;' })[char]);
 }
 function normalizeTitle(value = '') {
   return String(value).toLowerCase().normalize('NFKD').replace(/[^a-z0-9]+/g, ' ').trim();
@@ -276,7 +276,6 @@ async function enrichRadarMetadata(token) {
     await tmdb.enrichRadarMetadata(candidates, token, (done, total) => {
       setDataStatus('live', 'Release Intelligence', `Klassifiziere Releases ${done}/${total} …`);
       if (done % 8 === 0 || done === total) {
-        state.releases = dedupeReleaseEvents(state.releases);
         renderServices();
         renderReleases();
       }
@@ -344,7 +343,7 @@ async function openDetails(id) {
         item.originalLogoPath = details.inferredOriginalLogoPath || item.originalLogoPath;
         item.originalLogoSource = details.originalLogoSource || item.originalLogoSource;
       }
-      if (details.classification?.radarEligible) Object.assign(item, details.classification, enrichRelease({ ...item, ...details.classification }));
+      if (details.classification?.radarEligible) Object.assign(item, enrichRelease({ ...item, ...details.classification }));
       renderServices();
       renderReleases();
     }
