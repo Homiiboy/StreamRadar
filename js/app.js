@@ -233,6 +233,7 @@ function renderServices() {
 
 function matchesView(item) {
   if (state.view === 'today') return dayDistance(item.releaseDate) === 0;
+  if (state.view === 'movies') return item.mediaType === 'movie' || item.type === 'movie';
   if (state.view === 'seasons') return item.eventKind === 'season-premiere';
   if (state.view === 'episodes') return item.eventKind === 'episode';
   if (state.view === 'premieres') return item.eventKind === 'series-premiere' || item.eventKind === 'movie-premiere';
@@ -248,6 +249,7 @@ function radarCounts() {
   const eligible = state.releases.filter(item => item.radarEligible !== false);
   return {
     today: eligible.filter(item => dayDistance(item.releaseDate) === 0).length,
+    movies: eligible.filter(item => item.mediaType === 'movie' || item.type === 'movie').length,
     seasons: eligible.filter(item => item.eventKind === 'season-premiere').length,
     episodes: eligible.filter(item => item.eventKind === 'episode' && dayDistance(item.releaseDate) >= 0 && dayDistance(item.releaseDate) <= 14).length,
     premieres: eligible.filter(item => (item.eventKind === 'series-premiere' || item.eventKind === 'movie-premiere') && dayDistance(item.releaseDate) >= 0 && dayDistance(item.releaseDate) <= 30).length
@@ -260,6 +262,7 @@ function renderRadarSummary() {
   const counts = radarCounts();
   const cards = [
     ['today', 'Heute', counts.today, 'Events heute'],
+    ['movies', 'Filme', counts.movies, 'im Radar'],
     ['seasons', 'Staffelstarts', counts.seasons, 'im Radar'],
     ['episodes', 'Episoden', counts.episodes, 'nächste 14 Tage'],
     ['premieres', 'Premieren', counts.premieres, 'nächste 30 Tage']
@@ -514,6 +517,7 @@ function setView(view) {
   state.view = view;
   $$('.nav-link').forEach(link => link.classList.toggle('active', link.dataset.view === view));
   if (view === 'today') { $('#viewKicker').textContent = 'HEUTE'; $('#viewTitle').textContent = 'Heute erschienen'; }
+  else if (view === 'movies') { $('#viewKicker').textContent = 'FILM-RADAR'; $('#viewTitle').textContent = 'Filme'; }
   else if (view === 'seasons') { $('#viewKicker').textContent = 'STAFFEL-RADAR'; $('#viewTitle').textContent = 'Neue Staffeln'; }
   else if (view === 'episodes') { $('#viewKicker').textContent = 'EPISODEN-RADAR'; $('#viewTitle').textContent = 'Neue Episoden'; }
   else if (view === 'premieres') { $('#viewKicker').textContent = 'PREMIEREN'; $('#viewTitle').textContent = 'Neue Filme & Serien'; }

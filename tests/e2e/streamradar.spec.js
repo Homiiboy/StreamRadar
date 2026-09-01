@@ -136,3 +136,17 @@ test('corrupt local personalization data does not crash the app', async ({ page 
   expect(version).toBe('0.2.1');
   expect(errors).toEqual([]);
 });
+
+
+test('movies view and calendar include movie releases', async ({ page }) => {
+  const errors = await boot(page, configuredStorage());
+  await page.locator('.sidebar-link[data-view="movies"]').click();
+  await expect(page.locator('body')).toHaveAttribute('data-streamradar-view', 'movies');
+  await expect(page.locator('.release-card').filter({ hasText: 'Red Horizon' })).toBeVisible();
+  await expect(page.locator('.release-card').filter({ hasText: 'Neon District' })).toHaveCount(0);
+  await page.locator('.sidebar-link[data-view="calendar"]').click();
+  await page.locator('[data-calendar-mode="90"]').click();
+  await expect(page.locator('#calendarStats')).toContainText('Filme');
+  await expect(page.locator('.timeline-event').filter({ hasText: 'Red Horizon' })).toBeVisible();
+  expect(errors).toEqual([]);
+});

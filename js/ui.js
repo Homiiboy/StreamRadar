@@ -6,6 +6,7 @@
 
   const viewTitles = {
     discover: ['ENTDECKEN', 'Dein Streaming-Radar'],
+    movies: ['FILM-RADAR', 'Filme'],
     calendar: ['KALENDER', 'Release-Kalender'],
     seasons: ['STAFFEL-RADAR', 'Neue Staffeln'],
     episodes: ['EPISODEN-RADAR', 'Neue Episoden'],
@@ -243,6 +244,7 @@
 
   const ICONS = {
     home:'<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 10.8 12 3l9 7.8v9.7a.5.5 0 0 1-.5.5h-5.2v-6.2H8.7V21H3.5a.5.5 0 0 1-.5-.5z"/></svg>',
+    movies:'<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 4h14v16H5z"/><circle cx="9" cy="9" r="2"/><circle cx="15" cy="9" r="2"/><circle cx="9" cy="15" r="2"/><circle cx="15" cy="15" r="2"/></svg>',
     calendar:'<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 2v3M18 2v3M3.5 8.5h17M5 4h14a2 2 0 0 1 2 2v13a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2Zm3 8h3v3H8zm5 0h3v3h-3z"/></svg>',
     seasons:'<svg viewBox="0 0 24 24" aria-hidden="true"><rect x="4" y="4" width="16" height="16" rx="3"/><path d="m9 8 7 4-7 4z"/></svg>',
     episodes:'<svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="8"/><path d="m10 8 6 4-6 4z"/></svg>',
@@ -271,7 +273,7 @@
   }
 
   function installIcons() {
-    const viewIcons = { discover:'home', calendar:'calendar', seasons:'seasons', episodes:'episodes', upcoming:'upcoming', watchlist:'watch' };
+    const viewIcons = { discover:'home', movies:'movies', calendar:'calendar', seasons:'seasons', episodes:'episodes', upcoming:'upcoming', watchlist:'watch' };
     $$('.sidebar-link').forEach(link => {
       const slot = link.querySelector('.sidebar-icon');
       if (slot && viewIcons[link.dataset.view]) slot.innerHTML = ICONS[viewIcons[link.dataset.view]];
@@ -499,7 +501,7 @@
     const merged = { ...defaultConfig, ...(saved && typeof saved === 'object' ? saved : {}) };
     merged.mediaPreferences = Array.isArray(merged.mediaPreferences) && merged.mediaPreferences.length ? merged.mediaPreferences.filter(value => ['movie','series','anime'].includes(value)) : [...defaultConfig.mediaPreferences];
     if (!['comfortable','compact'].includes(merged.density)) merged.density = 'comfortable';
-    if (!['discover','calendar','upcoming','watchlist'].includes(merged.defaultView)) merged.defaultView = 'discover';
+    if (!['discover','movies','calendar','upcoming','watchlist'].includes(merged.defaultView)) merged.defaultView = 'discover';
     if (![14,30,60,90].includes(Number(merged.horizonDays))) merged.horizonDays = 30;
     return merged;
   }
@@ -643,7 +645,7 @@
       <div class="settings-main">
         <section class="settings-page" data-settings-page="general"><div class="settings-page-head"><span class="section-kicker">ALLGEMEIN</span><h2>StreamRadar für dich</h2><p>Lege fest, wie die Desktop-App startet und wie dicht Informationen dargestellt werden.</p></div>
           <div class="settings-group"><div class="setting-row"><div class="setting-copy"><strong>Letzte Ansicht merken</strong><span>Öffnet StreamRadar dort, wo du zuletzt gearbeitet hast.</span></div><label class="setting-switch"><input id="prefRememberView" type="checkbox" ${config.rememberLastView?'checked':''}/><span></span></label></div>
-          <div class="setting-row"><div class="setting-copy"><strong>Standardansicht</strong><span>Wird verwendet, wenn die letzte Ansicht nicht gemerkt wird.</span></div><select class="setting-select" id="prefDefaultView"><option value="discover">Entdecken</option><option value="calendar">Kalender</option><option value="upcoming">Demnächst</option><option value="watchlist">Merkliste</option></select></div>
+          <div class="setting-row"><div class="setting-copy"><strong>Standardansicht</strong><span>Wird verwendet, wenn die letzte Ansicht nicht gemerkt wird.</span></div><select class="setting-select" id="prefDefaultView"><option value="discover">Entdecken</option><option value="movies">Filme</option><option value="calendar">Kalender</option><option value="upcoming">Demnächst</option><option value="watchlist">Merkliste</option></select></div>
           <div class="setting-row"><div class="setting-copy"><strong>Informationsdichte</strong><span>Kompakt zeigt mehr Inhalte gleichzeitig.</span></div><select class="setting-select" id="prefDensity"><option value="comfortable">Komfortabel</option><option value="compact">Kompakt</option></select></div></div>
         </section>
         <section class="settings-page" data-settings-page="providers"><div class="settings-page-head"><span class="section-kicker">MEINE ANBIETER</span><h2>Deine Streaming-Dienste</h2><p>Diese Auswahl fließt in deinen persönlichen Home-Feed ein und kann den gesamten Radar auf abonnierte Dienste begrenzen.</p></div><div class="settings-group"><div class="setting-row"><div class="setting-copy"><strong>Nur meine Anbieter im Radar</strong><span>Blendet andere Streaming-Dienste aus Feed und Kalender aus.</span></div><label class="setting-switch"><input id="settingsProvidersOnly" type="checkbox" ${providersOnly()?'checked':''}/><span></span></label></div><div class="settings-provider-actions"><button class="text-button" id="settingsProvidersAll">Alle wählen</button><button class="text-button" id="settingsProvidersNone">Keine wählen</button></div><div class="settings-provider-grid" id="settingsProviderGrid">${providerGridMarkup()}</div></div></section>
@@ -785,13 +787,13 @@
   };
 
   setView = function(view) {
-    if (config.rememberLastView && ['discover','calendar','seasons','episodes','upcoming','watchlist'].includes(view)) localStorage.setItem(LAST_VIEW_KEY, view);
+    if (config.rememberLastView && ['discover','movies','calendar','seasons','episodes','upcoming','watchlist'].includes(view)) localStorage.setItem(LAST_VIEW_KEY, view);
     return baseSetView(view);
   };
 
   function restoreStartupView() {
     const view = config.rememberLastView ? localStorage.getItem(LAST_VIEW_KEY) : config.defaultView;
-    const target = ['discover','calendar','seasons','episodes','upcoming','watchlist'].includes(view) ? view : config.defaultView;
+    const target = ['discover','movies','calendar','seasons','episodes','upcoming','watchlist'].includes(view) ? view : config.defaultView;
     if (target && target !== state.view) baseSetView(target);
   }
 
