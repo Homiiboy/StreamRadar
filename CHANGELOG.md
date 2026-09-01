@@ -2,6 +2,38 @@
 
 Alle relevanten Änderungen an StreamRadar werden hier ab der ersten Version nach Semantic Versioning dokumentiert.
 
+## [0.0.6] - 2026-09-01
+
+### Added
+- Globaler Staffel- und Episoden-Radar über den TVmaze Web-/Streaming-Schedule.
+- Abfrage des Streaming-Schedules von gestern bis 14 Tage in die Zukunft.
+- Matching von TVmaze-Serien gegen bereits für Österreich relevante TMDB-Kandidaten über IMDb-ID, TVDB-ID und exakten Titel-Fallback.
+- Eigenständige Release-Events für kommende Streaming-Episoden direkt im Hauptfeed.
+- Automatische Erkennung von Staffelstarts aus TVmaze, wenn Episode 1 einer Staffel > 1 im Schedule erscheint.
+- Automatische Erkennung von Serienpremieren bei S1E1.
+- Bis zu vier kommende TVmaze-Schedule-Events pro Serie, damit einzelne tägliche Serien den Feed nicht dominieren.
+- Eigene Hauptnavigation für **Staffeln** und **Episoden**.
+- Radar-Zusammenfassung mit klickbaren Kennzahlen für **Heute**, **Staffelstarts**, **Episoden der nächsten 14 Tage** und **Premieren der nächsten 30 Tage**.
+- Sichtbares `TVMAZE ✓`-Kennzeichen bei durch den globalen Schedule bestätigten Ereignissen.
+- TVmaze-Web-Channel, Laufzeit und Sendezeit werden bei Schedule-Events übernommen.
+- Direkter Link zur konkreten TVmaze-Episode in der Detailansicht, sofern vorhanden.
+- Retry-Behandlung für TVmaze-HTTP-429-Antworten.
+- Neues Styling in `v006.css` für Radar-Zusammenfassung, Schedule-Badges und die erweiterte Navigation.
+
+### Changed
+- TVmaze wird nicht mehr nur in der Detailansicht verwendet, sondern ist jetzt eine aktive Datenquelle des Hauptfeeds.
+- Der globale TVmaze-Schedule wird bewusst nur mit Serien zusammengeführt, die durch die TMDB-/Provider-Discovery bereits als für Österreich relevant erkannt wurden.
+- TMDB bleibt die Quelle für österreichische Provider-Relevanz; TVmaze ergänzt konkrete Web-/Streaming-Ausstrahlungen.
+- Wenn TMDB und TVmaze dasselbe Staffel-/Episodenereignis liefern, werden beide Informationen durch die bestehende Deduplizierung zusammengeführt statt doppelt angezeigt.
+- Bei zusammengeführten Events bleiben TMDB-Provider, Original-Marke und Logos erhalten; TVmaze ergänzt Schedule-Bestätigung, Episodenname, Channel, Laufzeit und Link.
+- Die Detailansicht überschreibt ein konkretes TVmaze-Schedule-Event nicht mehr mit der allgemeineren TMDB-Klassifizierung.
+- Statusleiste zeigt nach der Synchronisierung Anzahl der Staffel-, Episoden- und TVmaze-Schedule-Events.
+- Versionsanzeige auf v0.0.6 aktualisiert.
+
+### Notes
+- Der TVmaze Web Schedule bildet globale und lokale Web-Channels ab. StreamRadar übernimmt daraus nur Treffer, die zu österreichisch relevanten TMDB-Kandidaten passen.
+- Der globale Episoden-Radar verwendet in v0.0.6 bewusst einen 14-Tage-Horizont. Eine umfangreichere Kalender-/Timeline-Ansicht ist für einen späteren Release vorgesehen.
+
 ## [0.0.5] - 2026-09-01
 
 ### Added
