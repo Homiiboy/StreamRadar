@@ -16,7 +16,7 @@ jobs:
   build-msi:
     name: Windows x64 MSI
     runs-on: windows-latest
-    timeout-minutes: 35
+    timeout-minutes: 40
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -43,13 +43,18 @@ jobs:
       - name: Audit high severity dependencies
         run: npm audit --audit-level=high
 
-      - name: Verify desktop integration configuration
+      - name: Verify catalog and desktop integration configuration
         shell: pwsh
         run: |
+          if ((Get-Content "VERSION" -Raw).Trim() -ne "0.4.0") { throw "Repository version mismatch." }
+          if (-not (Test-Path "js/catalog.js")) { throw "Catalog runtime missing." }
+          if (-not (Select-String -Path "index.html" -Pattern 'js/catalog.js' -Quiet)) { throw "Catalog runtime is not loaded by index.html." }
+          if (-not (Select-String -Path "scripts/build-desktop.mjs" -Pattern 'js/catalog.js' -Quiet)) { throw "Catalog runtime is not packed by desktop build." }
+          if (-not (Select-String -Path "js/tmdb.js" -Pattern 'loadCatalogPage' -Quiet)) { throw "Catalog TMDB API missing." }
           if (-not (Select-String -Path "src-tauri/Cargo.toml" -Pattern "tauri-plugin-opener" -Quiet)) { throw "Opener plugin missing." }
           if (-not (Select-String -Path "src-tauri/Cargo.toml" -Pattern "tauri-plugin-window-state" -Quiet)) { throw "Window state plugin missing." }
           $config = Get-Content "src-tauri/tauri.conf.json" -Raw | ConvertFrom-Json
-          if ($config.version -ne "0.3.0") { throw "Tauri version mismatch." }
+          if ($config.version -ne "0.4.0") { throw "Tauri version mismatch." }
           if (-not $config.app.withGlobalTauri) { throw "withGlobalTauri must be enabled for the vanilla desktop bridge." }
 
       - name: Build StreamRadar MSI
@@ -60,12 +65,13 @@ jobs:
         run: |
           $msi = Get-ChildItem -Path "src-tauri/target/release/bundle/msi" -Filter "*.msi" -File
           if (-not $msi) { throw "No MSI installer was generated." }
+          if (-not (Test-Path "dist/js/catalog.js")) { throw "Catalog runtime missing from desktop dist." }
           $msi | ForEach-Object { Write-Host "MSI: $($_.FullName) ($([math]::Round($_.Length / 1MB, 2)) MB)" }
 
       - name: Upload MSI installer
         uses: actions/upload-artifact@v4
         with:
-          name: StreamRadar-v0.3.0-Windows-x64-MSI
+          name: StreamRadar-v0.4.0-Windows-x64-MSI
           path: src-tauri/target/release/bundle/msi/*.msi
           if-no-files-found: error
           retention-days: 30
@@ -73,7 +79,7 @@ jobs:
       - name: Upload Windows executable
         uses: actions/upload-artifact@v4
         with:
-          name: StreamRadar-v0.3.0-Windows-x64-EXE
+          name: StreamRadar-v0.4.0-Windows-x64-EXE
           path: src-tauri/target/release/streamradar.exe
           if-no-files-found: error
           retention-days: 30
@@ -85,7 +91,7 @@ jobs:
           New-Item -ItemType Directory -Force -Path "downloads" | Out-Null
           $msi = Get-ChildItem -Path "src-tauri/target/release/bundle/msi" -Filter "*.msi" -File | Select-Object -First 1
           if (-not $msi) { throw "No MSI found for repository publishing." }
-          $destination = "downloads/StreamRadar_0.3.0_x64_de-DE.msi"
+          $destination = "downloads/StreamRadar_0.4.0_x64_de-DE.msi"
           Copy-Item $msi.FullName $destination -Force
           $hash = (Get-FileHash $destination -Algorithm SHA256).Hash.ToLowerInvariant()
           @"
@@ -95,11 +101,11 @@ jobs:
 
           ## Aktuelle Windows-Version
 
-          ### StreamRadar v0.3.0 – Windows x64
+          ### StreamRadar v0.4.0 – Windows x64
 
-          [**StreamRadar_0.3.0_x64_de-DE.msi herunterladen**](StreamRadar_0.3.0_x64_de-DE.msi)
+          [**StreamRadar_0.4.0_x64_de-DE.msi herunterladen**](StreamRadar_0.4.0_x64_de-DE.msi)
 
-          - Version: ``0.3.0``
+          - Version: ``0.4.0``
           - Plattform: Windows x64
           - Installer: MSI (``de-DE``)
           - SHA-256: ``$hash``
@@ -108,7 +114,7 @@ jobs:
 
           ## Vorherige Version
 
-          - [StreamRadar v0.2.2 – Windows x64](StreamRadar_0.2.2_x64_de-DE.msi)
+          - [StreamRadar v0.3.0 – Windows x64](StreamRadar_0.3.0_x64_de-DE.msi)
 
           Die aktuelle MSI wird vom GitHub-Actions-Workflow **Build StreamRadar Windows MSI** auf einem Windows-Runner gebaut, geprüft und anschließend automatisch in diesen Ordner veröffentlicht. Das Update-Center der Desktop-App liest genau diesen veröffentlichten Stand aus.
           "@ | Set-Content -Path "downloads/README.md" -Encoding utf8
@@ -119,5 +125,5 @@ jobs:
             Write-Host "Repository MSI is already current."
             exit 0
           }
-          git commit -m "chore: publish StreamRadar v0.3.0 MSI [skip ci]"
+          git commit -m "chore: publish StreamRadar v0.4.0 MSI [skip ci]"
           git push origin HEAD:main

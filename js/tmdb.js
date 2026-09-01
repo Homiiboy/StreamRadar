@@ -194,6 +194,118 @@
     };
   }
 
+  function normalizeCatalogItem(item, mediaType, service) {
+    const baseDate = mediaType === 'movie' ? item.release_date : item.first_air_date;
+    const isAnime = mediaType === 'tv' && item.genre_ids?.includes(16) && item.original_language === 'ja';
+    return {
+      id: `catalog-${mediaType}-${item.id}`,
+      entityId: `${mediaType}-${item.id}`,
+      tmdbId: item.id,
+      mediaType,
+      type: mediaType === 'movie' ? 'movie' : (isAnime ? 'anime' : 'series'),
+      title: mediaType === 'movie' ? item.title : item.name,
+      originalTitle: mediaType === 'movie' ? item.original_title : item.original_name,
+      description: item.overview || 'Für diesen Titel ist derzeit keine deutsche Beschreibung hinterlegt.',
+      releaseDate: baseDate || '',
+      posterPath: item.poster_path || null,
+      backdropPath: item.backdrop_path || null,
+      rating: Number(item.vote_average || 0),
+      voteCount: Number(item.vote_count || 0),
+      popularity: Number(item.popularity || 0),
+      genreIds: item.genre_ids || [],
+      originalLanguage: item.original_language || '',
+      services: [service.name],
+      serviceLogos: service.logoPath ? { [service.name]: service.logoPath } : {},
+      catalogAvailable: true,
+      radarEligible: false,
+      eventKind: null,
+      eventLabel: null,
+      source: 'tmdb-catalog'
+    };
+  }
+
+  function mergeCatalogItems(groups) {
+    const merged = new Map();
+    groups.flat().forEach(item => {
+      if (!item?.entityId || !item?.title) return;
+      const current = merged.get(item.entityId);
+      if (!current) {
+        merged.set(item.entityId, item);
+        return;
+      }
+      item.services.forEach(service => { if (!current.services.includes(service)) current.services.push(service); });
+      current.serviceLogos = { ...current.serviceLogos, ...item.serviceLogos };
+      current.posterPath ||= item.posterPath;
+      current.backdropPath ||= item.backdropPath;
+      current.description ||= item.description;
+      current.rating = Math.max(current.rating || 0, item.rating || 0);
+      current.voteCount = Math.max(current.voteCount || 0, item.voteCount || 0);
+      current.popularity = Math.max(current.popularity || 0, item.popularity || 0);
+    });
+    return [...merged.values()].sort((a, b) => (b.popularity || 0) - (a.popularity || 0));
+  }
+
+  async function discoverCatalogForProvider(service, mediaType, token, options = {}) {
+    const providerId = mediaType === 'movie' ? service.movieProviderId : service.tvProviderId;
+    if (!providerId) return { items:[], page:Number(options.page || 1), totalPages:0, totalResults:0, service:service.name };
+    const page = Math.max(1, Math.min(500, Number(options.page || 1)));
+    const params = {
+      language: LANGUAGE,
+      watch_region: REGION,
+      with_watch_providers: providerId,
+      with_watch_monetization_types: 'flatrate|free|ads',
+      include_adult: false,
+      page,
+      sort_by: options.sortBy || 'popularity.desc'
+    };
+    if (mediaType === 'movie') params.region = REGION;
+    if (options.anime) {
+      params.with_genres = '16';
+      params.with_original_language = 'ja';
+    }
+    const data = await request(`/discover/${mediaType}`, token, params);
+    return {
+      items: (data.results || []).map(item => normalizeCatalogItem(item, mediaType, service)),
+      page: Number(data.page || page),
+      totalPages: Math.min(500, Number(data.total_pages || 0)),
+      totalResults: Number(data.total_results || 0),
+      service: service.name
+    };
+  }
+
+  async function loadCatalogPage(token, providerMap, options = {}) {
+    const mediaType = options.mediaType === 'tv' ? 'tv' : 'movie';
+    const requested = new Set((options.providerNames || []).map(String));
+    const services = (providerMap || []).filter(service => service.available && (!requested.size || requested.has(service.name)));
+    const jobs = services
+      .filter(service => mediaType === 'movie' ? service.movieProviderId : service.tvProviderId)
+      .map(service => ({ service, mediaType }));
+    const groups = [];
+    const pageStats = [];
+    const queue = [...jobs];
+    const workers = Array.from({ length: Math.min(5, Math.max(1, queue.length)) }, async () => {
+      while (queue.length) {
+        const job = queue.shift();
+        try {
+          const result = await discoverCatalogForProvider(job.service, mediaType, token, options);
+          groups.push(result.items);
+          pageStats.push({ service:result.service, page:result.page, totalPages:result.totalPages, totalResults:result.totalResults });
+        } catch (error) {
+          console.warn(`StreamRadar Catalog: ${job.service.name}/${mediaType} konnte nicht geladen werden.`, error);
+          pageStats.push({ service:job.service.name, page:Number(options.page || 1), totalPages:0, totalResults:0, error:true });
+        }
+      }
+    });
+    await Promise.all(workers);
+    return {
+      items: mergeCatalogItems(groups),
+      page: Number(options.page || 1),
+      providers: services,
+      pageStats,
+      hasMore: pageStats.some(stat => stat.totalPages > stat.page)
+    };
+  }
+
   function mergeReleases(groups) {
     const merged = new Map();
     groups.flat().forEach(item => {
@@ -507,6 +619,9 @@
     validateToken,
     getProviderMap,
     loadRadar,
+    loadCatalogPage,
+    discoverCatalogForProvider,
+    mergeCatalogItems,
     enrichRadarMetadata,
     getDetails,
     getSeasonProviders,

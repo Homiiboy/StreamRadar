@@ -15,7 +15,8 @@ const files = [
   'js/stability.js',
   'js/polish.js',
   'js/desktop.js',
-  'js/ui.js'
+  'js/ui.js',
+  'js/catalog.js'
 ];
 
 await rm(dist, { recursive: true, force: true });

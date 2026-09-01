@@ -40,43 +40,76 @@ jobs:
 
       - name: Check version consistency
         run: |
-          grep -qx '0.3.0' VERSION
-          grep -q 'v0.3.0' README.md
-          grep -q '\[0.3.0\]' CHANGELOG.md
-          grep -q 'v0.3.0' index.html
-          grep -q '"version": "0.3.0"' package.json
-          grep -q '"version": "0.3.0"' package-lock.json
-          grep -q '"version": "0.3.0"' src-tauri/tauri.conf.json
-          grep -q 'version = "0.3.0"' src-tauri/Cargo.toml
-          grep -q "APP_VERSION = '0.3.0'" js/app.js
-          grep -q "VERSION = '0.3.0'" js/desktop.js
-          grep -q "const VERSION = '0.3.0'" js/ui.js
+          grep -qx '0.4.0' VERSION
+          grep -q 'v0.4.0' README.md
+          grep -q '\[0.4.0\]' CHANGELOG.md
+          grep -q 'v0.4.0' index.html
+          grep -q '"version": "0.4.0"' package.json
+          grep -q '"version": "0.4.0"' package-lock.json
+          grep -q '"version": "0.4.0"' src-tauri/tauri.conf.json
+          grep -q 'version = "0.4.0"' src-tauri/Cargo.toml
+          grep -q "APP_VERSION = '0.4.0'" js/app.js
+          grep -q "const VERSION = '0.4.0'" js/polish.js
+          grep -q "const VERSION = '0.4.0'" js/desktop.js
+          grep -q "const VERSION = '0.4.0'" js/ui.js
+          grep -q "const VERSION = '0.4.0'" js/catalog.js
           grep -q '"@playwright/test": "1.62.1"' package.json
 
       - name: Check runtime JavaScript layout
         run: |
           test -d js
           test -s js/README.md
-          for file in original-overrides.js tmdb.js tvmaze.js app.js calendar.js stability.js polish.js desktop.js ui.js; do
+          for file in original-overrides.js tmdb.js tvmaze.js app.js calendar.js stability.js polish.js desktop.js ui.js catalog.js; do
             test -s "js/$file"
             test ! -e "$file"
             grep -q "js/$file" index.html
             grep -q "js/$file" scripts/build-desktop.mjs
           done
-          test "$(find js -maxdepth 1 -type f -name '*.js' | wc -l)" -eq 9
+          test "$(find js -maxdepth 1 -type f -name '*.js' | wc -l)" -eq 10
           test -z "$(find . -maxdepth 1 -type f -name '*.js' -print -quit)"
 
-      - name: Check movie radar and calendar surface
+      - name: Check catalog-first architecture
         run: |
-          grep -q 'data-view="movies"' index.html
+          grep -q 'data-view="catalog-home"' index.html
+          grep -q 'data-view="catalog-movies"' index.html
+          grep -q 'data-view="catalog-series"' index.html
+          grep -q 'data-view="catalog-anime"' index.html
+          grep -q 'data-view="catalog-watchlist"' index.html
+          grep -q 'id="providerNav"' index.html
+          grep -q 'id="catalogSurface"' index.html
+          grep -q 'loadCatalogPage' js/tmdb.js
+          grep -q 'discoverCatalogForProvider' js/tmdb.js
+          grep -q 'mergeCatalogItems' js/tmdb.js
+          grep -q 'catalog-all' js/catalog.js
+          grep -q 'renderCatalogSearchOverlay' js/catalog.js
+          grep -q 'catalog-provider-band' js/catalog.js
+          grep -q 'providerMapPromise' js/catalog.js
+          grep -q 'JETZT AUF' js/catalog.js
+          grep -q 'StreamRadar v0.4.0 — Streaming Catalog & Provider Experience' styles.css
+          test -s OldCss/styles-v0.3.0.css
+          test -s OldUi/ui-v0.3.0.js
+          python - <<'PY'
+          from pathlib import Path
+          text = Path('js/tmdb.js').read_text(encoding='utf-8')
+          start = text.index('async function discoverCatalogForProvider')
+          end = text.index('async function loadCatalogPage', start)
+          block = text[start:end]
+          forbidden = ['release_date.gte', 'release_date.lte', 'first_air_date.gte', 'first_air_date.lte']
+          assert not any(term in block for term in forbidden), 'Catalog discovery must not use release date windows'
+          PY
+
+      - name: Check release radar and calendar remain independent
+        run: |
           grep -q "state.view === 'movies'" js/app.js
           grep -q "\['movies', 'Filme'" js/app.js
-          grep -q "movies: \['FILM-RADAR', 'Filme'\]" js/ui.js
-          grep -q "movies:'movies'" js/ui.js
           grep -q '<span>Filme</span>' js/calendar.js
           grep -q 'MOVIE_RELEASE_TYPES' js/tmdb.js
           grep -q "mediaType === 'movie'" js/tmdb.js
-          grep -q 'movies view and calendar include movie releases' tests/e2e/streamradar.spec.js
+          grep -q 'season-premiere' js/app.js
+          grep -q 'getGlobalEpisodeEvents' js/tvmaze.js
+          grep -q '/schedule/web' js/tvmaze.js
+          grep -q 'BEGIN:VCALENDAR' js/calendar.js
+          grep -q 'release radar still contains movie events and calendar coverage' tests/e2e/streamradar.spec.js
 
       - name: Check desktop integration and update center
         run: |
@@ -95,22 +128,18 @@ jobs:
           grep -q 'window-state:default' src-tauri/capabilities/default.json
           grep -q 'tauri_plugin_opener::init' src-tauri/src/lib.rs
           grep -q 'tauri_plugin_window_state' src-tauri/src/lib.rs
-          grep -q 'StreamRadar v0.3.0 — Desktop Integration & Updates' styles.css
 
-      - name: Check core release intelligence and personalization
+      - name: Check personalization and core intelligence
         run: |
-          grep -q 'season-premiere' js/app.js
-          grep -q 'getGlobalEpisodeEvents' js/tvmaze.js
-          grep -q '/schedule/web' js/tvmaze.js
           grep -q 'StreamRadarOriginalOverrides' js/original-overrides.js
           grep -q 'originalScore' js/tmdb.js
-          grep -q 'BEGIN:VCALENDAR' js/calendar.js
           grep -q 'CACHE_TTL_MS' js/stability.js
           grep -q 'PERSONALIZATION CENTER' js/ui.js
           grep -q 'onboardingOverlay' js/ui.js
           grep -q 'renderPersonalizedHome' js/ui.js
           grep -q 'exportBackup' js/ui.js
           grep -q 'importBackup' js/ui.js
+          grep -q "defaultView: 'catalog-home'" js/ui.js
 
       - name: Check automated browser QA surface
         run: |
@@ -121,7 +150,8 @@ jobs:
           grep -q 'settings persist density' tests/e2e/streamradar.spec.js
           grep -q 'backup excludes the token' tests/e2e/streamradar.spec.js
           grep -q 'corrupt local personalization data' tests/e2e/streamradar.spec.js
-          grep -q 'movies view and calendar include movie releases' tests/e2e/streamradar.spec.js
+          grep -q 'catalog exposes movies series and a provider-first Netflix experience' tests/e2e/streamradar.spec.js
+          grep -q 'release radar still contains movie events and calendar coverage' tests/e2e/streamradar.spec.js
           grep -q 'update center detects a newer published MSI' tests/e2e/streamradar.spec.js
 
       - name: Build static desktop frontend
@@ -129,29 +159,31 @@ jobs:
           node scripts/build-desktop.mjs
           test -s dist/index.html
           test -s dist/styles.css
-          for file in original-overrides.js tmdb.js tvmaze.js app.js calendar.js stability.js polish.js desktop.js ui.js; do test -s "dist/js/$file"; done
+          for file in original-overrides.js tmdb.js tvmaze.js app.js calendar.js stability.js polish.js desktop.js ui.js catalog.js; do test -s "dist/js/$file"; done
           test -z "$(find dist -maxdepth 1 -type f -name '*.js' -print -quit)"
           test ! -d dist/OldCss
           test ! -d dist/OldUi
           test ! -d dist/tests
-          grep -q 'v0.3.0' dist/index.html
-          grep -q 'data-view="movies"' dist/index.html
+          grep -q 'v0.4.0' dist/index.html
+          grep -q 'data-view="catalog-movies"' dist/index.html
+          grep -q 'loadCatalogPage' dist/js/tmdb.js
           grep -q 'checkForUpdates' dist/js/desktop.js
 
       - name: Check repository hygiene
         run: |
           if grep -R -nE '^(<<<<<<<|=======|>>>>>>>)' --exclude-dir=.git --exclude-dir=dist --exclude-dir=node_modules .; then exit 1; fi
           test -z "$(find . -maxdepth 1 -type f -name '*.js' -print -quit)"
+          test ! -e scripts/prepare-v040.py
+          test ! -e .github/workflows/prepare-v040.yml
+          test ! -e scripts/fix-v040-review.py
+          test ! -e .github/workflows/fix-v040-review.yml
           test ! -e scripts/prepare-v030.py
           test ! -e .github/workflows/prepare-v030.yml
-          test ! -e scripts/v022_movies.py
-          test ! -e scripts/v022_release.py
-          test ! -e .github/workflows/prepare-v022.yml
 
   browser-smoke:
     name: Chromium UI smoke tests
     runs-on: ubuntu-latest
-    timeout-minutes: 15
+    timeout-minutes: 20
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -175,7 +207,7 @@ jobs:
         if: failure()
         uses: actions/upload-artifact@v4
         with:
-          name: StreamRadar-v0.3.0-Playwright-Diagnostics
+          name: StreamRadar-v0.4.0-Playwright-Diagnostics
           path: |
             playwright-report/
             test-results/
