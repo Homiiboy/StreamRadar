@@ -9,6 +9,7 @@
   const baseRenderReleases = renderReleases;
   const baseLoadLiveData = loadLiveData;
   const baseEnrichRadarMetadata = enrichRadarMetadata;
+  const baseSetView = setView;
   let syncPromise = null;
   let lastSyncStart = 0;
 
@@ -195,6 +196,33 @@
     });
   }
 
+  function currentPreferredFilter(items) {
+    const stability = window.StreamRadarStability;
+    if (!stability?.isPreferredProvidersOnly?.()) return items;
+    const preferred = new Set(stability.getPreferredProviders?.() || []);
+    return items.filter(item => (item.services || []).some(service => preferred.has(service)));
+  }
+
+  function withCalendarPersonalization(callback) {
+    if (!Array.isArray(state.releases)) return callback();
+    const full = state.releases;
+    state.releases = currentPreferredFilter(full);
+    try {
+      return callback();
+    } finally {
+      state.releases = full;
+    }
+  }
+
+  setView = function(view) {
+    if (view === 'calendar') {
+      const result = withCalendarPersonalization(() => baseSetView(view));
+      updateCalendarLayout();
+      return result;
+    }
+    return baseSetView(view);
+  };
+
   function updateCalendarLayout() {
     const panel = $('#calendarPanel');
     if (!panel) return;
@@ -226,9 +254,11 @@
     const empty = $('#emptyState');
     const preferredOnly = Boolean(stability?.isPreferredProvidersOnly?.());
     const preferred = stability?.getPreferredProviders?.() || [];
-    if (empty && preferredOnly && preferred.length === 0 && !empty.hidden) {
+    if (empty) {
       const copy = empty.querySelector('p');
-      if (copy) copy.textContent = 'Unter „Meine Anbieter“ ist aktuell kein Streaming-Dienst ausgewählt.';
+      if (copy) copy.textContent = preferredOnly && preferred.length === 0 && !empty.hidden
+        ? 'Unter „Meine Anbieter“ ist aktuell kein Streaming-Dienst ausgewählt.'
+        : 'Ändere deine Filter oder suche nach einem anderen Titel.';
     }
     updateCalendarLayout();
   }
