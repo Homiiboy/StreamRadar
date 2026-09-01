@@ -3,6 +3,8 @@ name: Validate StreamRadar
 on:
   push:
     branches: [main]
+    paths-ignore:
+      - 'downloads/**'
   pull_request:
     branches: [main]
 
@@ -80,6 +82,9 @@ jobs:
           test -s src-tauri/tauri.conf.json
           test -s src-tauri/capabilities/default.json
           test -s .github/workflows/build-msi.yml
+          test -s downloads/README.md
+          grep -q 'downloads/StreamRadar_0.1.0_x64_de-DE.msi' README.md
+          grep -q 'StreamRadar_0.1.0_x64_de-DE.msi' downloads/README.md
           grep -q '"targets": \["msi"\]' src-tauri/tauri.conf.json
           grep -q '"language": "de-DE"' src-tauri/tauri.conf.json
           grep -q 'at.streamradar.desktop' src-tauri/tauri.conf.json

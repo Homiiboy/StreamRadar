@@ -6,6 +6,16 @@ StreamRadar ist ein persönlicher Streaming-Release-Radar für Filme, Serien, An
 
 **v0.1.0 – First Complete Radar** ist der erste größere Meilenstein und zugleich die erste installierbare Windows-Desktop-Version.
 
+## Download
+
+### Windows x64
+
+[**StreamRadar v0.1.0 als MSI herunterladen**](downloads/StreamRadar_0.1.0_x64_de-DE.msi)
+
+Weitere Hinweise, Prüfsumme und zukünftige Installer liegen im Ordner [`downloads/`](downloads/).
+
+Der Installer ist noch nicht code-signiert. Windows kann deshalb beim Öffnen einen Hinweis auf einen unbekannten Herausgeber anzeigen.
+
 ### Was v0.1.0 zusammenführt
 
 - TMDB-Live-Daten mit österreichischen Watch-Providern
@@ -38,10 +48,10 @@ StreamRadar_0.1.0_x64_de-DE.msi
 
 sowie die kompilierte Windows-Anwendung.
 
-Nach einem erfolgreichen Workflow-Lauf liegt der Installer unter den GitHub-Actions-Artefakten als:
+Nach einem erfolgreichen Build wird der Installer sowohl als GitHub-Actions-Artefakt als auch dauerhaft unter folgendem Pfad im Repository veröffentlicht:
 
 ```text
-StreamRadar-v0.1.0-Windows-x64-MSI
+downloads/StreamRadar_0.1.0_x64_de-DE.msi
 ```
 
 Der Installer ist in v0.1.0 noch **nicht code-signiert**. Windows SmartScreen kann deshalb bei einem heruntergeladenen Installer eine Warnung anzeigen. Code Signing ist für einen späteren Release vorgesehen.
@@ -140,6 +150,9 @@ StreamRadar/
 ├── .github/workflows/
 │   ├── validate.yml
 │   └── build-msi.yml
+├── downloads/
+│   ├── README.md
+│   └── StreamRadar_0.1.0_x64_de-DE.msi
 ├── assets/
 │   └── streamradar-icon.svg
 ├── scripts/
