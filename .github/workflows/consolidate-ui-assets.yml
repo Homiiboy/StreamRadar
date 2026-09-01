@@ -30,17 +30,15 @@ jobs:
           cp ui012.js OldUi/ui012.js
 
           # Runtime CSS: one active file only.
-          printf '\n\n/* Consolidated StreamRadar v0.1.2 polish */\n' >> styles.css
+          printf '\n/* Consolidated StreamRadar v0.1.2 polish */\n' >> styles.css
           cat v012.css >> styles.css
-          printf '\n' >> styles.css
 
           # Runtime UI JS: preserve current execution order in one active file.
           {
             printf '/* StreamRadar consolidated UI runtime — current version 0.1.2 */\n'
             cat ui011.js
-            printf '\n\n'
-            cat ui012.js
             printf '\n'
+            cat ui012.js
           } > ui.js
 
           rm v012.css ui011.js ui012.js
