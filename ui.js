@@ -713,8 +713,8 @@
     try {
       const data = JSON.parse(await file.text());
       if (data?.app !== 'StreamRadar' || !data.personalization || !Array.isArray(data.watchlist)) throw new Error('FORMAT');
-      config = { ...defaultConfig, ...data.personalization };
-      localStorage.setItem(CONFIG_KEY, JSON.stringify(config));
+      localStorage.setItem(CONFIG_KEY, JSON.stringify({ ...defaultConfig, ...data.personalization }));
+      config = loadConfig();
       if (Array.isArray(data.preferredProviders)) setProviders(data.preferredProviders, false);
       if (typeof data.preferredProvidersOnly === 'boolean') setProvidersOnly(data.preferredProvidersOnly, false);
       state.watchlist = new Set(data.watchlist.map(String).filter(Boolean)); localStorage.setItem(WATCHLIST_KEY, JSON.stringify([...state.watchlist]));
@@ -765,7 +765,7 @@
         try { $('#onboardingNext').disabled=true; await tmdb.validateToken(token); localStorage.setItem(TOKEN_STORAGE_KEY,token); }
         catch { $('#onboardingTokenError').textContent='Dieser Token konnte nicht validiert werden.'; step=1; render(); $('#onboardingNext').disabled=false; return; }
       }
-      const selectedProviders = $$('#onboardingProviderGrid input:checked').map(input => input.value); if (selectedProviders.length) setProviders(selectedProviders,false);
+      const selectedProviders = $$('#onboardingProviderGrid input:checked').map(input => input.value); setProviders(selectedProviders,false);
       const media = $$('[data-onboarding-media]:checked').map(input => input.dataset.onboardingMedia); if (media.length) config.mediaPreferences=media;
       config.originalsBoost=Boolean($('#onboardingOriginals')?.checked); config.showEpisodesHome=Boolean($('#onboardingEpisodes')?.checked); persistConfig({render:false});
       localStorage.setItem(ONBOARDING_KEY,'true'); $('#onboardingOverlay')?.remove(); installSettingsCenter(); renderReleases(); if (localStorage.getItem(TOKEN_STORAGE_KEY)) loadLiveData(); notify('Dein persönlicher StreamRadar ist eingerichtet.');
@@ -792,7 +792,7 @@
   function restoreStartupView() {
     const view = config.rememberLastView ? localStorage.getItem(LAST_VIEW_KEY) : config.defaultView;
     const target = ['discover','calendar','seasons','episodes','upcoming','watchlist'].includes(view) ? view : config.defaultView;
-    if (target && target !== state.view) { state.view = target; renderReleases(); }
+    if (target && target !== state.view) baseSetView(target);
   }
 
   applyConfigSurface();

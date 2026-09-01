@@ -131,6 +131,7 @@ StreamRadar/
 │   ├── README.md
 │   ├── StreamRadar_0.1.0_x64_de-DE.msi
 │   ├── StreamRadar_0.1.1_x64_de-DE.msi
+│   ├── StreamRadar_0.1.2_x64_de-DE.msi
 │   └── StreamRadar_0.2.0_x64_de-DE.msi
 ├── assets/
 │   └── streamradar-icon.svg
@@ -170,7 +171,7 @@ StreamRadar/
 
 Ab v0.1.2 gibt es keine versionsbezogenen Runtime-Dateien wie `v013.css` oder `ui013.js` mehr im Repository-Root.
 
-Für v0.1.3 und spätere Releases gilt:
+Für v0.2.1 und spätere Releases gilt:
 
 1. Die aktive Oberfläche wird direkt in `styles.css` weiterentwickelt.
 2. Die aktive UI-Logik wird direkt in `ui.js` weiterentwickelt.
