@@ -2,6 +2,24 @@
 
 Alle relevanten Änderungen an StreamRadar werden hier ab der ersten Version nach Semantic Versioning dokumentiert.
 
+## [0.2.1] - 2026-09-01
+
+### Added
+- Playwright-/Chromium-Smoke-Tests für First-Run-Onboarding, globale Suche, Premium-Details, Settings-Persistenz und Backup/Restore.
+- Regressionstest für beschädigte lokale Personalisierungsdaten.
+- `tests/`-Struktur mit eigener Playwright-Konfiguration.
+- `js/README.md` als Dokumentation der Runtime-Ladereihenfolge.
+
+### Changed
+- Alle aktiven Runtime-JavaScript-Dateien wurden aus dem Repository-Root nach `js/` verschoben.
+- `index.html` und Desktop-Packaging laden Runtime-JavaScript ausschließlich aus `js/`.
+- Repository-Hygiene-Checks verhindern künftig aktive `.js`-Dateien im Root.
+- App-, Tauri- und MSI-Version wurden auf `0.2.1` angehoben.
+
+### Quality
+- Browser-Smoke-Tests werden im PR zusätzlich zu Syntax-/Strukturprüfung und echtem Windows-MSI-Build ausgeführt.
+- Desktop-Preflight prüft die `dist/js/`-Struktur und stellt sicher, dass `OldCss/` und `OldUi/` nicht ausgeliefert werden.
+
 ## [0.2.0] - 2026-09-01
 
 ### Added

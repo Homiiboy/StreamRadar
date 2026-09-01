@@ -2,32 +2,29 @@
 
 StreamRadar ist ein persönlicher Streaming-Release-Radar für Filme, Serien, Anime, Originals, neue Staffeln und Episoden – optimiert für Österreich.
 
-## Aktuelle Version: v0.2.0
+## Aktuelle Version: v0.2.1
 
-**v0.2.0 – Personalization & Settings** macht aus dem Release-Radar eine persönliche Streaming-Desktop-App mit Onboarding, Einstellungs-Center, Anbieter-/Inhaltspräferenzen, persönlichem Home-Scoring und portablem Backup.
+**v0.2.1 – Automated QA & Repository Hardening** ergänzt echte Browser-Smoke-Tests und räumt die Runtime-Struktur auf, damit weitere Desktop-Features auf einer besser abgesicherten Basis entstehen.
 
 ## Download
 
 ### Windows x64
 
-[**StreamRadar v0.2.0 als MSI herunterladen**](downloads/StreamRadar_0.2.0_x64_de-DE.msi)
+[**StreamRadar v0.2.1 als MSI herunterladen**](downloads/StreamRadar_0.2.1_x64_de-DE.msi)
 
 Weitere Builds und die SHA-256-Prüfsumme liegen im Ordner [`downloads/`](downloads/).
 
 Der Installer ist für die persönliche Nutzung weiterhin nicht code-signiert. Windows kann deshalb beim Öffnen einen Hinweis auf einen unbekannten Herausgeber anzeigen.
 
-## Neu in v0.2.0
+## Neu in v0.2.1
 
-- vollständiges **Personalization Center** statt rein technischem Token-Dialog
-- First-Run-Onboarding für TMDB, Anbieter und Inhaltspräferenzen
-- persönlicher Home-Bereich **Dein Radar-Mix** mit Relevanz-Scoring
-- optionale Reihe **Bei deinen Diensten**
-- Präferenzen für Filme, Serien, Anime, Originals, Episoden und Zukunftshorizont
-- komfortable oder kompakte Informationsdichte
-- letzte bzw. Standardansicht beim Start merken
-- StreamRadar-Backup/Restore für Einstellungen, Anbieter und Merkliste ohne API-Token
-- aktive UI bleibt dauerhaft in `styles.css` und `ui.js`; stabile v0.1.2-Snapshots liegen im Archiv
-- zentraler App-/Desktop-Versionsstand `0.2.0`
+- Runtime-JavaScript vollständig unter `js/`; im Repository-Root liegt keine aktive `.js`-Datei mehr
+- `index.html` und Desktop-Packaging verwenden dieselbe feste `js/`-Struktur
+- Playwright-basierte Chromium-Smoke-Tests für First Run, Onboarding, Suche/Details, Einstellungen, Persistenz und Backup/Restore
+- Regressionstest für beschädigte lokale Einstellungen und ungültige JSON-Werte
+- automatischer Check, dass Archive aus `OldCss/` und `OldUi/` nie im Desktop-Paket landen
+- stärkere CI-Gates vor jedem Merge; Windows-MSI-Build bleibt ein unabhängiger Release-Gate
+- zentraler App-/Desktop-Versionsstand `0.2.1`
 
 ## Funktionsumfang
 
@@ -55,7 +52,7 @@ StreamRadar verwendet Tauri v2. Die HTML/CSS/JavaScript-Oberfläche wird als nat
 Der GitHub-Workflow **Build StreamRadar Windows MSI** läuft auf `windows-latest`, baut die Anwendung, verifiziert die MSI und veröffentlicht sie danach unter:
 
 ```text
-downloads/StreamRadar_0.2.0_x64_de-DE.msi
+downloads/StreamRadar_0.2.1_x64_de-DE.msi
 ```
 
 Beim finalen Main-Build wird außerdem automatisch die SHA-256-Prüfsumme in `downloads/README.md` eingetragen.
@@ -152,15 +149,19 @@ StreamRadar/
 │   └── tauri.conf.json
 ├── index.html
 ├── styles.css
-├── ui.js
-├── original-overrides.js
-├── tmdb.js
-├── tvmaze.js
-├── app.js
-├── calendar.js
-├── stability.js
-├── polish.js
-├── desktop.js
+├── js/
+│   ├── original-overrides.js
+│   ├── tmdb.js
+│   ├── tvmaze.js
+│   ├── app.js
+│   ├── calendar.js
+│   ├── stability.js
+│   ├── polish.js
+│   ├── desktop.js
+│   └── ui.js
+├── tests/
+│   ├── playwright.config.js
+│   └── e2e/streamradar.spec.js
 ├── package.json
 ├── VERSION
 ├── CHANGELOG.md
@@ -171,12 +172,12 @@ StreamRadar/
 
 Ab v0.1.2 gibt es keine versionsbezogenen Runtime-Dateien wie `v013.css` oder `ui013.js` mehr im Repository-Root.
 
-Für v0.2.1 und spätere Releases gilt:
+Für v0.2.2 und spätere Releases gilt:
 
 1. Die aktive Oberfläche wird direkt in `styles.css` weiterentwickelt.
-2. Die aktive UI-Logik wird direkt in `ui.js` weiterentwickelt.
+2. Die aktive UI-Logik wird direkt in `js/ui.js` weiterentwickelt.
 3. Vor größeren Änderungen kann der bisherige Stand optional als Snapshot in `OldCss/` bzw. `OldUi/` archiviert werden.
-4. `index.html` und der Desktop-Build laden weiterhin ausschließlich `styles.css` und `ui.js`.
+4. `index.html` und der Desktop-Build laden weiterhin ausschließlich `styles.css` sowie die Runtime-Dateien unter `js/`.
 5. Die Archive werden niemals mitgeladen und beeinflussen die aktuelle App nicht.
 
 Damit bleiben die Runtime-Dateinamen stabil, während die Historie trotzdem nachvollziehbar bleibt.
