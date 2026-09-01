@@ -2,6 +2,30 @@
 
 Alle relevanten Änderungen an StreamRadar werden hier ab der ersten Version nach Semantic Versioning dokumentiert.
 
+## [0.2.0] - 2026-09-01
+
+### Added
+- Vollständiges **Personalization Center** mit Bereichen Allgemein, Anbieter, Inhalte, Daten & Backup und Über StreamRadar.
+- First-Run-Onboarding für TMDB-Verbindung, Streaming-Anbieter und persönliche Inhaltspräferenzen.
+- Persönlicher Home-Feed **Dein Radar-Mix** mit Relevanz-Scoring aus Anbieterwahl, Medienpräferenzen, Originals, Merkliste und Release-Nähe.
+- Zusätzliche Reihe **Bei deinen Diensten** für ausgewählte Streaming-Anbieter.
+- Präferenzen für Filme, Serien, Anime, Originals-Gewichtung, Episoden auf Home und persönlichen Zukunftshorizont.
+- Wahl zwischen komfortabler und kompakter Informationsdichte.
+- Letzte Ansicht bzw. Standardansicht kann für den App-Start gespeichert werden.
+- Vollständiges StreamRadar-Backup/Restore für Personalisierung, Anbieter und Merkliste; der TMDB-Token wird bewusst nicht exportiert.
+- Stabile Provider-Setter im `StreamRadarStability`-API, damit alte und neue Personalisierungsoberflächen dieselbe Datenquelle verwenden.
+
+### Changed
+- Aktive UI bleibt ausschließlich in `styles.css` und `ui.js`; vor v0.2.0 wurden konsolidierte v0.1.2-Snapshots nach `OldCss/` und `OldUi/` archiviert.
+- Der bisherige technische TMDB-Einstellungsdialog wurde zu einem vollständigen Einstellungs-Center ausgebaut.
+- Home-Personalisierung arbeitet ergänzend zur bestehenden Release Intelligence und verändert keine Rohdaten.
+- App-, Desktop-, Tauri- und MSI-Version wurden auf `0.2.0` angehoben.
+
+### Desktop
+- Tauri-MSI und EXE werden als v0.2.0 gebaut.
+- Der finale Main-Build veröffentlicht `downloads/StreamRadar_0.2.0_x64_de-DE.msi` automatisch im Repository.
+- Der Installer bleibt für die persönliche Nutzung unsigniert.
+
 ## [0.1.2] - 2026-09-01
 
 ### Added

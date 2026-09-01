@@ -2,31 +2,32 @@
 
 StreamRadar ist ein persönlicher Streaming-Release-Radar für Filme, Serien, Anime, Originals, neue Staffeln und Episoden – optimiert für Österreich.
 
-## Aktuelle Version: v0.1.2
+## Aktuelle Version: v0.2.0
 
-**v0.1.2 – UI/UX Polish** verfeinert das v0.1.1-Desktop-Redesign mit einer Premium-Detailansicht, globaler Suche, besser navigierbaren Content-Rows, „Neu seit deinem letzten Besuch“ und einer konsolidierten UI-/CSS-Basis.
+**v0.2.0 – Personalization & Settings** macht aus dem Release-Radar eine persönliche Streaming-Desktop-App mit Onboarding, Einstellungs-Center, Anbieter-/Inhaltspräferenzen, persönlichem Home-Scoring und portablem Backup.
 
 ## Download
 
 ### Windows x64
 
-[**StreamRadar v0.1.2 als MSI herunterladen**](downloads/StreamRadar_0.1.2_x64_de-DE.msi)
+[**StreamRadar v0.2.0 als MSI herunterladen**](downloads/StreamRadar_0.2.0_x64_de-DE.msi)
 
 Weitere Builds und die SHA-256-Prüfsumme liegen im Ordner [`downloads/`](downloads/).
 
 Der Installer ist für die persönliche Nutzung weiterhin nicht code-signiert. Windows kann deshalb beim Öffnen einen Hinweis auf einen unbekannten Herausgeber anzeigen.
 
-## Neu in v0.1.2
+## Neu in v0.2.0
 
-- neue **Premium-Detailansicht** mit Backdrop, Poster, Release Intelligence, Herkunft, Providern und nächster Episode
-- globale Schnell-Suche mit Suchoverlay und **Ctrl+K**
-- einheitliche SVG-Icons statt gemischter Text-/Unicode-Symbole
-- Pfeilnavigation und sauberer Scroll-Zustand für horizontale Content-Rows
-- neuer Bereich **Neu seit deinem letzten Besuch** auf Basis lokal gespeicherter Radar-Event-IDs
-- `styles.css` enthält die komplette aktive Oberfläche
-- `ui.js` enthält die komplette aktive UI-Logik
-- `OldCss/` und `OldUi/` sind reine Archive und werden nicht zur Laufzeit geladen
-- zentraler sichtbarer App-/Desktop-Versionsstand auf `0.1.2`
+- vollständiges **Personalization Center** statt rein technischem Token-Dialog
+- First-Run-Onboarding für TMDB, Anbieter und Inhaltspräferenzen
+- persönlicher Home-Bereich **Dein Radar-Mix** mit Relevanz-Scoring
+- optionale Reihe **Bei deinen Diensten**
+- Präferenzen für Filme, Serien, Anime, Originals, Episoden und Zukunftshorizont
+- komfortable oder kompakte Informationsdichte
+- letzte bzw. Standardansicht beim Start merken
+- StreamRadar-Backup/Restore für Einstellungen, Anbieter und Merkliste ohne API-Token
+- aktive UI bleibt dauerhaft in `styles.css` und `ui.js`; stabile v0.1.2-Snapshots liegen im Archiv
+- zentraler App-/Desktop-Versionsstand `0.2.0`
 
 ## Funktionsumfang
 
@@ -54,7 +55,7 @@ StreamRadar verwendet Tauri v2. Die HTML/CSS/JavaScript-Oberfläche wird als nat
 Der GitHub-Workflow **Build StreamRadar Windows MSI** läuft auf `windows-latest`, baut die Anwendung, verifiziert die MSI und veröffentlicht sie danach unter:
 
 ```text
-downloads/StreamRadar_0.1.2_x64_de-DE.msi
+downloads/StreamRadar_0.2.0_x64_de-DE.msi
 ```
 
 Beim finalen Main-Build wird außerdem automatisch die SHA-256-Prüfsumme in `downloads/README.md` eingetragen.
@@ -130,7 +131,8 @@ StreamRadar/
 │   ├── README.md
 │   ├── StreamRadar_0.1.0_x64_de-DE.msi
 │   ├── StreamRadar_0.1.1_x64_de-DE.msi
-│   └── StreamRadar_0.1.2_x64_de-DE.msi
+│   ├── StreamRadar_0.1.2_x64_de-DE.msi
+│   └── StreamRadar_0.2.0_x64_de-DE.msi
 ├── assets/
 │   └── streamradar-icon.svg
 ├── OldCss/
@@ -169,7 +171,7 @@ StreamRadar/
 
 Ab v0.1.2 gibt es keine versionsbezogenen Runtime-Dateien wie `v013.css` oder `ui013.js` mehr im Repository-Root.
 
-Für v0.1.3 und spätere Releases gilt:
+Für v0.2.1 und spätere Releases gilt:
 
 1. Die aktive Oberfläche wird direkt in `styles.css` weiterentwickelt.
 2. Die aktive UI-Logik wird direkt in `ui.js` weiterentwickelt.
