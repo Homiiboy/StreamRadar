@@ -28,8 +28,15 @@ jobs:
       - name: Check version consistency
         run: |
           test -s VERSION
-          grep -q "0.0.4" VERSION
-          grep -q "v0.0.4" README.md
-          grep -q "0.0.4" CHANGELOG.md
-          grep -q "v0.0.4" index.html
-          grep -q "APP_VERSION = '0.0.4'" app.js
+          grep -q "0.0.5" VERSION
+          grep -q "v0.0.5" README.md
+          grep -q "0.0.5" CHANGELOG.md
+          grep -q "v0.0.5" index.html
+          grep -q "APP_VERSION = '0.0.5'" app.js
+      - name: Check v0.0.5 release intelligence surface
+        run: |
+          test -s v005.css
+          grep -q 'id="eventFilter"' index.html
+          grep -q "season-premiere" app.js
+          grep -q "air_date.gte" tmdb.js
+          grep -q "getSeasonProviders" tmdb.js
