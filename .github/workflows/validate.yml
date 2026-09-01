@@ -10,8 +10,8 @@ permissions:
   contents: read
 
 jobs:
-  javascript:
-    name: JavaScript syntax
+  validate:
+    name: Syntax & version consistency
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
@@ -20,7 +20,15 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: '22'
-      - name: Check app.js
-        run: node --check app.js
-      - name: Check tmdb.js
-        run: node --check tmdb.js
+      - name: Check JavaScript syntax
+        run: |
+          node --check tmdb.js
+          node --check tvmaze.js
+          node --check app.js
+      - name: Check version consistency
+        run: |
+          test -s VERSION
+          grep -q "0.0.3" VERSION
+          grep -q "v0.0.3" README.md
+          grep -q "0.0.3" CHANGELOG.md
+          grep -q "v0.0.3" index.html
