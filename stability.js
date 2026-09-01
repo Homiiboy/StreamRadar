@@ -9,7 +9,7 @@
 
   const allProviderNames = tmdb.SERVICE_DEFINITIONS.map(service => service.name);
   const savedProviders = safeJSON(localStorage.getItem(PROVIDERS_KEY) || 'null', null);
-  let preferredProviders = new Set(Array.isArray(savedProviders) && savedProviders.length ? savedProviders : allProviderNames);
+  let preferredProviders = new Set(Array.isArray(savedProviders) ? savedProviders : allProviderNames);
   let preferredProvidersOnly = localStorage.getItem(PROVIDERS_ONLY_KEY) === 'true';
   let sortMode = localStorage.getItem(SORT_KEY) || 'relevance';
   let cacheHydrated = false;
@@ -102,7 +102,7 @@
   }
 
   function providerFiltered(items) {
-    if (!preferredProvidersOnly || preferredProviders.size === 0) return items;
+    if (!preferredProvidersOnly) return items;
     return items.filter(item => (item.services || []).some(service => preferredProviders.has(service)));
   }
 
@@ -239,7 +239,7 @@
   function updatePersonalMode() {
     const label = $('#preferredProviderLabel');
     if (label) label.textContent = preferredProviders.size === allProviderNames.length ? 'Meine Anbieter' : `Meine Anbieter (${preferredProviders.size})`;
-    document.body.classList.toggle('personal-providers-active', preferredProvidersOnly && preferredProviders.size > 0);
+    document.body.classList.toggle('personal-providers-active', preferredProvidersOnly);
   }
 
   function updateHealth() {
@@ -323,7 +323,7 @@
   }
 
   function prepareCalendarPersonalization() {
-    if (!preferredProvidersOnly || preferredProviders.size === 0 || temporarySource) return;
+    if (!preferredProvidersOnly || temporarySource) return;
     temporarySource = state.releases;
     state.releases = personalized(temporarySource);
     queueMicrotask(() => {
