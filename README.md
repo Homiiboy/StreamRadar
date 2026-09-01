@@ -1,98 +1,94 @@
 # StreamRadar
 
-StreamRadar ist ein persönlicher Release-Radar für neue Filme, Serien und Anime aus wichtigen Streaming-Marken – optimiert für Österreich.
+StreamRadar ist ein persönlicher Release-Radar für neue Filme, Serien, Anime, Originals und neue Staffeln aus wichtigen Streaming-Marken – optimiert für Österreich.
 
-## Version 0.0.2
+## Aktuelle Version: v0.0.3
 
-v0.0.2 verbindet das Frontend erstmals mit **The Movie Database (TMDB)** und nutzt die dort verfügbaren Watch-Provider-Daten für Österreich.
+### Neu
 
-### Neu in v0.0.2
+- Original-Brand-Erkennung auf Basis von TMDB Networks und Produktionsfirmen
+- klare Trennung zwischen **„Original von“** und **„läuft in Österreich bei“**
+- Original-Filter und eigener Filter nach Original-Marke
+- unterstützte Original-Marken u. a. Netflix, HBO, HBO Max, Disney+, Hulu, FX, Prime Video, Apple TV+, Paramount+, Peacock, AMC+, Crunchyroll, BBC, Sky, Joyn, RTL+ und ORF
+- Erkennungssicherheit (`high` / `medium`) statt einer vorgetäuschten 100-%-Zuordnung
+- TVmaze-Anbindung für Serien
+- Anzeige der nächsten Episode
+- Erkennung eines neuen Staffelstarts, wenn die nächste Episode Episode 1 einer höheren Staffel ist
+- bis zu 8 kommende Episoden werden intern ausgewertet
+- TVmaze-Network/Web-Channel in der Detailansicht
+- Version zentral als `0.0.3` geführt und Changelog eingeführt
 
-- echte Filme und Serien über TMDB Discover
-- echte Poster und Backdrops
-- deutsche Titel und Beschreibungen (`de-DE`)
-- österreichische Watch-Provider (`watch_region=AT`)
-- Provider-Erkennung für u. a. Netflix, Disney+, Prime Video, HBO Max, Apple TV+, Paramount+, Crunchyroll, Sky/WOW, Joyn, RTL+ und ORF
-- automatische Zusammenführung von Titeln, die bei mehreren Providern verfügbar sind
-- Detailansicht mit Genres, Laufzeit/Staffeln, TMDB-Wertung und aktuellen Streaming-Providern
-- Provider-Logos aus TMDB
-- 35 Tage Rückblick + 90 Tage Vorschau für den Radar
-- Ansicht „Demnächst“ für die nächsten 30 Tage
-- lokaler TMDB-Token-Speicher im Browser
-- Refresh-/Sync-Schaltfläche
-- Fallback auf Demo-Daten, wenn kein Token gesetzt ist oder TMDB nicht erreichbar ist
-- JustWatch-Attribution für Streaming-Verfügbarkeitsdaten
+## Datenquellen
 
-## TMDB einrichten
+- **TMDB** – Titel, Metadaten, Bilder, Networks, Produktionsfirmen, externe IDs und Watch-Provider
+- **JustWatch via TMDB** – Streaming-Verfügbarkeit in Österreich
+- **TVmaze** – Episoden, Staffeln und kommende Episoden
 
-StreamRadar schreibt **keinen API-Token in das Repository**.
+TVmaze benötigt keinen API-Key. Der TMDB API Read Access Token wird nur lokal im Browser gespeichert.
 
-1. Ein kostenloses TMDB-Konto erstellen bzw. anmelden.
-2. In TMDB unter **Einstellungen → API** einen API-Zugang anlegen.
-3. Den dort angezeigten **API Read Access Token** kopieren.
-4. StreamRadar öffnen und oben auf das Zahnrad klicken.
-5. Token einfügen und **„Verbinden & laden“** wählen.
+## Original-Erkennung
 
-Der Token wird ausschließlich im `localStorage` des verwendeten Browsers unter `streamradar-tmdb-token` gespeichert.
+Die Original-Zuordnung ist bewusst heuristisch:
 
-> Hinweis: Bei einer rein statischen Browser-App wird der Token für Requests aus dem Browser verwendet. Für eine spätere öffentlich gehostete Version sollte die TMDB-Kommunikation über ein eigenes Backend/Proxy laufen.
+- Network-Treffer, z. B. `FX`, `HBO`, `Netflix` → hohe Sicherheit
+- Produktionsfirmen, z. B. `FX Productions` oder `Amazon MGM Studios` → mittlere Sicherheit
+
+Damit kann StreamRadar beispielsweise unterscheiden:
+
+```text
+Original von: FX
+Läuft in Österreich bei: Disney+
+```
+
+Das ist für das Projekt wichtiger als Streaming-Anbieter und Ursprungsmarke gleichzusetzen.
 
 ## Starten
-
-Es ist weiterhin kein Build-Schritt notwendig. Am besten über einen kleinen lokalen Webserver starten:
 
 ```bash
 python -m http.server 8080
 ```
 
-Danach `http://localhost:8080` öffnen.
+Dann `http://localhost:8080` öffnen und unter ⚙ den TMDB **API Read Access Token** hinterlegen.
 
-Das direkte Öffnen von `index.html` kann je nach Browser durch Sicherheitsregeln für Netzwerk-Requests eingeschränkt sein.
+## Versionierung
 
-## Datenlogik
+StreamRadar verwendet ab jetzt konsequent **Semantic Versioning (SemVer)** im Schema:
 
-StreamRadar lädt für die in Österreich erkannten Provider jeweils Filme und Serien über TMDB Discover und führt identische TMDB-Titel anschließend zusammen. Dadurch kann ein Titel mehrere Provider gleichzeitig anzeigen.
+```text
+MAJOR.MINOR.PATCH
+```
 
-Aktuell wird nach Titeln gesucht, deren Film- bzw. Serienstart in einem Fenster von ungefähr 35 Tagen in der Vergangenheit bis 90 Tagen in der Zukunft liegt. Das ist ein Release-Radar und noch kein vollständiger Katalog-Änderungstracker.
+- `PATCH`: Fehlerbehebungen ohne neue öffentliche Funktion
+- `MINOR`: rückwärtskompatible Features
+- `MAJOR`: Breaking Changes / grundlegende Neustrukturierung
 
-### Noch nicht in v0.0.2
+Während `0.x` befindet sich StreamRadar noch in der frühen Entwicklungsphase. Die vom Projekt gewünschte Release-Reihenfolge bleibt dennoch eindeutig (`0.0.1` → `0.0.2` → `0.0.3`).
 
-- zuverlässige Original-Zuordnung zu Netflix/HBO/FX/Hulu/Peacock usw.
-- Erkennung neuer Staffeln bereits laufender Serien
-- Episoden-Kalender
-- Watchmode-Katalogänderungen
-- persistente serverseitige Datenbank
-- Benutzerkonten / Sync zwischen Geräten
-
-Die Originals-Schaltfläche ist deshalb in v0.0.2 bewusst deaktiviert, statt unzuverlässige Ergebnisse anzuzeigen.
-
-## Geplante v0.0.3
-
-Für die nächste Version ist vorgesehen:
-
-- Network-/Studio-Erkennung für Originals
-- Trennung zwischen `Streaming Provider` und `Original Brand`
-- bessere Erkennung von Hulu-, FX-, Peacock-, HBO- und anderen Produktionen, auch wenn sie in Österreich bei einem anderen Anbieter laufen
-- TVmaze-Anbindung für Episoden und neue Staffeln
+Siehe auch [`CHANGELOG.md`](CHANGELOG.md) und [`VERSION`](VERSION).
 
 ## Projektstruktur
 
 ```text
 StreamRadar/
+├── .github/workflows/validate.yml
 ├── index.html
 ├── styles.css
+├── v003.css
 ├── tmdb.js
+├── tvmaze.js
 ├── app.js
+├── VERSION
+├── CHANGELOG.md
 └── README.md
 ```
 
-## Datenquellen
+## Grenzen von v0.0.3
 
-- **TMDB**: Metadaten, Bilder, Bewertungen und Watch-Provider
-- **JustWatch via TMDB**: Streaming-Verfügbarkeit
-
-Die Watch-Provider-Daten von TMDB basieren auf der JustWatch-Partnerschaft und erfordern eine entsprechende Attribution.
+- Filme lassen sich nicht immer eindeutig als Streaming-Original klassifizieren; Produktionsfirmen sind nur ein Indiz.
+- TVmaze kann nicht jede internationale Streamingserie perfekt abbilden.
+- Neue Staffeln werden aktuell in der Detailansicht erkannt; ein globaler Staffel-Feed folgt später.
+- Für eine öffentlich gehostete Multi-User-Version sollte TMDB über ein Backend/Proxy angebunden werden.
 
 ## Status
 
-`v0.0.2` – TMDB live data integration
+`v0.0.3` – Originals & TV episode intelligence
