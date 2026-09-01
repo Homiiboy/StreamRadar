@@ -2,29 +2,32 @@
 
 StreamRadar ist ein persönlicher Streaming-Release-Radar für Filme, Serien, Anime, Originals, neue Staffeln und Episoden – optimiert für Österreich.
 
-## Aktuelle Version: v0.2.2
+## Aktuelle Version: v0.3.0
 
-**v0.2.2 – Automated QA & Repository Hardening** ergänzt echte Browser-Smoke-Tests und räumt die Runtime-Struktur auf, damit weitere Desktop-Features auf einer besser abgesicherten Basis entstehen.
+**v0.3.0 – Desktop Integration & Updates** macht StreamRadar zu einer deutlich eigenständigeren Windows-App: mit Update-Center, veröffentlichtem MSI-Versionscheck, nativer Link-Öffnung und gespeichertem Fensterzustand.
 
 ## Download
 
 ### Windows x64
 
-[**StreamRadar v0.2.2 als MSI herunterladen**](downloads/StreamRadar_0.2.2_x64_de-DE.msi)
+[**StreamRadar v0.3.0 als MSI herunterladen**](downloads/StreamRadar_0.3.0_x64_de-DE.msi)
 
 Weitere Builds und die SHA-256-Prüfsumme liegen im Ordner [`downloads/`](downloads/).
 
 Der Installer ist für die persönliche Nutzung weiterhin nicht code-signiert. Windows kann deshalb beim Öffnen einen Hinweis auf einen unbekannten Herausgeber anzeigen.
 
-## Neu in v0.2.2
+## Neu in v0.3.0
 
-- Runtime-JavaScript vollständig unter `js/`; im Repository-Root liegt keine aktive `.js`-Datei mehr
-- `index.html` und Desktop-Packaging verwenden dieselbe feste `js/`-Struktur
-- Playwright-basierte Chromium-Smoke-Tests für First Run, Onboarding, Suche/Details, Einstellungen, Persistenz und Backup/Restore
-- Regressionstest für beschädigte lokale Einstellungen und ungültige JSON-Werte
-- automatischer Check, dass Archive aus `OldCss/` und `OldUi/` nie im Desktop-Paket landen
-- stärkere CI-Gates vor jedem Merge; Windows-MSI-Build bleibt ein unabhängiger Release-Gate
-- zentraler App-/Desktop-Versionsstand `0.2.2`
+- eigenes **Update-Center** im Personalization Center
+- manueller und optional täglicher Check der tatsächlich veröffentlichten MSI-Version im GitHub-Downloadordner
+- Update-Hinweis in der Sidebar, sobald eine neuere veröffentlichte Version verfügbar ist
+- direkter MSI-Download auf Benutzeraktion; keine automatische Installation
+- native Tauri-Integration zum Öffnen externer URLs im Windows-Standardbrowser
+- Fenstergröße, Position und Zustand werden über das Tauri Window-State-Plugin gespeichert und wiederhergestellt
+- echte Runtime-Metadaten für App- und Tauri-Version in der Desktop-Oberfläche
+- `withGlobalTauri` für die Vanilla-JavaScript-Desktop-Brücke, abgesichert über Tauri Capabilities
+- CSS-Snapshot des letzten v0.2.2-Zustands unter `OldCss/styles-v0.2.2.css`
+- automatisierter Browser-Test für Update-Erkennung zusätzlich zu den bestehenden Film-, Kalender-, First-Run-, Settings- und Backup-Tests
 
 ## Funktionsumfang
 
@@ -43,6 +46,8 @@ StreamRadar kombiniert:
 - lokale Merkliste mit JSON-Backup/-Import
 - lokalen Radar-Cache mit Offline-Fallback
 - Tauri-v2-Desktop-App für Windows
+- integriertes Update-Center mit veröffentlichtem MSI-Versionscheck
+- gespeicherter nativer Fensterzustand und externe Links über den Windows-Standardbrowser
 - MSI-Installer für Windows x64
 
 ## Windows Desktop / MSI
@@ -52,7 +57,7 @@ StreamRadar verwendet Tauri v2. Die HTML/CSS/JavaScript-Oberfläche wird als nat
 Der GitHub-Workflow **Build StreamRadar Windows MSI** läuft auf `windows-latest`, baut die Anwendung, verifiziert die MSI und veröffentlicht sie danach unter:
 
 ```text
-downloads/StreamRadar_0.2.2_x64_de-DE.msi
+downloads/StreamRadar_0.3.0_x64_de-DE.msi
 ```
 
 Beim finalen Main-Build wird außerdem automatisch die SHA-256-Prüfsumme in `downloads/README.md` eingetragen.
@@ -71,7 +76,7 @@ Voraussetzungen:
 Dann:
 
 ```bash
-npm install
+npm ci
 npm run desktop:build
 ```
 

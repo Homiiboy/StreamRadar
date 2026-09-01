@@ -7,10 +7,13 @@ const PROVIDERS_KEY = 'streamradar-preferred-providers';
 const TOKEN_KEY = 'streamradar-tmdb-token';
 const WATCHLIST_KEY = 'streamradar-watchlist';
 
-async function boot(page, storage = {}) {
+async function boot(page, storage = {}, options = {}) {
   const errors = [];
   page.on('pageerror', error => errors.push(error.message));
   await page.route(/^https?:\/\/(?!127\.0\.0\.1:4173)/, route => route.abort());
+  if (options.publishedDownloads) {
+    await page.route('https://raw.githubusercontent.com/Homiiboy/StreamRadar/main/downloads/README.md*', route => route.fulfill({ status:200, contentType:'text/markdown', body:options.publishedDownloads }));
+  }
   await page.addInitScript(entries => {
     try {
       if (sessionStorage.getItem('__streamradar_test_seeded') !== '1') {
@@ -106,7 +109,7 @@ test('backup excludes the token and restore normalizes personal data', async ({ 
   expect(exported).not.toHaveProperty('token');
 
   const restore = {
-    app: 'StreamRadar', format: 2, version: '0.2.2',
+    app: 'StreamRadar', format: 2, version: '0.3.0',
     personalization: { density: 'compact', mediaPreferences: ['movie'], originalsBoost: false, showEpisodesHome: false, horizonDays: 14, rememberLastView: false, defaultView: 'discover' },
     preferredProviders: [], preferredProvidersOnly: false, watchlist: ['demo-1']
   };
@@ -133,7 +136,7 @@ test('corrupt local personalization data does not crash the app', async ({ page 
   await expect(page.locator('.app-sidebar')).toBeVisible();
   await expect(page.locator('#releaseGrid')).toBeVisible();
   const version = await page.evaluate(() => window.StreamRadarPersonalization?.VERSION);
-  expect(version).toBe('0.2.2');
+  expect(version).toBe('0.3.0');
   expect(errors).toEqual([]);
 });
 
@@ -150,3 +153,19 @@ test('movies view and calendar include movie releases', async ({ page }) => {
   await expect(page.locator('.timeline-event').filter({ hasText: 'Red Horizon' })).toBeVisible();
   expect(errors).toEqual([]);
 });
+
+test('update center detects a newer published MSI', async ({ page }) => {
+  const published = '# StreamRadar Downloads\n\n### StreamRadar v0.3.1 – Windows x64\n\n- Version: `0.3.1`\n';
+  const errors = await boot(page, configuredStorage(), { publishedDownloads: published });
+  await page.locator('#openSettings').click();
+  await expect(page.locator('[data-settings-tab="updates"]')).toBeVisible();
+  await page.locator('[data-settings-tab="updates"]').click();
+  await page.locator('#checkStreamRadarUpdate').click();
+  await expect(page.locator('#settingsUpdatePage')).toContainText('Update v0.3.1 verfügbar');
+  await expect(page.locator('#downloadStreamRadarUpdate')).toContainText('v0.3.1 MSI herunterladen');
+  const state = await page.evaluate(() => window.StreamRadarDesktop.getUpdateState());
+  expect(state.status).toBe('available');
+  expect(state.latest).toBe('0.3.1');
+  expect(errors).toEqual([]);
+});
+
