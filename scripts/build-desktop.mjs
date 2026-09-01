@@ -7,15 +7,15 @@ const dist = resolve(root, 'dist');
 const files = [
   'index.html',
   'styles.css',
-  'v003.css',
-  'v004.css',
-  'v005.css',
-  'v006.css',
-  'v007.css',
-  'v008.css',
-  'v009.css',
-  'v0010.css',
-  'v0100.css',
+  'OldCss/v003.css',
+  'OldCss/v004.css',
+  'OldCss/v005.css',
+  'OldCss/v006.css',
+  'OldCss/v007.css',
+  'OldCss/v008.css',
+  'OldCss/v009.css',
+  'OldCss/v0010.css',
+  'OldCss/v0100.css',
   'v011.css',
   'original-overrides.js',
   'tmdb.js',
@@ -31,7 +31,9 @@ const files = [
 await rm(dist, { recursive: true, force: true });
 await mkdir(dist, { recursive: true });
 for (const file of files) {
-  await cp(resolve(root, file), resolve(dist, file));
+  const target = resolve(dist, file);
+  await mkdir(dirname(target), { recursive: true });
+  await cp(resolve(root, file), target);
 }
 
 console.log(`StreamRadar desktop frontend packed: ${files.length} files -> dist/`);
