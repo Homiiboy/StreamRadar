@@ -2,6 +2,21 @@
 
 Alle relevanten Änderungen an StreamRadar werden hier ab der ersten Version nach Semantic Versioning dokumentiert.
 
+## [0.2.2] - 2026-09-01
+
+### Added
+- Eigener **Filme**-Eintrag in der Hauptnavigation mit dediziertem Film-Radar.
+- Film-Zähler in der Kalender-Zusammenfassung.
+- Playwright-Regressionstest für Film-View und Film-Event in der 90-Tage-Kalender-Timeline.
+
+### Changed
+- App-, Tauri-, MSI- und Runtime-Version auf `0.2.2` angehoben.
+- Playwright auf `1.62.1` aktualisiert und reproduzierbare Node-Abhängigkeiten eingeführt.
+
+### Quality
+- Film-Releases werden explizit als Teil der Kalender-Abdeckung getestet.
+- High-Severity-NPM-Audit wird Bestandteil der Release-Validierung.
+
 ## [0.2.1] - 2026-09-01
 
 ### Added

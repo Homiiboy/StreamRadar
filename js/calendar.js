@@ -162,7 +162,7 @@
     }, { total:0 });
     const byDate = ranged.reduce((map, item) => map.set(item.releaseDate, (map.get(item.releaseDate) || 0) + 1), new Map());
     const busiest = [...byDate.entries()].sort((a, b) => b[1] - a[1])[0];
-    root.innerHTML = `<div><strong>${counts.total}</strong><span>Releases</span></div><div><strong>${counts['season-premiere'] || 0}</strong><span>Staffelstarts</span></div><div><strong>${counts.episode || 0}</strong><span>Episoden</span></div><div><strong>${(counts['movie-premiere'] || 0) + (counts['series-premiere'] || 0)}</strong><span>Premieren</span></div>${busiest ? `<div class="calendar-busiest"><strong>${busiest[1]}</strong><span>vollster Tag · ${escapeHTML(fmtDay(fromISO(busiest[0])))}</span></div>` : ''}`;
+    root.innerHTML = `<div><strong>${counts.total}</strong><span>Releases</span></div><div><strong>${counts['movie-premiere'] || 0}</strong><span>Filme</span></div><div><strong>${counts['season-premiere'] || 0}</strong><span>Staffelstarts</span></div><div><strong>${counts.episode || 0}</strong><span>Episoden</span></div><div><strong>${(counts['movie-premiere'] || 0) + (counts['series-premiere'] || 0)}</strong><span>Premieren</span></div>${busiest ? `<div class="calendar-busiest"><strong>${busiest[1]}</strong><span>vollster Tag · ${escapeHTML(fmtDay(fromISO(busiest[0])))}</span></div>` : ''}`;
   }
 
   function renderCalendar() {

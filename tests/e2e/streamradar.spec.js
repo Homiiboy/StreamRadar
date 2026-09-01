@@ -106,7 +106,7 @@ test('backup excludes the token and restore normalizes personal data', async ({ 
   expect(exported).not.toHaveProperty('token');
 
   const restore = {
-    app: 'StreamRadar', format: 2, version: '0.2.1',
+    app: 'StreamRadar', format: 2, version: '0.2.2',
     personalization: { density: 'compact', mediaPreferences: ['movie'], originalsBoost: false, showEpisodesHome: false, horizonDays: 14, rememberLastView: false, defaultView: 'discover' },
     preferredProviders: [], preferredProvidersOnly: false, watchlist: ['demo-1']
   };
@@ -133,6 +133,20 @@ test('corrupt local personalization data does not crash the app', async ({ page 
   await expect(page.locator('.app-sidebar')).toBeVisible();
   await expect(page.locator('#releaseGrid')).toBeVisible();
   const version = await page.evaluate(() => window.StreamRadarPersonalization?.VERSION);
-  expect(version).toBe('0.2.1');
+  expect(version).toBe('0.2.2');
+  expect(errors).toEqual([]);
+});
+
+
+test('movies view and calendar include movie releases', async ({ page }) => {
+  const errors = await boot(page, configuredStorage());
+  await page.locator('.sidebar-link[data-view="movies"]').click();
+  await expect(page.locator('body')).toHaveAttribute('data-streamradar-view', 'movies');
+  await expect(page.locator('.release-card').filter({ hasText: 'Red Horizon' })).toBeVisible();
+  await expect(page.locator('.release-card').filter({ hasText: 'Neon District' })).toHaveCount(0);
+  await page.locator('.sidebar-link[data-view="calendar"]').click();
+  await page.locator('[data-calendar-mode="90"]').click();
+  await expect(page.locator('#calendarStats')).toContainText('Filme');
+  await expect(page.locator('.timeline-event').filter({ hasText: 'Red Horizon' })).toBeVisible();
   expect(errors).toEqual([]);
 });

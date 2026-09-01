@@ -1,6 +1,6 @@
 {
   "name": "streamradar",
-  "version": "0.2.1",
+  "version": "0.2.2",
   "private": true,
   "type": "module",
   "description": "StreamRadar - Streaming Release Tracker",
@@ -13,6 +13,6 @@
   },
   "devDependencies": {
     "@tauri-apps/cli": "2.11.4",
-    "@playwright/test": "1.55.0"
+    "@playwright/test": "1.62.1"
   }
 }
