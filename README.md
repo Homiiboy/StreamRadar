@@ -2,21 +2,21 @@
 
 StreamRadar ist ein persönlicher Streaming-Release-Radar für Filme, Serien, Anime, Originals, neue Staffeln und Episoden – optimiert für Österreich.
 
-## Aktuelle Version: v0.2.1
+## Aktuelle Version: v0.2.2
 
-**v0.2.1 – Automated QA & Repository Hardening** ergänzt echte Browser-Smoke-Tests und räumt die Runtime-Struktur auf, damit weitere Desktop-Features auf einer besser abgesicherten Basis entstehen.
+**v0.2.2 – Automated QA & Repository Hardening** ergänzt echte Browser-Smoke-Tests und räumt die Runtime-Struktur auf, damit weitere Desktop-Features auf einer besser abgesicherten Basis entstehen.
 
 ## Download
 
 ### Windows x64
 
-[**StreamRadar v0.2.1 als MSI herunterladen**](downloads/StreamRadar_0.2.1_x64_de-DE.msi)
+[**StreamRadar v0.2.2 als MSI herunterladen**](downloads/StreamRadar_0.2.2_x64_de-DE.msi)
 
 Weitere Builds und die SHA-256-Prüfsumme liegen im Ordner [`downloads/`](downloads/).
 
 Der Installer ist für die persönliche Nutzung weiterhin nicht code-signiert. Windows kann deshalb beim Öffnen einen Hinweis auf einen unbekannten Herausgeber anzeigen.
 
-## Neu in v0.2.1
+## Neu in v0.2.2
 
 - Runtime-JavaScript vollständig unter `js/`; im Repository-Root liegt keine aktive `.js`-Datei mehr
 - `index.html` und Desktop-Packaging verwenden dieselbe feste `js/`-Struktur
@@ -24,7 +24,7 @@ Der Installer ist für die persönliche Nutzung weiterhin nicht code-signiert. W
 - Regressionstest für beschädigte lokale Einstellungen und ungültige JSON-Werte
 - automatischer Check, dass Archive aus `OldCss/` und `OldUi/` nie im Desktop-Paket landen
 - stärkere CI-Gates vor jedem Merge; Windows-MSI-Build bleibt ein unabhängiger Release-Gate
-- zentraler App-/Desktop-Versionsstand `0.2.1`
+- zentraler App-/Desktop-Versionsstand `0.2.2`
 
 ## Funktionsumfang
 
@@ -52,7 +52,7 @@ StreamRadar verwendet Tauri v2. Die HTML/CSS/JavaScript-Oberfläche wird als nat
 Der GitHub-Workflow **Build StreamRadar Windows MSI** läuft auf `windows-latest`, baut die Anwendung, verifiziert die MSI und veröffentlicht sie danach unter:
 
 ```text
-downloads/StreamRadar_0.2.1_x64_de-DE.msi
+downloads/StreamRadar_0.2.2_x64_de-DE.msi
 ```
 
 Beim finalen Main-Build wird außerdem automatisch die SHA-256-Prüfsumme in `downloads/README.md` eingetragen.
@@ -197,3 +197,8 @@ StreamRadar verwendet Semantic Versioning (`MAJOR.MINOR.PATCH`). v0.1.2 ist ein 
 ## Status
 
 `v0.1.2` – UI/UX Polish
+
+
+### Film-Radar
+
+StreamRadar v0.2.2 bietet einen eigenen **Filme**-Bereich. Film-Releases bleiben gleichzeitig Bestandteil des Release-Kalenders und der 90-Tage-Timeline.

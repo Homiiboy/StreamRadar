@@ -106,7 +106,7 @@ test('backup excludes the token and restore normalizes personal data', async ({ 
   expect(exported).not.toHaveProperty('token');
 
   const restore = {
-    app: 'StreamRadar', format: 2, version: '0.2.1',
+    app: 'StreamRadar', format: 2, version: '0.2.2',
     personalization: { density: 'compact', mediaPreferences: ['movie'], originalsBoost: false, showEpisodesHome: false, horizonDays: 14, rememberLastView: false, defaultView: 'discover' },
     preferredProviders: [], preferredProvidersOnly: false, watchlist: ['demo-1']
   };
@@ -133,7 +133,7 @@ test('corrupt local personalization data does not crash the app', async ({ page 
   await expect(page.locator('.app-sidebar')).toBeVisible();
   await expect(page.locator('#releaseGrid')).toBeVisible();
   const version = await page.evaluate(() => window.StreamRadarPersonalization?.VERSION);
-  expect(version).toBe('0.2.1');
+  expect(version).toBe('0.2.2');
   expect(errors).toEqual([]);
 });
 
