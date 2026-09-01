@@ -1,0 +1,106 @@
+name: Consolidate UI assets
+
+on:
+  push:
+    branches: [chore/consolidate-ui-assets]
+
+permissions:
+  contents: write
+
+jobs:
+  consolidate:
+    if: github.actor != 'github-actions[bot]'
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          ref: chore/consolidate-ui-assets
+
+      - name: Consolidate active CSS and UI JavaScript
+        shell: bash
+        run: |
+          set -euo pipefail
+
+          mkdir -p OldCss OldUi
+
+          # Preserve exact v0.1.2 patch files as archive snapshots.
+          cp v012.css OldCss/v012.css
+          cp ui011.js OldUi/ui011.js
+          cp ui012.js OldUi/ui012.js
+
+          # Runtime CSS: one active file only.
+          printf '\n\n/* Consolidated StreamRadar v0.1.2 polish */\n' >> styles.css
+          cat v012.css >> styles.css
+          printf '\n' >> styles.css
+
+          # Runtime UI JS: preserve current execution order in one active file.
+          {
+            printf '/* StreamRadar consolidated UI runtime — current version 0.1.2 */\n'
+            cat ui011.js
+            printf '\n\n'
+            cat ui012.js
+            printf '\n'
+          } > ui.js
+
+          rm v012.css ui011.js ui012.js
+
+          cat > OldUi/README.md <<'EOF'
+          # StreamRadar UI JavaScript Archive
+
+          Dieser Ordner enthält historische UI-Schichten zur Nachvollziehbarkeit.
+          Sie werden **nicht** von StreamRadar zur Laufzeit geladen oder in den Desktop-Build gepackt.
+
+          Ab der Konsolidierung nach v0.1.2 gilt:
+
+          - aktive UI-Logik im Repository-Root: `ui.js`
+          - historische Snapshots: `OldUi/`
+          - neue Releases ändern `ui.js` direkt; vor größeren Änderungen kann ein Versions-Snapshot hier archiviert werden.
+          EOF
+
+          python - <<'PY'
+          from pathlib import Path
+
+          index = Path('index.html')
+          html = index.read_text(encoding='utf-8')
+          html = html.replace('  <link rel="stylesheet" href="styles.css" />\n  <link rel="stylesheet" href="v012.css" />', '  <link rel="stylesheet" href="styles.css" />')
+          html = html.replace('<script src="desktop.js" defer></script><script src="ui011.js" defer></script><script src="ui012.js" defer></script>', '<script src="desktop.js" defer></script><script src="ui.js" defer></script>')
+          if 'v012.css' in html or 'ui011.js' in html or 'ui012.js' in html:
+              raise SystemExit('index.html still references versioned runtime assets')
+          index.write_text(html, encoding='utf-8')
+
+          build = Path('scripts/build-desktop.mjs')
+          text = build.read_text(encoding='utf-8')
+          text = text.replace("  'v012.css',\n", '')
+          text = text.replace("  'ui011.js',\n  'ui012.js'\n", "  'ui.js'\n")
+          if 'v012.css' in text or 'ui011.js' in text or 'ui012.js' in text:
+              raise SystemExit('build-desktop.mjs still packages versioned runtime assets')
+          build.write_text(text, encoding='utf-8')
+
+          readme = Path('README.md')
+          text = readme.read_text(encoding='utf-8')
+          text = text.replace('`v012.css`', '`styles.css`')
+          text = text.replace('`ui011.js` + `ui012.js`', '`ui.js`')
+          text = text.replace('`ui011.js`', '`ui.js`')
+          text = text.replace('`ui012.js`', '`ui.js`')
+          readme.write_text(text, encoding='utf-8')
+          PY
+
+          node --check ui.js
+          node scripts/build-desktop.mjs
+          test -f dist/styles.css
+          test -f dist/ui.js
+          test ! -e dist/v012.css
+          test ! -e dist/ui011.js
+          test ! -e dist/ui012.js
+          git diff --check
+
+      - name: Commit consolidation
+        shell: bash
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add styles.css ui.js OldCss/v012.css OldUi README.md index.html scripts/build-desktop.mjs
+          git rm v012.css ui011.js ui012.js
+          git commit -m "refactor: consolidate active CSS and UI runtime"
+          git push origin HEAD:chore/consolidate-ui-assets
