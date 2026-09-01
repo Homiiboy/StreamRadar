@@ -26,30 +26,37 @@ jobs:
 
       - name: Check JavaScript syntax
         run: |
-          node --check original-overrides.js
-          node --check tmdb.js
-          node --check tvmaze.js
-          node --check app.js
-          node --check calendar.js
-          node --check stability.js
-          node --check polish.js
-          node --check desktop.js
-          node --check ui.js
+          for file in js/*.js; do node --check "$file"; done
+          node --check tests/playwright.config.js
+          node --check tests/e2e/streamradar.spec.js
           node --check scripts/build-desktop.mjs
 
       - name: Check version consistency
         run: |
           test -s VERSION
-          grep -qx "0.2.0" VERSION
-          grep -q "v0.2.0" README.md
-          grep -q "\[0.2.0\]" CHANGELOG.md
-          grep -q "v0.2.0" index.html
-          grep -q '"version": "0.2.0"' package.json
-          grep -q '"version": "0.2.0"' src-tauri/tauri.conf.json
-          grep -q 'version = "0.2.0"' src-tauri/Cargo.toml
-          grep -q "APP_VERSION = '0.2.0'" app.js
-          grep -q "VERSION = '0.2.0'" desktop.js
-          grep -q "const VERSION = '0.2.0'" ui.js
+          grep -qx "0.2.1" VERSION
+          grep -q "v0.2.1" README.md
+          grep -q "\[0.2.1\]" CHANGELOG.md
+          grep -q "v0.2.1" index.html
+          grep -q '"version": "0.2.1"' package.json
+          grep -q '"version": "0.2.1"' src-tauri/tauri.conf.json
+          grep -q 'version = "0.2.1"' src-tauri/Cargo.toml
+          grep -q "APP_VERSION = '0.2.1'" js/app.js
+          grep -q "VERSION = '0.2.1'" js/desktop.js
+          grep -q "const VERSION = '0.2.1'" js/ui.js
+
+      - name: Check runtime JavaScript layout
+        run: |
+          test -d js
+          test -s js/README.md
+          for file in original-overrides.js tmdb.js tvmaze.js app.js calendar.js stability.js polish.js desktop.js ui.js; do
+            test -s "js/$file"
+            test ! -e "$file"
+            grep -q "js/$file" index.html
+            grep -q "js/$file" scripts/build-desktop.mjs
+          done
+          test "$(find js -maxdepth 1 -type f -name '*.js' | wc -l)" -eq 9
+          test -z "$(find . -maxdepth 1 -type f -name '*.js' -print -quit)"
 
       - name: Check release intelligence surface
         run: |
@@ -60,68 +67,66 @@ jobs:
           test -s OldCss/v009.css
           test -s OldCss/v0010.css
           grep -q 'id="eventFilter"' index.html
-          grep -q "season-premiere" app.js
-          grep -q "getGlobalEpisodeEvents" tvmaze.js
-          grep -q "/schedule/web" tvmaze.js
-          grep -q "StreamRadarOriginalOverrides" original-overrides.js
-          grep -q "originalScore" tmdb.js
-          grep -q "BEGIN:VCALENDAR" calendar.js
-          grep -q "CACHE_TTL_MS" stability.js
-          grep -q "preferredProvidersOnly" stability.js
-          grep -q "rebindFilterHandlers" polish.js
-          grep -q "saveCompactSnapshot" polish.js
+          grep -q "season-premiere" js/app.js
+          grep -q "getGlobalEpisodeEvents" js/tvmaze.js
+          grep -q "/schedule/web" js/tvmaze.js
+          grep -q "StreamRadarOriginalOverrides" js/original-overrides.js
+          grep -q "originalScore" js/tmdb.js
+          grep -q "BEGIN:VCALENDAR" js/calendar.js
+          grep -q "CACHE_TTL_MS" js/stability.js
+          grep -q "preferredProvidersOnly" js/stability.js
+          grep -q "rebindFilterHandlers" js/polish.js
+          grep -q "saveCompactSnapshot" js/polish.js
 
       - name: Check personalization and settings
         run: |
-          grep -q "PERSONALIZATION CENTER" ui.js
-          grep -q "onboardingOverlay" ui.js
-          grep -q "Personalization Center" CHANGELOG.md
-          grep -q "renderPersonalizedHome" ui.js
-          grep -q "personalScore" ui.js
-          grep -q "Dein Radar-Mix" ui.js
-          grep -q "Bei deinen Diensten" ui.js
-          grep -q "streamradar-personalization-v2" ui.js
-          grep -q "streamradar-onboarding-v2-complete" ui.js
-          grep -q "exportBackup" ui.js
-          grep -q "importBackup" ui.js
-          grep -q "Backup" ui.js
-          grep -q "setPreferredProviders" stability.js
-          grep -q "setPreferredProvidersOnly" stability.js
-          grep -q "getAllProviders" stability.js
+          grep -q "PERSONALIZATION CENTER" js/ui.js
+          grep -q "onboardingOverlay" js/ui.js
+          grep -q "renderPersonalizedHome" js/ui.js
+          grep -q "personalScore" js/ui.js
+          grep -q "Dein Radar-Mix" js/ui.js
+          grep -q "Bei deinen Diensten" js/ui.js
+          grep -q "streamradar-personalization-v2" js/ui.js
+          grep -q "streamradar-onboarding-v2-complete" js/ui.js
+          grep -q "exportBackup" js/ui.js
+          grep -q "importBackup" js/ui.js
+          grep -q "setPreferredProviders" js/stability.js
+          grep -q "setPreferredProvidersOnly" js/stability.js
+          grep -q "getAllProviders" js/stability.js
           grep -q "data-density" styles.css
           grep -q "settings-center" styles.css
           grep -q "onboarding-overlay" styles.css
           grep -q "v020-personal-rail" styles.css
 
-      - name: Check consolidated UI foundation
+      - name: Check automated QA surface
         run: |
-          test -s ui.js
+          test -s tests/playwright.config.js
+          test -s tests/e2e/streamradar.spec.js
+          grep -q 'first run can finish with no providers' tests/e2e/streamradar.spec.js
+          grep -q 'global search opens details' tests/e2e/streamradar.spec.js
+          grep -q 'settings persist density' tests/e2e/streamradar.spec.js
+          grep -q 'backup excludes the token' tests/e2e/streamradar.spec.js
+          grep -q 'corrupt local personalization data' tests/e2e/streamradar.spec.js
+          grep -q '"test:e2e"' package.json
+          grep -q '"@playwright/test": "1.55.0"' package.json
+
+      - name: Check consolidated UI and CSS
+        run: |
+          test -s styles.css
+          test -s js/ui.js
           test -s OldUi/ui011.js
           test -s OldUi/ui012.js
           test -s OldUi/ui-v0.1.2.js
-          grep -q 'class="app-sidebar"' index.html
-          grep -q 'id="homeDashboard"' index.html
-          grep -q 'id="homeRails"' index.html
-          grep -q 'id="toggleAdvancedFilters"' index.html
-          grep -q 'renderHomeDashboard' ui.js
-          grep -q 'globalSearchOverlay' ui.js
-          grep -q 'renderPremiumDetail' ui.js
-          grep -q 'ui.js' index.html
-          ! grep -q 'ui011.js' index.html
-          ! grep -q 'ui012.js' index.html
-          ! grep -q 'OldUi/' index.html
-
-      - name: Check consolidated CSS surface
-        run: |
-          test -s styles.css
           test -s OldCss/v011.css
           test -s OldCss/v012.css
           test -s OldCss/styles-v0.1.2.css
+          grep -q 'class="app-sidebar"' index.html
+          grep -q 'id="homeDashboard"' index.html
+          grep -q 'globalSearchOverlay' js/ui.js
+          grep -q 'renderPremiumDetail' js/ui.js
           grep -q 'rail-heading-actions' styles.css
           grep -q 'premium-detail' styles.css
-          grep -q 'StreamRadar v0.2.0 — Personalization & Settings' styles.css
-          grep -q 'styles.css' index.html
-          ! grep -q 'v012.css' index.html
+          ! grep -q 'OldUi/' index.html
           ! grep -q 'OldCss/.*\.css' index.html
 
       - name: Check desktop surface
@@ -129,7 +134,7 @@ jobs:
           test -s package.json
           test -s scripts/build-desktop.mjs
           test -s assets/streamradar-icon.svg
-          test -s desktop.js
+          test -s js/desktop.js
           test -s src-tauri/Cargo.toml
           test -s src-tauri/build.rs
           test -s src-tauri/src/main.rs
@@ -138,47 +143,45 @@ jobs:
           test -s src-tauri/capabilities/default.json
           test -s .github/workflows/build-msi.yml
           test -s downloads/README.md
-          test -s OldCss/README.md
-          test -s OldUi/README.md
-          grep -q 'downloads/StreamRadar_0.2.0_x64_de-DE.msi' README.md
+          grep -q 'downloads/StreamRadar_0.2.1_x64_de-DE.msi' README.md
           node -e "const c=JSON.parse(require('fs').readFileSync('src-tauri/tauri.conf.json','utf8')); if(!c.bundle.targets.includes('msi')||c.bundle.windows.wix.language!=='de-DE'||c.identifier!=='at.streamradar.desktop') process.exit(1)"
           grep -q '@tauri-apps/cli' package.json
           grep -q 'streamradar-icon.svg' package.json
-          grep -q 'desktop.js' index.html
-          grep -q 'WINDOWS APP' desktop.js
+          grep -q 'js/desktop.js' index.html
+          grep -q 'WINDOWS APP' js/desktop.js
 
       - name: Build static desktop frontend
         run: |
           node scripts/build-desktop.mjs
           test -s dist/index.html
           test -s dist/styles.css
-          test -s dist/desktop.js
-          test -s dist/ui.js
+          test -s dist/js/original-overrides.js
+          test -s dist/js/tmdb.js
+          test -s dist/js/tvmaze.js
+          test -s dist/js/app.js
+          test -s dist/js/calendar.js
+          test -s dist/js/stability.js
+          test -s dist/js/polish.js
+          test -s dist/js/desktop.js
+          test -s dist/js/ui.js
+          test -z "$(find dist -maxdepth 1 -type f -name '*.js' -print -quit)"
           test ! -d dist/OldCss
           test ! -d dist/OldUi
-          grep -q "v0.2.0" dist/index.html
-          grep -q 'class="app-sidebar"' dist/index.html
-          grep -q 'ui.js' dist/index.html
-          grep -q 'styles.css' dist/index.html
-          grep -q 'PERSONALIZATION CENTER' dist/ui.js
-          grep -q 'onboarding-overlay' dist/styles.css
+          test ! -d dist/tests
+          grep -q "v0.2.1" dist/index.html
+          grep -q 'js/ui.js' dist/index.html
+          grep -q 'PERSONALIZATION CENTER' dist/js/ui.js
 
       - name: Check archive layout
         run: |
-          test -s styles.css
-          test -s ui.js
           for file in v003.css v004.css v005.css v006.css v007.css v008.css v009.css v0010.css v0100.css v011.css v012.css; do
             test ! -e "$file"
             test -s "OldCss/$file"
           done
           test -s OldCss/styles-v0.1.2.css
-          test ! -e ui011.js
-          test ! -e ui012.js
           test -s OldUi/ui011.js
           test -s OldUi/ui012.js
           test -s OldUi/ui-v0.1.2.js
-          grep -q 'styles-v0.1.2.css' OldCss/README.md
-          grep -q 'ui-v0.1.2.js' OldUi/README.md
 
       - name: Check configuration JSON
         run: |
@@ -186,7 +189,7 @@ jobs:
 
       - name: Check repository hygiene
         run: |
-          if grep -R -nE '^(<<<<<<<|=======|>>>>>>>)' --exclude-dir=.git --exclude-dir=dist .; then
+          if grep -R -nE '^(<<<<<<<|=======|>>>>>>>)' --exclude-dir=.git --exclude-dir=dist --exclude-dir=node_modules .; then
             echo "Merge conflict marker found"
             exit 1
           fi
@@ -194,6 +197,41 @@ jobs:
             echo "Temporary root file found"
             exit 1
           fi
+          test -z "$(find . -maxdepth 1 -type f -name '*.js' -print -quit)"
+          test ! -e scripts/prepare-v021.py
+          test ! -e .github/workflows/prepare-v021.yml
           test ! -e scripts/prepare-v020.py
           test ! -e .github/workflows/prepare-v020.yml
-          test ! -e .github/workflows/consolidate-ui-assets.yml
+
+  browser-smoke:
+    name: Chromium UI smoke tests
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+
+      - name: Install test dependencies
+        run: npm install
+
+      - name: Install Chromium
+        run: npx playwright install --with-deps chromium
+
+      - name: Run StreamRadar UI smoke tests
+        run: npm run test:e2e
+
+      - name: Upload Playwright diagnostics
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: StreamRadar-v0.2.1-Playwright-Diagnostics
+          path: |
+            playwright-report/
+            test-results/
+          if-no-files-found: ignore
+          retention-days: 14
