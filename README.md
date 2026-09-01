@@ -2,39 +2,31 @@
 
 StreamRadar ist ein persönlicher Streaming-Release-Radar für Filme, Serien, Anime, Originals, neue Staffeln und Episoden – optimiert für Österreich.
 
-## Aktuelle Version: v0.1.1
+## Aktuelle Version: v0.1.2
 
-**v0.1.1 – Desktop UI/UX Redesign** baut auf dem vollständigen v0.1.0-Radar auf und gestaltet StreamRadar erstmals konsequent wie eine Desktop-Media-App statt wie ein klassisches Web-Dashboard.
+**v0.1.2 – UI/UX Polish** verfeinert das v0.1.1-Desktop-Redesign mit einer Premium-Detailansicht, globaler Suche, besser navigierbaren Content-Rows, „Neu seit deinem letzten Besuch“ und einer konsolidierten CSS-Basis.
 
 ## Download
 
 ### Windows x64
 
-[**StreamRadar v0.1.1 als MSI herunterladen**](downloads/StreamRadar_0.1.1_x64_de-DE.msi)
+[**StreamRadar v0.1.2 als MSI herunterladen**](downloads/StreamRadar_0.1.2_x64_de-DE.msi)
 
 Weitere Builds und die SHA-256-Prüfsumme liegen im Ordner [`downloads/`](downloads/).
 
 Der Installer ist für die persönliche Nutzung weiterhin nicht code-signiert. Windows kann deshalb beim Öffnen einen Hinweis auf einen unbekannten Herausgeber anzeigen.
 
-## Neu in v0.1.1
+## Neu in v0.1.2
 
-- neue permanente **Desktop-Sidebar** für Entdecken, Kalender, Staffeln, Episoden, Demnächst und Merkliste
-- kompaktere Topbar mit Seitentitel, globaler Suche, Refresh und Einstellungen
-- neuer Home-/Discover-Bereich mit Begrüßung, Datum und Radar-Schnellstatistiken
-- streamingartige horizontale **Content-Rows** für:
-  - Heute
-  - neue Staffeln
-  - Filme & Serien der nächsten 30 Tage
-  - Originals
-  - neue Episoden
-- Home-Rows respektieren **Meine Anbieter** und den aktiven Provider-/Herkunftsfilter
-- kompakter Filter-Drawer statt dauerhaft sichtbarer Filterwand
-- sichtbare Anzahl aktiver Filter
-- responsive Off-Canvas-Sidebar auf kleineren Fenstern
-- dichteres Postergrid und optimierte Desktop-Flächennutzung
-- klarere Statusanzeige direkt in der Sidebar
-- Detail-, Kalender-, Cache-, Merkliste-, Provider- und Origin-Logik aus v0.1.0 bleiben erhalten
-- neue UI-Schicht `ui011.js` und Styling `v011.css`
+- neue **Premium-Detailansicht** mit Backdrop, Poster, Release Intelligence, Herkunft, Providern und nächster Episode
+- globale Schnell-Suche mit Suchoverlay und **Ctrl+K**
+- einheitliche SVG-Icons statt gemischter Text-/Unicode-Symbole
+- Pfeilnavigation und sauberer Scroll-Zustand für horizontale Content-Rows
+- neuer Bereich **Neu seit deinem letzten Besuch** auf Basis lokal gespeicherter Radar-Event-IDs
+- `styles.css` konsolidiert alle historischen visuellen Patches bis v0.1.1
+- `OldCss/` ist jetzt ein echtes Archiv und wird nicht mehr zur Laufzeit geladen
+- aktuelle UI-Schicht `ui012.js` und Styling `v012.css`
+- zentraler sichtbarer App-/Desktop-Versionsstand auf `0.1.2`
 
 ## Funktionsumfang
 
@@ -62,7 +54,7 @@ StreamRadar verwendet Tauri v2. Die HTML/CSS/JavaScript-Oberfläche wird als nat
 Der GitHub-Workflow **Build StreamRadar Windows MSI** läuft auf `windows-latest`, baut die Anwendung, verifiziert die MSI und veröffentlicht sie danach unter:
 
 ```text
-downloads/StreamRadar_0.1.1_x64_de-DE.msi
+downloads/StreamRadar_0.1.2_x64_de-DE.msi
 ```
 
 Beim finalen Main-Build wird außerdem automatisch die SHA-256-Prüfsumme in `downloads/README.md` eingetragen.
