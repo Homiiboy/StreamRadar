@@ -1,6 +1,6 @@
 const tmdb = window.StreamRadarTMDB;
 const tvmaze = window.StreamRadarTVMaze;
-const APP_VERSION = '0.0.6';
+const APP_VERSION = '0.0.7';
 const TOKEN_KEY = 'streamradar-tmdb-token';
 const WATCHLIST_KEY = 'streamradar-watchlist';
 const brandNames = tmdb.ORIGINAL_BRANDS.map(brand => brand.name);
@@ -13,14 +13,14 @@ const todayISO = () => { const date = new Date(); date.setHours(12, 0, 0, 0); re
 const addDaysISO = days => { const date = new Date(); date.setHours(12, 0, 0, 0); date.setDate(date.getDate() + days); return date.toISOString().slice(0, 10); };
 
 const demoReleases = [
-  { id:'demo-1', entityId:'demo-1', title:'Neon District', services:['Netflix'], type:'series', mediaType:'tv', releaseDate:todayISO(), eventKind:'series-premiere', eventLabel:'Neue Serie', eventSeason:1, eventEpisode:1, radarEligible:true, original:true, originalBrand:'Netflix', originalConfidence:'high', studio:'Netflix Original', accent:'#ff3158', description:'Demo-Inhalt: Eine düstere Tech-Thriller-Serie über Macht, Erinnerung und eine Stadt, die niemals offline geht.', source:'demo' },
-  { id:'demo-2', entityId:'demo-2', title:'Ashes of Europa', services:['HBO Max'], type:'series', mediaType:'tv', releaseDate:addDaysISO(3), eventKind:'season-premiere', eventLabel:'Neue Staffel 2', eventSeason:2, eventEpisode:1, radarEligible:true, original:true, originalBrand:'HBO', originalConfidence:'high', studio:'HBO Original', accent:'#7c6dff', description:'Demo-Inhalt: Staffel 2 der Prestige-Sci-Fi-Serie startet in wenigen Tagen.', source:'demo' },
-  { id:'demo-3', entityId:'demo-3', title:'Red Horizon', services:['Prime Video'], type:'movie', mediaType:'movie', releaseDate:addDaysISO(11), eventKind:'movie-premiere', eventLabel:'Digital-Premiere', radarEligible:true, original:true, originalBrand:'Prime Video', originalConfidence:'medium', studio:'Amazon MGM', accent:'#39a8ff', description:'Demo-Inhalt: Ein Survival-Thriller über die erste bemannte Mars-Mission und ein Signal aus dem Nichts.', source:'demo' },
-  { id:'demo-4', entityId:'demo-4', title:'Moonblade', services:['Crunchyroll'], type:'anime', mediaType:'tv', releaseDate:addDaysISO(1), eventKind:'episode', eventLabel:'Neue Episode', eventSeason:1, eventEpisode:7, eventEpisodeName:'Moonlit Gate', eventChannel:'Crunchyroll', eventRuntime:24, radarEligible:true, original:true, originalBrand:'Crunchyroll', originalConfidence:'high', studio:'Crunchyroll', accent:'#ff8c31', description:'Demo-Inhalt: Morgen erscheint eine neue Episode.', source:'demo' },
-  { id:'demo-5', entityId:'demo-5', title:'The Quiet Room', services:['Apple TV+'], type:'series', mediaType:'tv', releaseDate:addDaysISO(18), eventKind:'series-premiere', eventLabel:'Neue Serie', eventSeason:1, eventEpisode:1, radarEligible:true, original:true, originalBrand:'Apple TV+', originalConfidence:'high', studio:'Apple Original', accent:'#d9e2ef', description:'Demo-Inhalt: Psychologisches Mystery-Drama über einen Raum, in dem niemand länger als 17 Minuten bleiben kann.', source:'demo' },
-  { id:'demo-6', entityId:'demo-6', title:'Blackwater', services:['Paramount+'], type:'series', mediaType:'tv', releaseDate:addDaysISO(7), eventKind:'episode', eventLabel:'Neue Episode', eventSeason:3, eventEpisode:2, eventEpisodeName:'Low Tide', eventChannel:'Paramount+', eventRuntime:52, radarEligible:true, original:true, originalBrand:'Paramount+', originalConfidence:'high', studio:'Paramount+ Original', accent:'#4386ff', description:'Demo-Inhalt: Eine weitere Episode der dritten Staffel erscheint.', source:'demo' },
-  { id:'demo-7', entityId:'demo-7', title:'Glass Cities', services:['Disney+'], type:'movie', mediaType:'movie', releaseDate:addDaysISO(27), eventKind:'movie-premiere', eventLabel:'Film-Premiere', radarEligible:true, original:true, originalBrand:'Disney+', originalConfidence:'medium', studio:'Disney+ Original', accent:'#2a7cff', description:'Demo-Inhalt: Visuell opulentes Abenteuer über zwei Geschwister in einer Stadt aus lebendem Glas.', source:'demo' },
-  { id:'demo-8', entityId:'demo-8', title:'Signal Fire', services:['Disney+'], type:'series', mediaType:'tv', releaseDate:addDaysISO(5), eventKind:'episode', eventLabel:'Neue Episode', eventSeason:2, eventEpisode:4, eventEpisodeName:'The Beacon', eventChannel:'FX', eventRuntime:46, radarEligible:true, original:true, originalBrand:'FX', originalConfidence:'high', studio:'FX Original', accent:'#ff7a59', description:'Demo-Inhalt: Ein FX Original, das in Österreich über Disney+ verfügbar ist.', source:'demo' }
+  { id:'demo-1', entityId:'demo-1', title:'Neon District', services:['Netflix'], type:'series', mediaType:'tv', releaseDate:todayISO(), eventKind:'series-premiere', eventLabel:'Neue Serie', eventSeason:1, eventEpisode:1, radarEligible:true, original:true, originalBrand:'Netflix', originalConfidence:'high', originalScore:96, originType:'platform', originLabel:'Original von', originalReason:'Network-Treffer: Netflix', studio:'Netflix Original', accent:'#ff3158', description:'Demo-Inhalt: Eine düstere Tech-Thriller-Serie über Macht, Erinnerung und eine Stadt, die niemals offline geht.', source:'demo' },
+  { id:'demo-2', entityId:'demo-2', title:'Ashes of Europa', services:['HBO Max'], type:'series', mediaType:'tv', releaseDate:addDaysISO(3), eventKind:'season-premiere', eventLabel:'Neue Staffel 2', eventSeason:2, eventEpisode:1, radarEligible:true, original:true, originalBrand:'HBO', originalConfidence:'high', originalScore:96, originType:'network', originLabel:'Original von', originalReason:'Network-Treffer: HBO', studio:'HBO Original', accent:'#7c6dff', description:'Demo-Inhalt: Staffel 2 der Prestige-Sci-Fi-Serie startet in wenigen Tagen.', source:'demo' },
+  { id:'demo-3', entityId:'demo-3', title:'Red Horizon', services:['Prime Video'], type:'movie', mediaType:'movie', releaseDate:addDaysISO(11), eventKind:'movie-premiere', eventLabel:'Digital-Premiere', radarEligible:true, original:true, originalBrand:'Prime Video', originalConfidence:'medium', originalScore:77, originType:'platform', originLabel:'Original von', originalReason:'Produktionsfirma: Amazon MGM Studios', studio:'Amazon MGM', accent:'#39a8ff', description:'Demo-Inhalt: Ein Survival-Thriller über die erste bemannte Mars-Mission und ein Signal aus dem Nichts.', source:'demo' },
+  { id:'demo-4', entityId:'demo-4', title:'Moonblade', services:['Crunchyroll'], type:'anime', mediaType:'tv', releaseDate:addDaysISO(1), eventKind:'episode', eventLabel:'Neue Episode', eventSeason:1, eventEpisode:7, eventEpisodeName:'Moonlit Gate', eventChannel:'Crunchyroll', eventRuntime:24, radarEligible:true, original:true, originalBrand:'Crunchyroll', originalConfidence:'high', originalScore:96, originType:'platform', originLabel:'Original von', originalReason:'Network-Treffer: Crunchyroll', studio:'Crunchyroll', accent:'#ff8c31', description:'Demo-Inhalt: Morgen erscheint eine neue Episode.', source:'demo' },
+  { id:'demo-5', entityId:'demo-5', title:'The Quiet Room', services:['Apple TV+'], type:'series', mediaType:'tv', releaseDate:addDaysISO(18), eventKind:'series-premiere', eventLabel:'Neue Serie', eventSeason:1, eventEpisode:1, radarEligible:true, original:true, originalBrand:'Apple TV+', originalConfidence:'high', originalScore:96, originType:'platform', originLabel:'Original von', originalReason:'Network-Treffer: Apple TV+', studio:'Apple Original', accent:'#d9e2ef', description:'Demo-Inhalt: Psychologisches Mystery-Drama über einen Raum, in dem niemand länger als 17 Minuten bleiben kann.', source:'demo' },
+  { id:'demo-6', entityId:'demo-6', title:'Blackwater', services:['Paramount+'], type:'series', mediaType:'tv', releaseDate:addDaysISO(7), eventKind:'episode', eventLabel:'Neue Episode', eventSeason:3, eventEpisode:2, eventEpisodeName:'Low Tide', eventChannel:'Paramount+', eventRuntime:52, radarEligible:true, original:true, originalBrand:'Paramount+', originalConfidence:'high', originalScore:96, originType:'platform', originLabel:'Original von', originalReason:'Network-Treffer: Paramount+', studio:'Paramount+ Original', accent:'#4386ff', description:'Demo-Inhalt: Eine weitere Episode der dritten Staffel erscheint.', source:'demo' },
+  { id:'demo-7', entityId:'demo-7', title:'Glass Cities', services:['Disney+'], type:'movie', mediaType:'movie', releaseDate:addDaysISO(27), eventKind:'movie-premiere', eventLabel:'Film-Premiere', radarEligible:true, original:false, originalBrand:'Marvel Studios', originalConfidence:'medium', originalScore:76, originType:'studio', originLabel:'Studio / Brand', originalReason:'Produktionsfirma: Marvel Studios', accent:'#2a7cff', description:'Demo-Inhalt: Beispiel dafür, dass ein Studio-Treffer nicht automatisch als Streaming-Original gilt.', source:'demo' },
+  { id:'demo-8', entityId:'demo-8', title:'Signal Fire', services:['Disney+'], type:'series', mediaType:'tv', releaseDate:addDaysISO(5), eventKind:'episode', eventLabel:'Neue Episode', eventSeason:2, eventEpisode:4, eventEpisodeName:'The Beacon', eventChannel:'FX', eventRuntime:46, radarEligible:true, original:true, originalBrand:'FX', originalConfidence:'high', originalScore:96, originType:'network', originLabel:'Original von', originalReason:'Network-Treffer: FX', studio:'FX Original', accent:'#ff7a59', description:'Demo-Inhalt: Ein FX Original, das in Österreich über Disney+ verfügbar ist.', source:'demo' }
 ];
 
 const state = {
@@ -69,11 +69,13 @@ function accentFor(service) {
     'Netflix':'#ff3158','Disney+':'#2a7cff','Prime Video':'#39a8ff','HBO Max':'#7c6dff','HBO':'#a89cff',
     'Apple TV+':'#d9e2ef','Paramount+':'#4386ff','Crunchyroll':'#ff8c31','Sky / WOW':'#ff5dcc','Sky':'#ff5dcc',
     'Joyn':'#f4d44d','RTL+':'#38d59f','ORF':'#e84855','FX':'#ff7a59','Hulu':'#55e58a','Peacock':'#8f7aff',
-    'AMC+':'#ffb45a','BBC':'#e6e6e6'
+    'AMC+':'#ffb45a','AMC':'#ffb45a','BBC':'#e6e6e6','Showtime':'#ff4a4a','CBS':'#5a83ff','NBC':'#d8d8d8',
+    'ABC':'#d8d8d8','FOX':'#f0b34c','Starz':'#e8e8e8','CANAL+':'#e8e8e8','Marvel Studios':'#ef5350','Lucasfilm':'#e9e3d4',
+    'Pixar':'#63a8ff','Walt Disney Studios':'#6f8fff','National Geographic':'#ffd447','Warner Bros.':'#4e82ff','Sony Pictures':'#77b4ff','A24':'#f5f5f5'
   })[service] || '#62f7c7';
 }
 function escapeHTML(value = '') {
-  return String(value).replace(/[&<>'"]/g, char => ({ '&':'&amp;', '<':'&lt;', '>':'&gt;', "'":'&#39;', '"':'&quot;' })[char]);
+  return String(value).replace(/[&<>'\"]/g, char => ({ '&':'&amp;', '<':'&lt;', '>':'&gt;', "'":'&#39;', '"':'&quot;' })[char]);
 }
 function normalizeTitle(value = '') {
   return String(value).toLowerCase().normalize('NFKD').replace(/[^a-z0-9]+/g, ' ').trim();
@@ -102,6 +104,20 @@ function eventDetail(item) {
 }
 function watchKey(item) { return String(item.entityId || item.id); }
 function isTVMazeEvent(item) { return String(item.eventSource || '').startsWith('tvmaze-'); }
+function originBadgeLabel(item) {
+  if (!item.originalBrand) return '';
+  if (item.overrideApplied) return `${item.originalBrand} · MANUELL`;
+  if (item.original) return `${item.originalBrand} ORIGINAL`;
+  if (item.originType === 'studio') return `${item.originalBrand} STUDIO`;
+  return `${item.originalBrand} BRAND`;
+}
+function confidenceText(item) {
+  if (item.overrideApplied || item.originalConfidence === 'manual') return 'manuell geprüft';
+  if (item.originalConfidence === 'high') return 'hohe Sicherheit';
+  if (item.originalConfidence === 'medium') return 'mittlere Sicherheit';
+  if (item.originalConfidence === 'low') return 'niedrige Sicherheit';
+  return 'nicht bewertet';
+}
 function sortByRadarRelevance(a, b) {
   const score = days => Math.abs(days) + (days < 0 ? 4 : 0);
   const eventPriority = { 'series-premiere':0, 'season-premiere':1, 'movie-premiere':2, episode:3 };
@@ -119,6 +135,12 @@ function mergeDuplicate(existing, incoming) {
   preferred.originalBrand ||= other.originalBrand;
   preferred.originalLogoPath ||= other.originalLogoPath;
   preferred.originalConfidence ||= other.originalConfidence;
+  preferred.originType ||= other.originType;
+  preferred.originLabel ||= other.originLabel;
+  preferred.originalScore ||= other.originalScore;
+  preferred.originalReason ||= other.originalReason;
+  preferred.overrideApplied ||= other.overrideApplied;
+  preferred.original ||= other.original;
   preferred.description ||= other.description;
   preferred.posterPath ||= other.posterPath;
   preferred.backdropPath ||= other.backdropPath;
@@ -161,7 +183,7 @@ function setDataStatus(kind, label, text) {
   $('#dataStatus').dataset.state = kind;
   $('#dataStatusLabel').textContent = label;
   $('#dataStatusText').textContent = text;
-  $('#radarState').textContent = kind === 'live' ? 'Global Episode Radar' : kind === 'loading' ? 'Synchronisiere …' : 'Radar aktiv';
+  $('#radarState').textContent = kind === 'live' ? 'Origin Intelligence' : kind === 'loading' ? 'Synchronisiere …' : 'Radar aktiv';
   $('#statusAction').textContent = kind === 'live' ? 'Einstellungen' : 'TMDB verbinden';
 }
 function setLoading(value) {
@@ -190,7 +212,7 @@ function useDemo(message = 'TMDB noch nicht verbunden.') {
 function renderBrandFilter() {
   const select = $('#brandFilter');
   const current = select.value;
-  select.innerHTML = '<option value="all">Alle Original-Marken</option>' + brandNames.map(brand => `<option value="${escapeHTML(brand)}">${escapeHTML(brand)}</option>`).join('');
+  select.innerHTML = '<option value="all">Alle Herkunftsmarken</option>' + brandNames.map(brand => `<option value="${escapeHTML(brand)}">${escapeHTML(brand)}</option>`).join('');
   select.value = brandNames.includes(current) ? current : 'all';
 }
 function renderServices() {
@@ -199,7 +221,7 @@ function renderServices() {
     const path = provider?.logoPath || brandLogoPath(name);
     const logo = path ? logoMarkup(path, 'service-logo') : '<span class="service-dot"></span>';
     const sourceOnly = state.mode === 'live' && (!provider || !provider.available);
-    const kind = brandNames.includes(name) ? 'Original-Marke / Network' : 'Streaming-Provider';
+    const kind = brandNames.includes(name) ? 'Herkunftsmarke / Network / Studio' : 'Streaming-Provider';
     return `<button class="service-chip ${state.service === name ? 'active' : ''} ${sourceOnly ? 'source-only' : ''}" data-service="${escapeHTML(name)}" title="${escapeHTML(kind)}: ${escapeHTML(name)}">${logo}<span>${escapeHTML(name)}</span></button>`;
   }).join('');
   $$('.service-chip').forEach(button => button.onclick = () => {
@@ -256,7 +278,7 @@ function renderReleases() {
 
   const filtered = state.releases.filter(item => {
     if (item.radarEligible === false) return false;
-    const haystack = `${item.title} ${item.originalTitle || ''} ${(item.services || []).join(' ')} ${item.originalBrand || ''} ${item.studio || ''} ${eventLabel(item)} ${item.eventEpisodeName || ''} ${item.eventChannel || ''}`.toLowerCase();
+    const haystack = `${item.title} ${item.originalTitle || ''} ${(item.services || []).join(' ')} ${item.originalBrand || ''} ${item.originType || ''} ${item.originLabel || ''} ${item.studio || ''} ${eventLabel(item)} ${item.eventEpisodeName || ''} ${item.eventChannel || ''}`.toLowerCase();
     return matchesView(item)
       && (state.service === 'all' || item.services?.includes(state.service) || item.originalBrand === state.service)
       && (type === 'all' || item.type === type)
@@ -272,7 +294,7 @@ function renderReleases() {
   $('#watchlistCount').textContent = state.watchlist.size;
   $('#resultSummary').textContent = state.loading
     ? 'TMDB-Daten werden geladen …'
-    : `${filtered.length} Release-Events ${state.mode === 'live' ? 'für Österreich' : 'im Demo-Modus'}${state.enriching ? ' · TMDB-Klassifizierung läuft …' : ''}${state.scheduleSyncing ? ' · TVmaze-Schedule wird synchronisiert …' : ''}`;
+    : `${filtered.length} Release-Events ${state.mode === 'live' ? 'für Österreich' : 'im Demo-Modus'}${state.enriching ? ' · Herkunft wird bewertet …' : ''}${state.scheduleSyncing ? ' · TVmaze-Schedule wird synchronisiert …' : ''}`;
   $('#releaseGrid').innerHTML = filtered.map(cardTemplate).join('');
   $('#emptyState').hidden = filtered.length > 0 || state.loading || state.enriching || state.scheduleSyncing;
   renderRadarSummary();
@@ -295,16 +317,19 @@ function cardTemplate(item) {
   const extra = Math.max(0, (item.services?.length || 1) - 1);
   const rating = item.rating > 0 ? `<span class="rating">★ ${item.rating.toFixed(1)}</span>` : '';
   const brandLogo = item.originalBrand ? logoMarkup(item.originalLogoPath || brandLogoPath(item.originalBrand), 'original-badge-logo') : '';
+  const badgeClass = item.original ? 'original-brand' : 'original-brand origin-studio';
   const rightBadge = item.originalBrand
-    ? `<span class="badge original-brand" title="Original-Erkennung: ${escapeHTML(item.originalConfidence || '')}">${brandLogo}<span>${escapeHTML(item.originalBrand)} ORIGINAL</span></span>`
+    ? `<span class="badge ${badgeClass}" title="${escapeHTML(confidenceText(item))}${item.originalScore ? ` · Score ${item.originalScore}` : ''}">${brandLogo}<span>${escapeHTML(originBadgeLabel(item))}</span></span>`
     : (state.mode === 'demo' ? '<span class="badge demo">DEMO</span>' : '');
   const episodeCopy = item.eventKind === 'episode' && item.eventEpisodeName ? ` · ${escapeHTML(item.eventEpisodeName)}` : '';
   const sourceChip = isTVMazeEvent(item) || item.scheduleConfirmed ? '<span class="schedule-source">TVMAZE ✓</span>' : '';
+  const overrideChip = item.overrideApplied ? '<span class="origin-override-chip">OVERRIDE</span>' : '';
   const channelCopy = item.eventChannel ? ` · ${escapeHTML(item.eventChannel)}` : '';
+  const originCopy = item.originalBrand ? `${escapeHTML(item.originLabel || (item.original ? 'Original von' : 'Herkunft'))}: ${escapeHTML(item.originalBrand)} · ` : '';
   return `<article class="release-card" data-id="${escapeHTML(item.id)}" style="--card-accent:${item.accent}">
-    <div class="poster">${poster}<div class="poster-shade"></div><div class="badge-row"><span class="badge">${escapeHTML(primary)}${extra ? ` +${extra}` : ''}</span>${rightBadge}</div>${rating}<span class="event-ribbon event-${escapeHTML(item.eventKind || 'unknown')}">${escapeHTML(eventLabel(item))}</span>${sourceChip}</div>
+    <div class="poster">${poster}<div class="poster-shade"></div><div class="badge-row"><span class="badge">${escapeHTML(primary)}${extra ? ` +${extra}` : ''}</span>${rightBadge}</div>${rating}<span class="event-ribbon event-${escapeHTML(item.eventKind || 'unknown')}">${escapeHTML(eventLabel(item))}</span>${sourceChip}${overrideChip}</div>
     <button class="save-button ${saved ? 'saved' : ''}" data-watch-key="${escapeHTML(watchKey(item))}" aria-label="${saved ? 'Von Merkliste entfernen' : 'Zur Merkliste hinzufügen'}">${saved ? '✓' : '+'}</button>
-    <div class="card-body"><div class="card-meta"><span>${escapeHTML(eventDetail(item))}</span><span>${escapeHTML(item.date)}</span></div><h3>${escapeHTML(item.title)}</h3><p>${item.originalBrand ? `Original: ${escapeHTML(item.originalBrand)} · ` : ''}${escapeHTML(item.services?.join(' · ') || 'Streaming')}${channelCopy}${episodeCopy}</p></div>
+    <div class="card-body"><div class="card-meta"><span>${escapeHTML(eventDetail(item))}</span><span>${escapeHTML(item.date)}</span></div><h3>${escapeHTML(item.title)}</h3><p>${originCopy}${escapeHTML(item.services?.join(' · ') || 'Streaming')}${channelCopy}${episodeCopy}</p></div>
   </article>`;
 }
 
@@ -339,7 +364,7 @@ async function enrichRadarMetadata(token) {
   const candidates = [...state.releases].sort((a, b) => (b.popularity || 0) - (a.popularity || 0));
   try {
     await tmdb.enrichRadarMetadata(candidates, token, (done, total) => {
-      setDataStatus('live', 'Release Intelligence', `Klassifiziere Releases ${done}/${total} …`);
+      setDataStatus('live', 'Origin Intelligence', `Bewerte Herkunft & Originals ${done}/${total} …`);
       if (done % 8 === 0 || done === total) {
         renderServices();
         renderReleases();
@@ -351,9 +376,16 @@ async function enrichRadarMetadata(token) {
     state.releases = dedupeReleaseEvents(state.releases);
     state.enriching = false;
     state.scheduleSyncing = false;
-    const counts = state.releases.reduce((acc, item) => { acc[item.eventKind] = (acc[item.eventKind] || 0) + 1; return acc; }, {});
+    const counts = state.releases.reduce((acc, item) => {
+      acc[item.eventKind] = (acc[item.eventKind] || 0) + 1;
+      if (item.original) acc.originals = (acc.originals || 0) + 1;
+      if (item.originType === 'studio') acc.studios = (acc.studios || 0) + 1;
+      if (item.overrideApplied) acc.overrides = (acc.overrides || 0) + 1;
+      return acc;
+    }, {});
     const scheduleText = state.scheduleStats.events ? ` · ${state.scheduleStats.events} TVmaze-Events` : '';
-    setDataStatus('live', 'TMDB + TVmaze', `${state.releases.length} Events · ${counts['season-premiere'] || 0} Staffeln · ${counts.episode || 0} Episoden${scheduleText} · Region Österreich.`);
+    const overrideText = counts.overrides ? ` · ${counts.overrides} Overrides` : '';
+    setDataStatus('live', 'TMDB + TVmaze', `${state.releases.length} Events · ${counts.originals || 0} Originals · ${counts.studios || 0} Studio-Brands${scheduleText}${overrideText} · AT.`);
     renderServices();
     renderReleases();
   }
@@ -373,7 +405,7 @@ async function loadLiveData({ closeSettings = false } = {}) {
     state.scheduleStats = { days:0, matchedShows:0, events:0, errors:0 };
     state.detailCache.clear();
     state.tvmazeCache.clear();
-    setDataStatus('live', 'TMDB live', `${state.releases.length} Kandidaten · Release-Klassifizierung startet …`);
+    setDataStatus('live', 'TMDB live', `${state.releases.length} Kandidaten · Herkunftsbewertung startet …`);
     $('#settingsStatus').textContent = 'Verbunden. Live-Daten sind aktiv.';
     renderServices();
     renderReleases();
@@ -407,11 +439,16 @@ async function openDetails(id) {
       }
       state.detailCache.set(key, details);
       if (details.inferredOriginalBrand) {
-        item.original = true;
         item.originalBrand = details.inferredOriginalBrand;
         item.originalConfidence = details.originalConfidence;
         item.originalLogoPath = details.inferredOriginalLogoPath || item.originalLogoPath;
         item.originalLogoSource = details.originalLogoSource || item.originalLogoSource;
+        item.originType = details.originType || item.originType;
+        item.originLabel = details.originLabel || item.originLabel;
+        item.originalScore = details.originalScore ?? item.originalScore;
+        item.originalReason = details.originalReason || item.originalReason;
+        item.overrideApplied = Boolean(details.overrideApplied);
+        item.original = Boolean(details.qualifiesAsOriginal);
       }
       if (!isTVMazeEvent(item) && details.classification?.radarEligible) Object.assign(item, enrichRelease({ ...item, ...details.classification }));
       renderServices();
@@ -446,6 +483,11 @@ function renderDetail(item, details, maze, loading) {
   const style = backdrop ? `--detail-bg:url('${backdrop}');--card-accent:${item.accent}` : `--card-accent:${item.accent}`;
   const brand = item.originalBrand || details?.inferredOriginalBrand;
   const confidence = item.originalConfidence || details?.originalConfidence;
+  const originType = item.originType || details?.originType;
+  const originLabel = item.originLabel || details?.originLabel || (item.original ? 'Original von' : 'Herkunft');
+  const originScore = item.originalScore ?? details?.originalScore;
+  const originReason = item.originalReason || details?.originalReason || details?.originalEvidence;
+  const overrideApplied = item.overrideApplied || details?.overrideApplied;
   const originalLogo = item.originalLogoPath || details?.inferredOriginalLogoPath || brandLogoPath(brand);
   const originLogo = brand && originalLogo ? `<div class="origin-logo-wrap">${logoMarkup(originalLogo, 'origin-logo')}</div>` : '';
   const eventInfo = item.eventKind === 'episode'
@@ -463,8 +505,9 @@ function renderDetail(item, details, maze, loading) {
 
   const providerHeading = seasonProviders.length && item.eventSeason ? `Staffel ${item.eventSeason} läuft in Österreich bei` : 'Läuft in Österreich bei';
   const watchLink = details?.seasonProviders?.watchLink || details?.watchLink;
+  const originQuality = brand ? `<div class="origin-quality"><span class="quality-pill quality-${escapeHTML(overrideApplied ? 'manual' : confidence || 'unknown')}">${escapeHTML(overrideApplied ? 'MANUELL' : String(confidence || 'unbekannt').toUpperCase())}${originScore ? ` · ${originScore}` : ''}</span><span>${escapeHTML(originReason || 'Keine zusätzliche Evidenz hinterlegt.')}</span>${originType ? `<span>Typ: ${escapeHTML(originType)}</span>` : ''}</div>` : '';
 
-  $('#dialogContent').innerHTML = `<div class="detail-hero ${backdrop ? 'has-backdrop' : ''}" style="${style}"><div><span class="section-kicker">${escapeHTML(item.services?.join(' · ') || 'STREAMRADAR')}</span><h2>${escapeHTML(item.title)}</h2><span>${escapeHTML(eventLabel(item))} · ${escapeHTML(item.date)}</span></div></div><div class="detail-content"><p>${escapeHTML(details?.overview || item.description || 'Keine Beschreibung verfügbar.')}</p>${eventPanel}${brand ? `<div class="origin-line">${originLogo}<div class="origin-copy"><strong>Original von ${escapeHTML(brand)}</strong><span>${confidence === 'high' ? 'hohe' : 'mittlere'} Erkennungssicherheit${details?.originalEvidence ? ` · ${escapeHTML(details.originalEvidence)}` : ''}</span></div></div>` : ''}<div class="detail-facts">${item.rating > 0 ? `<span>★ ${item.rating.toFixed(1)} TMDB</span>` : ''}${runtime ? `<span>${runtime} Min.</span>` : ''}${details?.number_of_seasons ? `<span>${details.number_of_seasons} Staffeln</span>` : ''}${genres.slice(0, 3).map(genre => `<span>${escapeHTML(genre)}</span>`).join('')}<span>Region AT</span></div>${episodePanel}${providerPills ? `<div class="provider-list"><strong>${escapeHTML(providerHeading)}</strong><div>${providerPills}</div></div>` : `<div class="provider-list"><strong>${escapeHTML(providerHeading)}</strong><p>Keine aktuellen Providerdaten gefunden.</p></div>`}${loading ? '<div class="inline-loading">Release-, Serien- und Episodendaten werden geladen …</div>' : ''}${maze?.loadError ? '<div class="inline-error">TVmaze-Zusatzdaten konnten nicht geladen werden.</div>' : ''}<div class="detail-actions">${tmdbUrl ? `<a class="ghost-button link-button" href="${tmdbUrl}" target="_blank" rel="noopener">Auf TMDB ansehen ↗</a>` : ''}${watchLink ? `<a class="primary-button link-button" href="${escapeHTML(watchLink)}" target="_blank" rel="noopener">Streamingoptionen ↗</a>` : ''}${item.tvmazeUrl ? `<a class="ghost-button link-button" href="${escapeHTML(item.tvmazeUrl)}" target="_blank" rel="noopener">Episode auf TVmaze ↗</a>` : ''}${maze?.url && maze.url !== item.tvmazeUrl ? `<a class="ghost-button link-button" href="${escapeHTML(maze.url)}" target="_blank" rel="noopener">Serie auf TVmaze ↗</a>` : ''}</div><p class="attribution">Release-Klassifizierung, Metadaten & Network-/Studio-Logos: TMDB · Streaming-Verfügbarkeit: JustWatch via TMDB · globaler Web-/Streaming-Episodenplan und Episodendaten: TVmaze. TVmaze-Events werden nur mit für Österreich relevanten TMDB-Kandidaten zusammengeführt.</p></div>`;
+  $('#dialogContent').innerHTML = `<div class="detail-hero ${backdrop ? 'has-backdrop' : ''}" style="${style}"><div><span class="section-kicker">${escapeHTML(item.services?.join(' · ') || 'STREAMRADAR')}</span><h2>${escapeHTML(item.title)}</h2><span>${escapeHTML(eventLabel(item))} · ${escapeHTML(item.date)}</span></div></div><div class="detail-content"><p>${escapeHTML(details?.overview || item.description || 'Keine Beschreibung verfügbar.')}</p>${eventPanel}${brand ? `<div class="origin-line ${item.original ? '' : 'origin-line-studio'}">${originLogo}<div class="origin-copy"><strong>${escapeHTML(originLabel)} ${escapeHTML(brand)}</strong><span>${escapeHTML(overrideApplied ? 'manuell geprüft' : confidenceText({ originalConfidence:confidence }))}${originScore ? ` · Score ${originScore}` : ''}</span></div></div>${originQuality}` : ''}<div class="detail-facts">${item.rating > 0 ? `<span>★ ${item.rating.toFixed(1)} TMDB</span>` : ''}${runtime ? `<span>${runtime} Min.</span>` : ''}${details?.number_of_seasons ? `<span>${details.number_of_seasons} Staffeln</span>` : ''}${genres.slice(0, 3).map(genre => `<span>${escapeHTML(genre)}</span>`).join('')}<span>Region AT</span></div>${episodePanel}${providerPills ? `<div class="provider-list"><strong>${escapeHTML(providerHeading)}</strong><div>${providerPills}</div></div>` : `<div class="provider-list"><strong>${escapeHTML(providerHeading)}</strong><p>Keine aktuellen Providerdaten gefunden.</p></div>`}${loading ? '<div class="inline-loading">Release-, Herkunfts- und Episodendaten werden geladen …</div>' : ''}${maze?.loadError ? '<div class="inline-error">TVmaze-Zusatzdaten konnten nicht geladen werden.</div>' : ''}<div class="detail-actions">${tmdbUrl ? `<a class="ghost-button link-button" href="${tmdbUrl}" target="_blank" rel="noopener">Auf TMDB ansehen ↗</a>` : ''}${watchLink ? `<a class="primary-button link-button" href="${escapeHTML(watchLink)}" target="_blank" rel="noopener">Streamingoptionen ↗</a>` : ''}${item.tvmazeUrl ? `<a class="ghost-button link-button" href="${escapeHTML(item.tvmazeUrl)}" target="_blank" rel="noopener">Episode auf TVmaze ↗</a>` : ''}${maze?.url && maze.url !== item.tvmazeUrl ? `<a class="ghost-button link-button" href="${escapeHTML(maze.url)}" target="_blank" rel="noopener">Serie auf TVmaze ↗</a>` : ''}</div><p class="attribution">Release-Klassifizierung, Herkunfts-Scoring, Metadaten & Network-/Studio-Logos: TMDB · Streaming-Verfügbarkeit: JustWatch via TMDB · globaler Web-/Streaming-Episodenplan und Episodendaten: TVmaze. Studio-/Brand-Treffer werden nicht automatisch als Streaming-Original behandelt; manuelle Korrekturen laufen über die Override-Schicht.</p></div>`;
 }
 
 function setView(view) {
