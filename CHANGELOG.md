@@ -2,6 +2,27 @@
 
 Alle relevanten Änderungen an StreamRadar werden hier ab der ersten Version nach Semantic Versioning dokumentiert.
 
+## [0.3.0] - 2026-09-01
+
+### Added
+- Neues **Update-Center** im Einstellungs-Center mit installierter und veröffentlichter Version.
+- Manueller Update-Check sowie optionaler automatischer Check höchstens einmal pro 24 Stunden.
+- Sidebar-Hinweis und direkter MSI-Download, sobald eine neuere veröffentlichte Version verfügbar ist.
+- Native Tauri-Opener-Integration für externe Links im Windows-Standardbrowser.
+- Tauri Window State zum Wiederherstellen von Fenstergröße, Position und Zustand.
+- Runtime-Anzeige für echte App- und Tauri-Version.
+- Playwright-Regressionstest für die Erkennung einer neueren veröffentlichten MSI-Version.
+- Archiv-Snapshot `OldCss/styles-v0.2.2.css` vor den v0.3.0-Styleänderungen.
+
+### Changed
+- App-, Desktop-, Tauri- und MSI-Version auf `0.3.0` angehoben.
+- Tauri Vanilla-JavaScript-Bridge über `withGlobalTauri` aktiviert und über Capabilities auf Core, Opener und Window State begrenzt.
+- Update-Erkennung orientiert sich am tatsächlich veröffentlichten `downloads/README.md` statt an einem noch nicht gebauten Release-Commit.
+
+### Security
+- v0.3.0 installiert Updates nicht automatisch und führt keine heruntergeladenen Dateien aus.
+- Ein MSI wird ausschließlich nach einem Benutzerklick im Standardbrowser geöffnet; der bestehende unsignierte Installer-Status bleibt unverändert.
+
 ## [0.2.2] - 2026-09-01
 
 ### Added

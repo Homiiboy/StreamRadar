@@ -465,9 +465,9 @@
   window.StreamRadarUI012 = Object.freeze({ VERSION, openSearch, renderNewSince, persistVisit });
 })();
 
-/* StreamRadar v0.2.0 — Personalization & Settings */
+/* StreamRadar v0.2.0+ — Personalization & Settings */
 (() => {
-  const VERSION = '0.2.2';
+  const VERSION = '0.3.0';
   const CONFIG_KEY = 'streamradar-personalization-v2';
   const ONBOARDING_KEY = 'streamradar-onboarding-v2-complete';
   const LAST_VIEW_KEY = 'streamradar-last-view-v2';
