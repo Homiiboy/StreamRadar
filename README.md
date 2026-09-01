@@ -2,56 +2,74 @@
 
 StreamRadar ist ein persönlicher Release-Radar für neue Filme, Serien, Anime, Originals, neue Staffeln und Episoden aus wichtigen Streaming-Marken – optimiert für Österreich.
 
-## Aktuelle Version: v0.0.5
+## Aktuelle Version: v0.0.6
 
 ### Neu
 
-- echte Release-Klassifizierung statt einer reinen Film-/Serien-Liste
-- getrennte Ereignistypen **Film-Premiere**, **Neue Serie**, **Neue Staffel** und **Neue Episode**
-- eigener Filter nach Release-Typ
-- TV-Discovery über Ausstrahlungen im Radar-Zeitraum statt ausschließlich über das ursprüngliche `first_air_date`
-- laufende ältere Serien können dadurch als aktuelle Staffel-/Episodenereignisse auftauchen
-- Film-Releases werden mit den österreichischen TMDB-`release_dates` abgeglichen und bevorzugen Digital-/TV-Releases
-- Staffelstarts werden über TMDB-Staffeldaten und Episodenmetadaten erkannt
-- staffelspezifische Watch-Provider für Österreich in der Detailansicht
-- zweistufige Deduplizierung über TMDB-IDs und einen Release-Fingerprint
-- bestehende Merkliste bleibt über stabile Serien-/Film-IDs kompatibel
-- neue Event-Badges und Release-Detailbox in `v005.css`
+- globaler Staffel- und Episoden-Radar über den **TVmaze Web Schedule**
+- TVmaze wird jetzt nicht nur in der Detailansicht, sondern als aktive Feed-Datenquelle verwendet
+- Streaming-Schedule von gestern bis 14 Tage in die Zukunft
+- Matching gegen österreichisch relevante TMDB-Kandidaten über IMDb-ID, TVDB-ID und Titel-Fallback
+- neue Staffelstarts und Episoden erscheinen direkt auf der Startseite
+- eigene Hauptansichten **Staffeln** und **Episoden**
+- Radar-Zusammenfassung für **Heute**, **Staffelstarts**, **Episoden** und **Premieren**
+- `TVMAZE ✓` auf Schedule-bestätigten Karten
+- Web-Channel, Laufzeit, Sendezeit und direkter Episodenlink aus TVmaze
+- bestehende TMDB-Deduplizierung verschmilzt identische TMDB-/TVmaze-Events
+- bis zu vier kommende Schedule-Ereignisse pro Serie, damit der Feed ausgewogen bleibt
+- Retry-Behandlung für TVmaze-Rate-Limits
+- neues Styling in `v006.css`
+
+## Wie v0.0.6 Daten zusammenführt
+
+StreamRadar verwendet jetzt zwei Ebenen:
+
+```text
+TMDB + JustWatch
+        ↓
+Welche Titel/Provider sind für Österreich relevant?
+        ↓
+TVmaze Web Schedule
+        ↓
+Wann erscheinen konkrete Streaming-Episoden?
+        ↓
+Deduplizierung / Release Intelligence
+        ↓
+StreamRadar Feed
+```
+
+Der TVmaze-Schedule wird **nicht ungefiltert** in StreamRadar übernommen. Ein TVmaze-Titel muss zu einer Serie passen, die bereits durch die TMDB-/Provider-Discovery als österreichisch relevant erkannt wurde.
+
+Dadurch kann StreamRadar beispielsweise aus einer Serie, die bereits bei Disney+ Österreich erkannt wurde, mehrere konkrete kommende Episodenereignisse erzeugen, ohne gleichzeitig tausende internationale TVmaze-Titel in den Feed zu übernehmen.
 
 ## Release-Intelligence
 
-StreamRadar behandelt einen Titel ab v0.0.5 als **Release-Event**. Das bedeutet beispielsweise:
+StreamRadar behandelt Titel als **Release-Events**. Mögliche Ereignisse sind:
+
+- **Film-Premiere** / Digital- oder TV-Premiere
+- **Neue Serie**
+- **Neue Staffel**
+- **Neue Episode**
+
+TVmaze-Schedule-Ereignisse enthalten zusätzlich – sofern vorhanden – Web-Channel, Episodenname, Laufzeit, Sendezeit und einen Link zur konkreten Episode.
+
+## Staffel- und Episodenradar
+
+Der globale Web-Schedule wird in v0.0.6 standardmäßig für dieses Fenster geladen:
 
 ```text
-The Example Show
-Neue Staffel 3
-12. Sep.
-Original von: FX
-Läuft in Österreich bei: Disney+
+Gestern → Heute → nächste 14 Tage
 ```
 
-oder:
+Pro Serie werden maximal vier Schedule-Events in den Radar übernommen. Dies verhindert, dass Serien mit täglichen Episoden den kompletten Feed dominieren.
 
-```text
-Example Movie
-Digital-Premiere
-18. Sep.
-Läuft in Österreich bei: Prime Video
-```
-
-Für Serien priorisiert die Klassifizierung:
-
-1. einen neuen Serienstart,
-2. einen neuen Staffelstart,
-3. eine aktuelle bzw. kommende Episode.
-
-Dadurch soll eine laufende Serie nicht mehr mit ihrem Jahre alten Serienstart als aktuelles Release angezeigt werden.
+S1E1 wird als **Neue Serie** klassifiziert. Episode 1 einer Staffel größer 1 wird als **Neue Staffel** klassifiziert. Alle anderen Treffer werden als **Neue Episode** geführt.
 
 ## Datenquellen
 
 - **TMDB** – Titel, Metadaten, Bilder, Networks, Produktionsfirmen, Release-Dates, Staffeln, Episodenmetadaten, Network-/Studio-Logos und Watch-Provider
 - **JustWatch via TMDB** – Streaming-Verfügbarkeit in Österreich, inklusive staffelspezifischer Provider wenn verfügbar
-- **TVmaze** – zusätzliche Episoden-, Staffel- und kommende Episodendaten in der Detailansicht
+- **TVmaze** – globaler Web-/Streaming-Schedule, Episoden, Staffeln, Web-Channels und kommende Episoden
 
 TVmaze benötigt keinen API-Key. Der TMDB API Read Access Token wird nur lokal im Browser gespeichert.
 
@@ -66,12 +84,12 @@ Seit v0.0.4 übernimmt StreamRadar zusätzlich den von TMDB gelieferten `logo_pa
 
 ## Deduplizierung
 
-v0.0.5 führt Release-Ereignisse zweistufig zusammen:
+Release-Ereignisse werden zweistufig zusammengeführt:
 
 - primär über TMDB-ID + Release-Typ + Datum + Staffel/Episode
 - sekundär über einen exakten Fingerprint aus normalisiertem Titel, Datum, Release-Typ und Staffel/Episode
 
-Bei Duplikaten werden Streaming-Provider und Logos zusammengeführt. Unterschiedliche Episoden oder unterschiedliche Staffelstarts bleiben getrennte Ereignisse.
+Wenn TMDB und TVmaze dasselbe Event melden, bleiben TMDB-Provider, Original-Marken und Bilder erhalten, während TVmaze Schedule-Bestätigung, Episodenname, Channel, Laufzeit und Link ergänzt.
 
 ## Starten
 
@@ -93,7 +111,7 @@ MAJOR.MINOR.PATCH
 - `MINOR`: größere rückwärtskompatible Feature-Pakete
 - `MAJOR`: Breaking Changes / grundlegende Neustrukturierung
 
-Während `0.x` befindet sich StreamRadar noch in der frühen Entwicklungsphase. Die Release-Reihenfolge bleibt eindeutig (`0.0.1` → `0.0.2` → `0.0.3` → `0.0.4` → `0.0.5`).
+Während `0.x` befindet sich StreamRadar noch in der frühen Entwicklungsphase. Die Release-Reihenfolge bleibt eindeutig (`0.0.1` → `0.0.2` → `0.0.3` → `0.0.4` → `0.0.5` → `0.0.6`).
 
 Siehe auch [`CHANGELOG.md`](CHANGELOG.md) und [`VERSION`](VERSION).
 
@@ -107,6 +125,7 @@ StreamRadar/
 ├── v003.css
 ├── v004.css
 ├── v005.css
+├── v006.css
 ├── tmdb.js
 ├── tvmaze.js
 ├── app.js
@@ -115,14 +134,15 @@ StreamRadar/
 └── README.md
 ```
 
-## Grenzen von v0.0.5
+## Grenzen von v0.0.6
 
-- Der globale Episoden-/Staffel-Feed wird noch nicht direkt aus einem vollständigen TV-Kalender erzeugt; das ist für v0.0.6 vorgesehen.
+- Der globale Episodenradar deckt aktuell 14 Tage in die Zukunft ab; die spätere Kalender-/Timeline-Version wird einen längeren Planungshorizont bekommen.
+- TVmaze kann nicht jede internationale Streamingserie perfekt abbilden oder mit TMDB verknüpfen.
+- Ein exakter IMDb-/TVDB-ID-Treffer wird bevorzugt; Titelmatching ist nur der Fallback.
 - TMDB kann je nach Titel/Region unvollständige Release-, Staffel- oder Providerdaten haben.
-- Film-Release-Typen sind nicht immer identisch mit einer exklusiven Streaming-Premiere; StreamRadar bevorzugt für den Streaming-Radar Digital- und TV-Releases, wenn TMDB diese für Österreich liefert.
-- TVmaze kann nicht jede internationale Streamingserie perfekt abbilden.
+- Der TVmaze Web Schedule zeigt den Veröffentlichungs-/Ausstrahlungsplan des Web-Channels; die österreichische Verfügbarkeit wird weiterhin separat über TMDB/JustWatch bestimmt.
 - Für eine öffentlich gehostete Multi-User-Version sollte TMDB über ein Backend/Proxy angebunden werden.
 
 ## Status
 
-`v0.0.5` – Release classification & stronger deduplication
+`v0.0.6` – Global season & episode radar
