@@ -2,67 +2,75 @@
 
 StreamRadar ist ein persönlicher Release-Radar und Streaming-Kalender für Filme, Serien, Anime, Originals, neue Staffeln und Episoden – optimiert für Österreich.
 
-## Aktuelle Version: v0.0.9
+## Aktuelle Version: v0.0.10
 
-### Neu in v0.0.9
+### Neu in v0.0.10
 
-- **Sofort-Cache** für den zuletzt vollständig synchronisierten Radar
-- Cache-TTL von 6 Stunden mit **stale-while-revalidate**: gespeicherte Daten erscheinen sofort, während TMDB/TVmaze im Hintergrund aktualisiert werden
-- Offline-/Fehler-Fallback auf den letzten lokalen Datenstand statt Rückfall auf Demo-Inhalte
-- sichtbarer Online-/Offline- und Cache-Status
-- neuer Filter **Meine Anbieter**
-- persönliche Provider-Auswahl in den Einstellungen, lokal und dauerhaft gespeichert
-- persönliche Provider-Auswahl wirkt auch auf Kalender und Timeline
-- persistente Sortierung nach **Relevanz**, **Datum**, **Beliebtheit** oder **TMDB-Wertung**
-- Merkliste kann als JSON gesichert und später wieder importiert werden
-- bestehende Merkliste wird normalisiert und dedupliziert
-- Suchfeld wird leicht verzögert aktualisiert, um unnötige Feed-Neuberechnungen beim Tippen zu reduzieren
-- Toast-Hinweise für Offline-Modus, Wiederverbindung, Cache-Aktionen und Merkliste-Import
-- zusätzliche mobile Optimierungen für Einstellungen, Provider-Auswahl und Statusanzeige
-- neue Runtime-Schicht `stability.js` und Styling in `v009.css`
+v0.0.10 ist bewusst ein **Bugfix-/Polish-Release** vor v0.1.0. Der Schwerpunkt liegt auf Konsistenz, Stabilität und UX statt auf neuen großen Datenquellen.
+
+- Filter-Handler für Medientyp, Release-Typ, Zeitraum, Herkunft und Originals greifen wieder korrekt durch die v0.0.9-Personalisierung
+- **Meine Anbieter** kann dadurch nicht mehr versehentlich umgangen werden
+- Schutz gegen parallele/doppelte Live-Synchronisierungen
+- Refresh-Button zeigt einen echten Busy-State und ist während laufender Synchronisierung gesperrt
+- lokaler Radar-Cache wird beim Start strukturell validiert
+- beschädigte, fremde oder unvollständige Cache-Einträge werden entfernt
+- Cache wird dedupliziert und kompakter gespeichert
+- bei knappem LocalStorage-Budget wird die Snapshot-Größe stufenweise reduziert statt den Cache komplett zu verlieren
+- gespeicherte Provider-Auswahl wird gegen die aktuell unterstützten Provider bereinigt
+- Merkliste wird robuster normalisiert und beim Import werden nur tatsächlich neue Einträge gemeldet
+- kaputte Poster-/Logo-URLs bekommen einen visuellen Fallback statt Browser-Broken-Image-Symbolen
+- Tag/Woche/90-Tage-Kalender werden als fokussierte Timeline dargestellt; das Monatsraster bleibt der Monatsansicht vorbehalten
+- verbesserte Tastatur-Fokusmarkierungen
+- `prefers-reduced-motion` wird berücksichtigt
+- kleinere Mobile-Verbesserungen für Filter, Navigation und Kalendersteuerung
+- neue Runtime-Schicht `polish.js` und Styling in `v0010.css`
 
 ## Lokaler Radar-Cache
 
-Nach einer erfolgreichen Live-Synchronisierung speichert StreamRadar bis zu 350 Release-Events sowie Provider- und Schedule-Metadaten lokal im Browser.
+Seit v0.0.9 speichert StreamRadar den letzten vollständigen Radar lokal im Browser. v0.0.10 härtet dieses Verhalten ab.
 
 ```text
 StreamRadar öffnen
       ↓
-Lokaler Cache vorhanden?
-      ↓ ja
-Events sofort anzeigen
+Cache vorhanden?
       ↓
-TMDB + TVmaze im Hintergrund aktualisieren
+Struktur + Region prüfen
       ↓
-Cache nach erfolgreichem Sync erneuern
+Einträge bereinigen / deduplizieren
+      ↓
+lokale Daten sofort anzeigen
+      ↓
+TMDB + TVmaze live aktualisieren
+      ↓
+kompakten Snapshot speichern
 ```
 
-Der Cache verfällt für den normalen Sofortstart nach sechs Stunden. Falls TMDB/TVmaze oder die Internetverbindung nicht verfügbar sind, kann StreamRadar auch einen älteren Cache als Fallback verwenden.
+Der normale Sofort-Cache besitzt weiterhin eine TTL von sechs Stunden. Bei Netzwerk- oder API-Problemen darf ein älterer Cache als Fallback verwendet werden.
 
-Der TMDB API Read Access Token bleibt weiterhin ausschließlich im Browser und wird nicht in den Radar-Cache geschrieben.
+Der TMDB API Read Access Token wird **nicht** im Radar-Cache gespeichert.
 
 ## Meine Anbieter
 
-Unter ⚙ können die Streaming-Dienste ausgewählt werden, die für den persönlichen Feed relevant sind. Der Schalter **Meine Anbieter** aktiviert anschließend einen Multi-Provider-Filter.
+Unter ⚙ können die Streaming-Dienste ausgewählt werden, die für den persönlichen Feed relevant sind. Der Schalter **Meine Anbieter** aktiviert den Multi-Provider-Filter für Feed, Kalender und Timeline.
 
-Die Auswahl ist unabhängig von der vorhandenen einzelnen Provider-/Herkunftsmarken-Auswahl. Dadurch kann zum Beispiel dauerhaft nur Netflix, Disney+, HBO Max und Crunchyroll angezeigt und danach zusätzlich temporär nach einer einzelnen Herkunftsmarke gefiltert werden.
+v0.0.10 korrigiert einen v0.0.9-Edge-Case: Änderungen an anderen Filtern laufen nun immer durch dieselbe Personalisierungsschicht. Dadurch bleibt die persönliche Provider-Auswahl konsistent aktiv.
 
 ## Sortierung
 
-v0.0.9 ergänzt vier persistente Sortierungen:
+StreamRadar bietet folgende persistente Sortierungen:
 
-- **Relevanz** – bisherige StreamRadar-Priorisierung aus zeitlicher Nähe, Release-Typ und Popularität
+- **Relevanz** – zeitliche Nähe, Release-Typ und Popularität
 - **Datum** – bald erscheinende Events zuerst
 - **Beliebtheit** – TMDB-Popularität zuerst
 - **TMDB-Wertung** – Bewertung zuerst, Popularität als Tie-Breaker
 
-## Merkliste sichern
+## Merkliste
 
-Die Merkliste bleibt in `localStorage`, kann jetzt aber zusätzlich als JSON-Datei exportiert werden. Beim Import werden IDs normalisiert, dedupliziert und mit der vorhandenen Merkliste zusammengeführt.
+Die Merkliste bleibt in `localStorage` und kann als JSON-Datei exportiert bzw. wieder importiert werden. IDs werden normalisiert und dedupliziert. v0.0.10 zeigt beim Import nun die Zahl der tatsächlich neu hinzugefügten Einträge statt nur die Zahl der Datensätze in der Datei.
 
 ## Release-Kalender
 
-Seit v0.0.8 besitzt StreamRadar eine eigene Kalenderansicht mit:
+Seit v0.0.8 besitzt StreamRadar eine Kalenderansicht mit:
 
 ```text
 Tag
@@ -71,9 +79,9 @@ Monat
 90 Tage
 ```
 
-Dazu kommen Monatsraster, chronologische Timeline, volle-Tage-Erkennung, Provider-/Herkunftsfilter, Nur-Merkliste-Modus und `.ics`-/iCalendar-Export.
+Die Monatsansicht zeigt ein klassisches Monatsraster plus Timeline. Tag, Woche und 90 Tage fokussieren ab v0.0.10 stärker auf die chronologische Timeline, damit kein irreführendes Monatsraster parallel angezeigt wird.
 
-v0.0.9 übernimmt **Meine Anbieter** auch in Kalender und Timeline.
+Dazu kommen Provider-/Herkunftsfilter, Nur-Merkliste-Modus und `.ics`-/iCalendar-Export.
 
 ## Origin Intelligence
 
@@ -120,7 +128,7 @@ MAJOR.MINOR.PATCH
 - `MINOR`: größere rückwärtskompatible Feature-Pakete
 - `MAJOR`: Breaking Changes / grundlegende Neustrukturierung
 
-Während `0.x` befindet sich StreamRadar in der frühen Entwicklungsphase. Release-Reihenfolge: `0.0.1` → `0.0.2` → `0.0.3` → `0.0.4` → `0.0.5` → `0.0.6` → `0.0.7` → `0.0.8` → `0.0.9`.
+Release-Reihenfolge: `0.0.1` → `0.0.2` → `0.0.3` → `0.0.4` → `0.0.5` → `0.0.6` → `0.0.7` → `0.0.8` → `0.0.9` → `0.0.10`.
 
 Siehe [`CHANGELOG.md`](CHANGELOG.md) und [`VERSION`](VERSION).
 
@@ -138,25 +146,27 @@ StreamRadar/
 ├── v007.css
 ├── v008.css
 ├── v009.css
+├── v0010.css
 ├── original-overrides.js
 ├── tmdb.js
 ├── tvmaze.js
 ├── app.js
 ├── calendar.js
 ├── stability.js
+├── polish.js
 ├── VERSION
 ├── CHANGELOG.md
 └── README.md
 ```
 
-## Grenzen von v0.0.9
+## Grenzen von v0.0.10
 
-- Der Cache ist browserlokal und wird nicht zwischen Geräten synchronisiert.
-- `localStorage` ist kein Ersatz für die für spätere Desktop-/Server-Versionen geplante SQLite-Datenbank.
-- Die 90-Tage-Kalenderansicht kann bei Episoden wegen des kürzeren TVmaze-Schedule-Horizonts weniger vollständig sein.
-- Der `.ics`-Export ist dateibasiert; eine direkte Zwei-Wege-Synchronisierung mit externen Kalenderdiensten ist noch nicht integriert.
+- Cache, Einstellungen und Merkliste sind weiterhin browserlokal und nicht geräteübergreifend synchronisiert.
+- `localStorage` bleibt eine Übergangslösung; für eine spätere Desktop-/Server-Version ist SQLite sinnvoller.
+- Die 90-Tage-Kalenderansicht kann bei Episoden durch den kürzeren TVmaze-Schedule weniger vollständig sein.
+- Der `.ics`-Export ist dateibasiert und keine Zwei-Wege-Synchronisierung.
 - Für eine öffentlich gehostete Multi-User-Version sollte TMDB später über ein Backend/Proxy angebunden werden.
 
 ## Status
 
-`v0.0.9` – Stability, cache, personalization & watchlist portability
+`v0.0.10` – Bugfix, polish & pre-v0.1.0 hardening
