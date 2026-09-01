@@ -34,19 +34,21 @@ jobs:
           node --check stability.js
           node --check polish.js
           node --check desktop.js
+          node --check ui011.js
           node --check scripts/build-desktop.mjs
 
       - name: Check version consistency
         run: |
           test -s VERSION
-          grep -qx "0.1.0" VERSION
-          grep -q "v0.1.0" README.md
-          grep -q "\[0.1.0\]" CHANGELOG.md
-          grep -q "v0.1.0" index.html
-          grep -q '"version": "0.1.0"' package.json
-          grep -q '"version": "0.1.0"' src-tauri/tauri.conf.json
-          grep -q 'version = "0.1.0"' src-tauri/Cargo.toml
-          grep -q "VERSION = '0.1.0'" desktop.js
+          grep -qx "0.1.1" VERSION
+          grep -q "v0.1.1" README.md
+          grep -q "\[0.1.1\]" CHANGELOG.md
+          grep -q "v0.1.1" index.html
+          grep -q '"version": "0.1.1"' package.json
+          grep -q '"version": "0.1.1"' src-tauri/tauri.conf.json
+          grep -q 'version = "0.1.1"' src-tauri/Cargo.toml
+          grep -q "VERSION = '0.1.1'" desktop.js
+          grep -q "VERSION = '0.1.1'" ui011.js
 
       - name: Check release intelligence surface
         run: |
@@ -68,7 +70,24 @@ jobs:
           grep -q "rebindFilterHandlers" polish.js
           grep -q "saveCompactSnapshot" polish.js
 
-      - name: Check v0.1.0 desktop surface
+      - name: Check v0.1.1 UI UX surface
+        run: |
+          test -s v011.css
+          test -s ui011.js
+          grep -q 'class="app-sidebar"' index.html
+          grep -q 'id="homeDashboard"' index.html
+          grep -q 'id="homeRails"' index.html
+          grep -q 'id="toggleAdvancedFilters"' index.html
+          grep -q 'sidebar-link' index.html
+          grep -q 'media-rail' v011.css
+          grep -q 'renderHomeDashboard' ui011.js
+          grep -q 'dashboardSource' ui011.js
+          grep -q 'preferredFiltered' ui011.js
+          grep -q 'updateFilterUX' ui011.js
+          grep -q 'ui011.js' index.html
+          grep -q 'v011.css' index.html
+
+      - name: Check desktop surface
         run: |
           test -s package.json
           test -s scripts/build-desktop.mjs
@@ -83,8 +102,8 @@ jobs:
           test -s src-tauri/capabilities/default.json
           test -s .github/workflows/build-msi.yml
           test -s downloads/README.md
-          grep -q 'downloads/StreamRadar_0.1.0_x64_de-DE.msi' README.md
-          grep -q 'StreamRadar_0.1.0_x64_de-DE.msi' downloads/README.md
+          grep -q 'downloads/StreamRadar_0.1.1_x64_de-DE.msi' README.md
+          grep -q 'StreamRadar_0.1.1_x64_de-DE.msi' downloads/README.md
           grep -q '"targets": \["msi"\]' src-tauri/tauri.conf.json
           grep -q '"language": "de-DE"' src-tauri/tauri.conf.json
           grep -q 'at.streamradar.desktop' src-tauri/tauri.conf.json
@@ -99,8 +118,11 @@ jobs:
           node scripts/build-desktop.mjs
           test -s dist/index.html
           test -s dist/desktop.js
+          test -s dist/ui011.js
           test -s dist/v0100.css
-          grep -q "v0.1.0" dist/index.html
+          test -s dist/v011.css
+          grep -q "v0.1.1" dist/index.html
+          grep -q 'class="app-sidebar"' dist/index.html
 
       - name: Check configuration JSON
         run: |

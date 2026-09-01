@@ -16,6 +16,7 @@ const files = [
   'v009.css',
   'v0010.css',
   'v0100.css',
+  'v011.css',
   'original-overrides.js',
   'tmdb.js',
   'tvmaze.js',
@@ -23,7 +24,8 @@ const files = [
   'calendar.js',
   'stability.js',
   'polish.js',
-  'desktop.js'
+  'desktop.js',
+  'ui011.js'
 ];
 
 await rm(dist, { recursive: true, force: true });
