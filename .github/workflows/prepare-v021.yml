@@ -1,0 +1,48 @@
+name: Prepare StreamRadar v0.2.1
+
+on:
+  push:
+    branches: [dev/v0.2.1]
+    paths:
+      - 'scripts/prepare-v021.py'
+
+permissions:
+  contents: write
+
+jobs:
+  prepare:
+    if: github.actor != 'github-actions[bot]'
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          ref: dev/v0.2.1
+
+      - name: Prepare v0.2.1
+        run: python scripts/prepare-v021.py
+
+      - name: Preflight
+        run: |
+          for file in js/*.js; do node --check "$file"; done
+          node --check tests/playwright.config.js
+          node --check tests/e2e/streamradar.spec.js
+          node scripts/build-desktop.mjs
+          test -s dist/index.html
+          test -s dist/styles.css
+          test -s dist/js/ui.js
+          test -s dist/js/app.js
+          test -z "$(find . -maxdepth 1 -type f -name '*.js' -print -quit)"
+          test -z "$(find dist -maxdepth 1 -type f -name '*.js' -print -quit)"
+          grep -q 'js/ui.js' index.html
+          grep -q 'js/ui.js' dist/index.html
+          grep -qx '0.2.1' VERSION
+          git diff --check
+
+      - name: Commit prepared release
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add VERSION package.json src-tauri/tauri.conf.json src-tauri/Cargo.toml index.html README.md CHANGELOG.md .gitignore scripts/build-desktop.mjs js tests
+          git commit -m "StreamRadar v0.2.1 — Automated QA & Repository Hardening"
+          git push origin HEAD:dev/v0.2.1
