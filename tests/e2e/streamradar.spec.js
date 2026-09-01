@@ -61,12 +61,12 @@ test('global search opens details and main navigation remains usable', async ({ 
   const errors = await boot(page, configuredStorage());
   await page.keyboard.press('Control+K');
   await expect(page.locator('#globalSearchOverlay')).toBeVisible();
-  await page.locator('#searchInput').fill('Neon District');
-  const result = page.locator('.global-search-result').filter({ hasText: 'Neon District' }).first();
+  await page.locator('#searchInput').fill('Midnight Protocol');
+  const result = page.locator('.global-search-result').filter({ hasText: 'Midnight Protocol' }).first();
   await expect(result).toBeVisible();
   await result.click();
   await expect(page.locator('#detailDialog')).toHaveAttribute('open', '');
-  await expect(page.locator('#detailDialog h2')).toContainText('Neon District');
+  await expect(page.locator('#detailDialog h2')).toContainText('Midnight Protocol');
   await page.locator('#dialogClose').click();
 
   await page.locator('.sidebar-link[data-view="calendar"]').click();
@@ -146,6 +146,9 @@ test('catalog exposes movies series and a provider-first Netflix experience', as
   await expect(page.locator('body')).toHaveAttribute('data-streamradar-view', 'catalog-home');
   await expect(page.locator('#catalogSurface')).toBeVisible();
   await expect(page.locator('#catalogSurface')).toContainText('Alles, was du');
+  await page.locator('[data-catalog-action="catalog-all"]').first().click();
+  await expect(page.locator('body')).toHaveAttribute('data-streamradar-view', 'catalog-all');
+  await expect(page.locator('#catalogSurface')).toContainText('Gesamtes Streaming-Angebot');
 
   await page.locator('.sidebar-link[data-view="catalog-movies"]').click();
   await expect(page.locator('#catalogSurface')).toContainText('Filme aus deinen Streaming-Diensten');

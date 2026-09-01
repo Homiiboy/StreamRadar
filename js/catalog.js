@@ -3,8 +3,9 @@
   const TOKEN_KEY = 'streamradar-tmdb-token';
   const PROVIDERS_KEY = 'streamradar-preferred-providers';
   const CATALOG_META_KEY = 'streamradar-catalog-watchlist-v1';
-  const CATALOG_VIEWS = new Set(['catalog-home','catalog-movies','catalog-series','catalog-anime','catalog-watchlist']);
+  const CATALOG_VIEWS = new Set(['catalog-home','catalog-all','catalog-movies','catalog-series','catalog-anime','catalog-watchlist']);
   const releaseSetView = setView;
+  const releaseRenderReleases = renderReleases;
   const releaseLoadLiveData = loadLiveData;
   const releaseUseDemo = useDemo;
   const searchInput = $('#searchInput');
@@ -44,6 +45,7 @@
     view:'catalog-home', provider:null, page:1, loading:false, hasMore:false,
     items:[], allItems:new Map(), providerMap:[], error:null, query:'', requestSerial:0
   };
+  let providerMapPromise = null;
 
   const slug = value => String(value || '').toLowerCase().normalize('NFKD').replace(/[^a-z0-9]+/g,'-').replace(/^-|-$/g,'');
   const isCatalogView = view => CATALOG_VIEWS.has(view) || String(view || '').startsWith('provider-');
@@ -104,13 +106,16 @@
   async function ensureProviderMap() {
     if (state.providerMap?.length) catalogState.providerMap = state.providerMap;
     if (catalogState.providerMap.length) return catalogState.providerMap;
+    if (providerMapPromise) return providerMapPromise;
     const token = localStorage.getItem(TOKEN_KEY)?.trim();
     if (!token) {
       catalogState.providerMap = tmdb.SERVICE_DEFINITIONS.map(service => ({...service,available:true,movieProviderId:null,tvProviderId:null,logoPath:null}));
       return catalogState.providerMap;
     }
-    catalogState.providerMap = await tmdb.getProviderMap(token);
-    return catalogState.providerMap;
+    providerMapPromise = tmdb.getProviderMap(token)
+      .then(map => { catalogState.providerMap = map; return map; })
+      .finally(() => { providerMapPromise = null; });
+    return providerMapPromise;
   }
 
   function providerLogo(provider, size='w185') {
@@ -145,6 +150,7 @@
     $$('.sidebar-link').forEach(link => link.classList.toggle('active', link.dataset.view === view));
     const titles = {
       'catalog-home':['ENTDECKEN','Dein Streaming-Katalog'],
+      'catalog-all':['KATALOG','Gesamtes Streaming-Angebot'],
       'catalog-movies':['FILME','Filme streamen'],
       'catalog-series':['SERIEN','Serien streamen'],
       'catalog-anime':['ANIME','Anime streamen'],
@@ -182,7 +188,8 @@
     const saved = state.watchlist.has(key);
     const year = String(item.releaseDate || '').slice(0,4);
     const type = item.type === 'movie' ? 'FILM' : item.type === 'anime' ? 'ANIME' : 'SERIE';
-    return `<article class="catalog-card catalog-${layout}" data-catalog-id="${escapeHTML(item.id)}" tabindex="0">
+    const cardTheme = themeFor(item.services?.[0]);
+    return `<article class="catalog-card catalog-${layout}" data-catalog-id="${escapeHTML(item.id)}" tabindex="0" style="--item-provider:${cardTheme.accent};--item-glow:${cardTheme.glow}">
       <div class="catalog-art">${imageMarkup(item,layout === 'backdrop' ? 'backdrop' : 'poster')}<div class="catalog-art-shade"></div>${providerBand(item)}<button class="catalog-save ${saved?'saved':''}" data-catalog-watch="${escapeHTML(key)}" aria-label="${saved?'Von Merkliste entfernen':'Zur Merkliste hinzufügen'}">${saved?'✓':'+'}</button>${item.rating>0?`<span class="catalog-rating">★ ${item.rating.toFixed(1)}</span>`:''}</div>
       <div class="catalog-card-copy"><div><span>${type}</span>${year?`<span>${escapeHTML(year)}</span>`:''}</div><h3>${escapeHTML(item.title)}</h3><p>${escapeHTML((item.services || []).join(' · ') || 'Streaming')}</p></div>
     </article>`;
@@ -258,6 +265,7 @@
     }
     let html = '';
     if (state.view === 'catalog-home') html = renderHome(catalogState.items);
+    else if (state.view === 'catalog-all') html = renderGrid('Gesamtes Streaming-Angebot','KATALOG',catalogState.items,'Alle aktuell geladenen Filme, Serien und Anime deiner Streaming-Dienste – unabhängig vom Erscheinungsdatum.');
     else if (state.view === 'catalog-movies') html = renderGrid('Filme aus deinen Streaming-Diensten','FILME',catalogState.items,'Nicht nur Premieren: verfügbare Filme aus dem gesamten geladenen Katalog deiner Anbieter.');
     else if (state.view === 'catalog-series') html = renderGrid('Serien aus deinen Streaming-Diensten','SERIEN',catalogState.items,'Laufende und ältere Serien, solange sie bei deinen Diensten in Österreich verfügbar sind.');
     else if (state.view === 'catalog-anime') html = renderGrid('Anime streamen','ANIME',catalogState.items,'Anime-Angebot deiner verfügbaren Streaming-Dienste in Österreich.');
@@ -365,6 +373,33 @@
     $('#catalogDetailWatch')?.addEventListener('click',()=>{ toggleCatalogWatch(item); openCatalogDetails(item); });
   }
 
+  function catalogSearchItems(query) {
+    const normalized = String(query || '').trim().toLowerCase();
+    const source = catalogState.items.length ? catalogState.items : [...catalogState.allItems.values()];
+    const ranked = normalized
+      ? source.filter(item => `${item.title} ${item.originalTitle || ''} ${(item.services || []).join(' ')}`.toLowerCase().includes(normalized))
+      : source;
+    return ranked.slice(0, 10);
+  }
+
+  function renderCatalogSearchOverlay(query = searchInput?.value || '') {
+    const root = $('#globalSearchResults');
+    if (!root) return;
+    const results = catalogSearchItems(query);
+    root.innerHTML = results.length ? results.map(item => {
+      const art = item.posterPath ? `<img src="${tmdb.image(item.posterPath,'w185')}" alt=""/>` : `<span>${escapeHTML(item.title.slice(0,1))}</span>`;
+      const type = item.type === 'movie' ? 'Film' : item.type === 'anime' ? 'Anime' : 'Serie';
+      return `<button type="button" class="global-search-result" data-catalog-search-id="${escapeHTML(item.id)}"><span class="global-search-art">${art}</span><span class="global-search-copy"><strong>${escapeHTML(item.title)}</strong><small>${escapeHTML(type)} · ${escapeHTML((item.services || []).join(' · ') || 'Streaming-Katalog')}</small></span><span class="search-arrow">›</span></button>`;
+    }).join('') : `<div class="global-search-empty"><strong>Keine Katalog-Treffer</strong><span>Lade weitere Katalogseiten oder versuche einen anderen Titel bzw. Anbieter.</span></div>`;
+    root.querySelectorAll('[data-catalog-search-id]').forEach(button => button.onclick = () => {
+      const item = catalogState.items.find(entry => String(entry.id) === String(button.dataset.catalogSearchId))
+        || [...catalogState.allItems.values()].find(entry => String(entry.id) === String(button.dataset.catalogSearchId));
+      $('#globalSearchOverlay')?.setAttribute('hidden','');
+      document.body.classList.remove('search-open');
+      if (item) openCatalogDetails(item);
+    });
+  }
+
   function installInteractions() {
     catalogSurface()?.querySelectorAll('[data-catalog-action]').forEach(button => button.onclick = () => setView(button.dataset.catalogAction));
     catalogSurface()?.querySelectorAll('.catalog-card').forEach(card => {
@@ -380,6 +415,12 @@
     });
     $('#catalogLoadMore')?.addEventListener('click',loadMore);
   }
+
+  renderReleases = function(...args) {
+    const result = releaseRenderReleases(...args);
+    if (isCatalogView(state.view)) setCatalogChrome(state.view);
+    return result;
+  };
 
   setView = function(view) {
     if (isCatalogView(view)) {
@@ -416,23 +457,26 @@
     searchInput.placeholder = 'Katalog oder Radar durchsuchen …';
     searchInput.onfocus = event => {
       if (isCatalogView(state.view)) {
-        document.body.classList.remove('search-open');
-        const overlay = $('#globalSearchOverlay'); if (overlay) overlay.hidden = true;
+        releaseSearchFocus?.call(searchInput,event);
+        renderCatalogSearchOverlay(searchInput.value);
       } else if (releaseSearchFocus) releaseSearchFocus.call(searchInput,event);
     };
     searchInput.oninput = event => {
       if (isCatalogView(state.view)) {
         catalogState.query = searchInput.value || '';
-        renderCurrent();
+        releaseSearchInput?.call(searchInput,event);
+        renderCatalogSearchOverlay(searchInput.value);
       } else if (releaseSearchInput) releaseSearchInput.call(searchInput,event);
     };
   }
 
   document.documentElement.dataset.streamradarVersion = VERSION;
   window.StreamRadarVersion = VERSION;
-  ensureProviderMap().then(() => { buildProviderNav(); if (isCatalogView(state.view)) loadView(state.view,true); }).catch(console.warn);
-  if (!isCatalogView(state.view) && state.view === 'discover') setView('catalog-home');
-  else if (isCatalogView(state.view)) setView(state.view);
+  ensureProviderMap().then(() => {
+    buildProviderNav();
+    if (!isCatalogView(state.view) && state.view === 'discover') setView('catalog-home');
+    else if (isCatalogView(state.view)) setView(state.view);
+  }).catch(console.warn);
   syncWatchCount();
 
   window.StreamRadarCatalog = Object.freeze({
