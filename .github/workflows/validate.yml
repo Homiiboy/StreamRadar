@@ -40,17 +40,17 @@ jobs:
 
       - name: Check version consistency
         run: |
-          grep -qx '0.2.2' VERSION
-          grep -q 'v0.2.2' README.md
-          grep -q '\[0.2.2\]' CHANGELOG.md
-          grep -q 'v0.2.2' index.html
-          grep -q '"version": "0.2.2"' package.json
-          grep -q '"version": "0.2.2"' package-lock.json
-          grep -q '"version": "0.2.2"' src-tauri/tauri.conf.json
-          grep -q 'version = "0.2.2"' src-tauri/Cargo.toml
-          grep -q "APP_VERSION = '0.2.2'" js/app.js
-          grep -q "VERSION = '0.2.2'" js/desktop.js
-          grep -q "const VERSION = '0.2.2'" js/ui.js
+          grep -qx '0.3.0' VERSION
+          grep -q 'v0.3.0' README.md
+          grep -q '\[0.3.0\]' CHANGELOG.md
+          grep -q 'v0.3.0' index.html
+          grep -q '"version": "0.3.0"' package.json
+          grep -q '"version": "0.3.0"' package-lock.json
+          grep -q '"version": "0.3.0"' src-tauri/tauri.conf.json
+          grep -q 'version = "0.3.0"' src-tauri/Cargo.toml
+          grep -q "APP_VERSION = '0.3.0'" js/app.js
+          grep -q "VERSION = '0.3.0'" js/desktop.js
+          grep -q "const VERSION = '0.3.0'" js/ui.js
           grep -q '"@playwright/test": "1.62.1"' package.json
 
       - name: Check runtime JavaScript layout
@@ -74,9 +74,28 @@ jobs:
           grep -q "movies: \['FILM-RADAR', 'Filme'\]" js/ui.js
           grep -q "movies:'movies'" js/ui.js
           grep -q '<span>Filme</span>' js/calendar.js
-          grep -q "MOVIE_RELEASE_TYPES" js/tmdb.js
+          grep -q 'MOVIE_RELEASE_TYPES' js/tmdb.js
           grep -q "mediaType === 'movie'" js/tmdb.js
           grep -q 'movies view and calendar include movie releases' tests/e2e/streamradar.spec.js
+
+      - name: Check desktop integration and update center
+        run: |
+          test -s OldCss/styles-v0.2.2.css
+          grep -q 'PUBLISHED_DOWNLOADS_URL' js/desktop.js
+          grep -q 'downloads/README.md' js/desktop.js
+          grep -q 'checkForUpdates' js/desktop.js
+          grep -q 'settingsUpdatePage' js/desktop.js
+          grep -q 'downloadStreamRadarUpdate' js/desktop.js
+          grep -q 'openExternal' js/desktop.js
+          grep -q '24 \* 60 \* 60 \* 1000' js/desktop.js
+          grep -q '"withGlobalTauri": true' src-tauri/tauri.conf.json
+          grep -q 'tauri-plugin-opener' src-tauri/Cargo.toml
+          grep -q 'tauri-plugin-window-state' src-tauri/Cargo.toml
+          grep -q 'opener:default' src-tauri/capabilities/default.json
+          grep -q 'window-state:default' src-tauri/capabilities/default.json
+          grep -q 'tauri_plugin_opener::init' src-tauri/src/lib.rs
+          grep -q 'tauri_plugin_window_state' src-tauri/src/lib.rs
+          grep -q 'StreamRadar v0.3.0 — Desktop Integration & Updates' styles.css
 
       - name: Check core release intelligence and personalization
         run: |
@@ -102,6 +121,8 @@ jobs:
           grep -q 'settings persist density' tests/e2e/streamradar.spec.js
           grep -q 'backup excludes the token' tests/e2e/streamradar.spec.js
           grep -q 'corrupt local personalization data' tests/e2e/streamradar.spec.js
+          grep -q 'movies view and calendar include movie releases' tests/e2e/streamradar.spec.js
+          grep -q 'update center detects a newer published MSI' tests/e2e/streamradar.spec.js
 
       - name: Build static desktop frontend
         run: |
@@ -113,13 +134,16 @@ jobs:
           test ! -d dist/OldCss
           test ! -d dist/OldUi
           test ! -d dist/tests
-          grep -q 'v0.2.2' dist/index.html
+          grep -q 'v0.3.0' dist/index.html
           grep -q 'data-view="movies"' dist/index.html
+          grep -q 'checkForUpdates' dist/js/desktop.js
 
       - name: Check repository hygiene
         run: |
           if grep -R -nE '^(<<<<<<<|=======|>>>>>>>)' --exclude-dir=.git --exclude-dir=dist --exclude-dir=node_modules .; then exit 1; fi
           test -z "$(find . -maxdepth 1 -type f -name '*.js' -print -quit)"
+          test ! -e scripts/prepare-v030.py
+          test ! -e .github/workflows/prepare-v030.yml
           test ! -e scripts/v022_movies.py
           test ! -e scripts/v022_release.py
           test ! -e .github/workflows/prepare-v022.yml
@@ -151,7 +175,7 @@ jobs:
         if: failure()
         uses: actions/upload-artifact@v4
         with:
-          name: StreamRadar-v0.2.2-Playwright-Diagnostics
+          name: StreamRadar-v0.3.0-Playwright-Diagnostics
           path: |
             playwright-report/
             test-results/
