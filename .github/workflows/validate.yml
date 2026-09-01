@@ -16,10 +16,12 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v4
+
       - name: Setup Node
         uses: actions/setup-node@v4
         with:
           node-version: '22'
+
       - name: Check JavaScript syntax
         run: |
           node --check original-overrides.js
@@ -29,14 +31,21 @@ jobs:
           node --check calendar.js
           node --check stability.js
           node --check polish.js
+          node --check desktop.js
+          node --check scripts/build-desktop.mjs
+
       - name: Check version consistency
         run: |
           test -s VERSION
-          grep -qx "0.0.10" VERSION
-          grep -q "v0.0.10" README.md
-          grep -q "\[0.0.10\]" CHANGELOG.md
-          grep -q "v0.0.10" index.html
-          grep -q "VERSION = '0.0.10'" polish.js
+          grep -qx "0.1.0" VERSION
+          grep -q "v0.1.0" README.md
+          grep -q "\[0.1.0\]" CHANGELOG.md
+          grep -q "v0.1.0" index.html
+          grep -q '"version": "0.1.0"' package.json
+          grep -q '"version": "0.1.0"' src-tauri/tauri.conf.json
+          grep -q 'version = "0.1.0"' src-tauri/Cargo.toml
+          grep -q "VERSION = '0.1.0'" desktop.js
+
       - name: Check release intelligence surface
         run: |
           test -s v005.css
@@ -44,6 +53,7 @@ jobs:
           test -s v007.css
           test -s v008.css
           test -s v009.css
+          test -s v0010.css
           grep -q 'id="eventFilter"' index.html
           grep -q "season-premiere" app.js
           grep -q "getGlobalEpisodeEvents" tvmaze.js
@@ -53,24 +63,47 @@ jobs:
           grep -q "BEGIN:VCALENDAR" calendar.js
           grep -q "CACHE_TTL_MS" stability.js
           grep -q "preferredProvidersOnly" stability.js
-      - name: Check v0.0.10 bugfix and polish
-        run: |
-          test -s v0010.css
-          test -s polish.js
           grep -q "rebindFilterHandlers" polish.js
           grep -q "saveCompactSnapshot" polish.js
-          grep -q "sanitizeExistingCache" polish.js
-          grep -q "syncPromise" polish.js
-          grep -q "aria-busy" polish.js
-          grep -q "installImageFallback" polish.js
-          grep -q "installImprovedWatchlistImport" polish.js
-          grep -q "updateCalendarLayout" polish.js
-          grep -q "prefers-reduced-motion" v0010.css
-          grep -q "polish.js" index.html
-          grep -q "v0010.css" index.html
+
+      - name: Check v0.1.0 desktop surface
+        run: |
+          test -s package.json
+          test -s scripts/build-desktop.mjs
+          test -s assets/streamradar-icon.svg
+          test -s v0100.css
+          test -s desktop.js
+          test -s src-tauri/Cargo.toml
+          test -s src-tauri/build.rs
+          test -s src-tauri/src/main.rs
+          test -s src-tauri/src/lib.rs
+          test -s src-tauri/tauri.conf.json
+          test -s src-tauri/capabilities/default.json
+          test -s .github/workflows/build-msi.yml
+          grep -q '"targets": \["msi"\]' src-tauri/tauri.conf.json
+          grep -q '"language": "de-DE"' src-tauri/tauri.conf.json
+          grep -q 'at.streamradar.desktop' src-tauri/tauri.conf.json
+          grep -q '@tauri-apps/cli' package.json
+          grep -q 'streamradar-icon.svg' package.json
+          grep -q 'desktop.js' index.html
+          grep -q 'v0100.css' index.html
+          grep -q 'WINDOWS APP' desktop.js
+
+      - name: Build static desktop frontend
+        run: |
+          node scripts/build-desktop.mjs
+          test -s dist/index.html
+          test -s dist/desktop.js
+          test -s dist/v0100.css
+          grep -q "v0.1.0" dist/index.html
+
+      - name: Check configuration JSON
+        run: |
+          node -e "JSON.parse(require('fs').readFileSync('package.json','utf8')); JSON.parse(require('fs').readFileSync('src-tauri/tauri.conf.json','utf8')); JSON.parse(require('fs').readFileSync('src-tauri/capabilities/default.json','utf8'));"
+
       - name: Check repository hygiene
         run: |
-          if grep -R -nE '^(<<<<<<<|=======|>>>>>>>)' --exclude-dir=.git .; then
+          if grep -R -nE '^(<<<<<<<|=======|>>>>>>>)' --exclude-dir=.git --exclude-dir=dist .; then
             echo "Merge conflict marker found"
             exit 1
           fi

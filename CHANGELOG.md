@@ -2,6 +2,41 @@
 
 Alle relevanten Änderungen an StreamRadar werden hier ab der ersten Version nach Semantic Versioning dokumentiert.
 
+## [0.1.0] - 2026-09-01
+
+### Added
+- Erster größerer **First Complete Radar**-Meilenstein.
+- Erste installierbare Windows-Desktop-Version auf Basis von **Tauri v2**.
+- Windows-x64-MSI-Build über GitHub Actions auf `windows-latest`.
+- Zusätzliches Windows-EXE-Build-Artefakt.
+- Neues Desktop-Buildsystem mit `package.json` und `scripts/build-desktop.mjs`.
+- Tauri-Rust-Projekt unter `src-tauri/` mit minimaler Capability-Konfiguration.
+- Feste Windows-App-ID `at.streamradar.desktop`.
+- Deutscher WiX-MSI-Build (`de-DE`) mit stabilem Upgrade-Code für spätere Updates.
+- Eigene StreamRadar-Icon-Quelle unter `assets/streamradar-icon.svg`.
+- Automatische Generierung der Tauri-/Windows-Icon-Sets während des Desktop-Builds.
+- Desktop-Runtime-Erkennung über `desktop.js` und sichtbares `WINDOWS APP`-Badge innerhalb der installierten Anwendung.
+- Neues Desktop-/Meilenstein-Styling in `v0100.css`.
+- Separate GitHub-Actions-Pipeline `Build StreamRadar Windows MSI` mit MSI- und EXE-Artefakten.
+
+### Changed
+- Sichtbare Produktversion auf `v0.1.0` angehoben.
+- Hero und Produkttexte beschreiben StreamRadar jetzt als vollständigen Release-Radar statt als Pre-Milestone-Build.
+- Bestehende Web-Oberfläche wird für Desktop reproduzierbar in ein separates `dist/` gepackt und anschließend von Tauri eingebettet.
+- Web- und Desktop-Version verwenden weiterhin dieselbe Release-, Origin-, Kalender-, Cache- und Personalisierungslogik.
+- README um Windows-Installation, Desktop-Build und Installer-Hinweise erweitert.
+- `VERSION` auf `0.1.0` gesetzt.
+
+### Desktop
+- MSI ist für Windows x64 vorgesehen.
+- Tauri verwendet auf Windows WebView2 für die Darstellung.
+- Der Installer verwendet den Tauri/WiX-MSI-Bundler.
+- v0.1.0 ist noch nicht mit einem Windows-Code-Signing-Zertifikat signiert; Windows SmartScreen kann daher bei Downloads warnen.
+- Automatische Desktop-Updates und SQLite-Persistenz sind noch nicht Bestandteil dieses Releases.
+
+### Notes
+- v0.1.0 integriert die vollständige bisherige Funktionskette aus v0.0.1 bis v0.0.10: TMDB-Live-Daten, TVmaze-Episodenradar, Release Intelligence, Origin Intelligence, Logos, Kalender/Timeline, persönliche Anbieter, Merkliste, Cache/Offline-Fallback und v0.0.10-Hardening.
+
 ## [0.0.10] - 2026-09-01
 
 ### Fixed
