@@ -22,30 +22,36 @@ jobs:
           node-version: '22'
       - name: Check JavaScript syntax
         run: |
+          node --check original-overrides.js
           node --check tmdb.js
           node --check tvmaze.js
           node --check app.js
       - name: Check version consistency
         run: |
           test -s VERSION
-          grep -q "0.0.6" VERSION
-          grep -q "v0.0.6" README.md
-          grep -q "0.0.6" CHANGELOG.md
-          grep -q "v0.0.6" index.html
-          grep -q "APP_VERSION = '0.0.6'" app.js
+          grep -q "0.0.7" VERSION
+          grep -q "v0.0.7" README.md
+          grep -q "0.0.7" CHANGELOG.md
+          grep -q "v0.0.7" index.html
+          grep -q "APP_VERSION = '0.0.7'" app.js
       - name: Check release intelligence surface
         run: |
           test -s v005.css
+          test -s v006.css
           grep -q 'id="eventFilter"' index.html
           grep -q "season-premiere" app.js
-          grep -q "air_date.gte" tmdb.js
-          grep -q "getSeasonProviders" tmdb.js
-      - name: Check v0.0.6 global episode radar
-        run: |
-          test -s v006.css
-          grep -q 'id="radarSummary"' index.html
-          grep -q 'data-view="seasons"' index.html
-          grep -q 'data-view="episodes"' index.html
           grep -q "getGlobalEpisodeEvents" tvmaze.js
           grep -q "/schedule/web" tvmaze.js
-          grep -q "TVMAZE ✓" app.js
+      - name: Check v0.0.7 origin intelligence
+        run: |
+          test -s v007.css
+          test -s original-overrides.js
+          grep -q "ORIGIN_OVERRIDES" original-overrides.js
+          grep -q "originalScore" tmdb.js
+          grep -q "originType" tmdb.js
+          grep -q "override" tmdb.js
+          grep -q "Marvel Studios" tmdb.js
+          grep -q "Lucasfilm" tmdb.js
+          grep -q "Pixar" tmdb.js
+          grep -q "MANUELL" app.js
+          grep -q 'original-overrides.js' index.html
