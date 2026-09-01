@@ -34,8 +34,7 @@ jobs:
           node --check stability.js
           node --check polish.js
           node --check desktop.js
-          node --check ui011.js
-          node --check ui012.js
+          node --check ui.js
           node --check scripts/build-desktop.mjs
 
       - name: Check version consistency
@@ -50,7 +49,7 @@ jobs:
           grep -q 'version = "0.1.2"' src-tauri/Cargo.toml
           grep -q "APP_VERSION = '0.1.2'" app.js
           grep -q "VERSION = '0.1.2'" desktop.js
-          grep -q "VERSION = '0.1.2'" ui012.js
+          grep -q "const VERSION = '0.1.2'" ui.js
 
       - name: Check release intelligence surface
         run: |
@@ -72,34 +71,39 @@ jobs:
           grep -q "rebindFilterHandlers" polish.js
           grep -q "saveCompactSnapshot" polish.js
 
-      - name: Check v0.1.1 foundation
+      - name: Check consolidated UI foundation
         run: |
-          test -s OldCss/v011.css
-          test -s ui011.js
+          test -s ui.js
+          test -s OldUi/ui011.js
+          test -s OldUi/ui012.js
           grep -q 'class="app-sidebar"' index.html
           grep -q 'id="homeDashboard"' index.html
           grep -q 'id="homeRails"' index.html
           grep -q 'id="toggleAdvancedFilters"' index.html
-          grep -q 'renderHomeDashboard' ui011.js
-          grep -q 'dashboardSource' ui011.js
-          grep -q 'preferredFiltered' ui011.js
-          grep -q 'updateFilterUX' ui011.js
-          grep -q 'ui011.js' index.html
+          grep -q 'renderHomeDashboard' ui.js
+          grep -q 'dashboardSource' ui.js
+          grep -q 'preferredFiltered' ui.js
+          grep -q 'updateFilterUX' ui.js
+          grep -q 'globalSearchOverlay' ui.js
+          grep -q 'renderPremiumDetail' ui.js
+          grep -q 'newSinceItems' ui.js
+          grep -q 'ui.js' index.html
+          ! grep -q 'ui011.js' index.html
+          ! grep -q 'ui012.js' index.html
+          ! grep -q 'OldUi/' index.html
 
-      - name: Check v0.1.2 UI UX polish
+      - name: Check consolidated CSS surface
         run: |
-          test -s v012.css
-          test -s ui012.js
-          grep -q 'globalSearchOverlay' ui012.js
-          grep -q 'renderPremiumDetail' ui012.js
-          grep -q 'newSinceItems' ui012.js
-          grep -q 'rail-heading-actions' v012.css
-          grep -q 'premium-detail' v012.css
-          grep -q 'Ctrl+K' CHANGELOG.md
-          grep -q 'ui012.js' index.html
-          grep -q 'v012.css' index.html
-          ! grep -q 'OldCss/.*\.css' index.html
+          test -s styles.css
+          test -s OldCss/v011.css
+          test -s OldCss/v012.css
+          grep -q 'rail-heading-actions' styles.css
+          grep -q 'premium-detail' styles.css
           grep -q 'StreamRadar consolidated visual baseline through v0.1.1' styles.css
+          grep -q 'Consolidated StreamRadar v0.1.2 polish' styles.css
+          grep -q 'styles.css' index.html
+          ! grep -q 'v012.css' index.html
+          ! grep -q 'OldCss/.*\.css' index.html
 
       - name: Check desktop surface
         run: |
@@ -116,6 +120,7 @@ jobs:
           test -s .github/workflows/build-msi.yml
           test -s downloads/README.md
           test -s OldCss/README.md
+          test -s OldUi/README.md
           grep -q 'downloads/StreamRadar_0.1.2_x64_de-DE.msi' README.md
           grep -q 'StreamRadar_0.1.2_x64_de-DE.msi' downloads/README.md
           node -e "const c=JSON.parse(require('fs').readFileSync('src-tauri/tauri.conf.json','utf8')); if(!c.bundle.targets.includes('msi')||c.bundle.windows.wix.language!=='de-DE'||c.identifier!=='at.streamradar.desktop') process.exit(1)"
@@ -129,27 +134,32 @@ jobs:
           node scripts/build-desktop.mjs
           test -s dist/index.html
           test -s dist/styles.css
-          test -s dist/v012.css
           test -s dist/desktop.js
-          test -s dist/ui011.js
-          test -s dist/ui012.js
+          test -s dist/ui.js
+          test ! -e dist/v012.css
+          test ! -e dist/ui011.js
+          test ! -e dist/ui012.js
           test ! -d dist/OldCss
+          test ! -d dist/OldUi
           grep -q "v0.1.2" dist/index.html
           grep -q 'class="app-sidebar"' dist/index.html
-          grep -q 'ui012.js' dist/index.html
-          grep -q 'v012.css' dist/index.html
-          ! grep -q 'OldCss/.*\.css' dist/index.html
+          grep -q 'ui.js' dist/index.html
+          grep -q 'styles.css' dist/index.html
 
-      - name: Check CSS archive layout
+      - name: Check archive layout
         run: |
           test -s styles.css
-          test -s v012.css
-          test ! -e v011.css
-          for file in v003.css v004.css v005.css v006.css v007.css v008.css v009.css v0010.css v0100.css v011.css; do
+          test -s ui.js
+          for file in v003.css v004.css v005.css v006.css v007.css v008.css v009.css v0010.css v0100.css v011.css v012.css; do
             test ! -e "$file"
             test -s "OldCss/$file"
           done
-          grep -q 'konsolidierte aktive Basis' OldCss/README.md
+          test ! -e ui011.js
+          test ! -e ui012.js
+          test -s OldUi/ui011.js
+          test -s OldUi/ui012.js
+          grep -q 'nur `styles.css`' OldCss/README.md
+          grep -q 'aktive UI-Logik' OldUi/README.md
 
       - name: Check configuration JSON
         run: |
@@ -167,3 +177,4 @@ jobs:
           fi
           test ! -e scripts/prepare-v012.py
           test ! -e .github/workflows/prepare-v012.yml
+          test ! -e .github/workflows/consolidate-ui-assets.yml
