@@ -11,7 +11,7 @@ permissions:
 
 jobs:
   validate:
-    name: Syntax & version consistency
+    name: Syntax & release consistency
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
@@ -28,20 +28,22 @@ jobs:
           node --check app.js
           node --check calendar.js
           node --check stability.js
+          node --check polish.js
       - name: Check version consistency
         run: |
           test -s VERSION
-          grep -q "0.0.9" VERSION
-          grep -q "v0.0.9" README.md
-          grep -q "\[0.0.9\]" CHANGELOG.md
-          grep -q "v0.0.9" index.html
-          grep -q "VERSION = '0.0.9'" stability.js
+          grep -qx "0.0.10" VERSION
+          grep -q "v0.0.10" README.md
+          grep -q "\[0.0.10\]" CHANGELOG.md
+          grep -q "v0.0.10" index.html
+          grep -q "VERSION = '0.0.10'" polish.js
       - name: Check release intelligence surface
         run: |
           test -s v005.css
           test -s v006.css
           test -s v007.css
           test -s v008.css
+          test -s v009.css
           grep -q 'id="eventFilter"' index.html
           grep -q "season-premiere" app.js
           grep -q "getGlobalEpisodeEvents" tvmaze.js
@@ -49,18 +51,30 @@ jobs:
           grep -q "StreamRadarOriginalOverrides" original-overrides.js
           grep -q "originalScore" tmdb.js
           grep -q "BEGIN:VCALENDAR" calendar.js
-      - name: Check v0.0.9 stability and personalization
-        run: |
-          test -s v009.css
-          test -s stability.js
           grep -q "CACHE_TTL_MS" stability.js
-          grep -q "CACHE_KEY" stability.js
-          grep -q "restoreCache" stability.js
-          grep -q "saveSnapshot" stability.js
           grep -q "preferredProvidersOnly" stability.js
-          grep -q "sortMode" stability.js
-          grep -q "exportWatchlist" stability.js
-          grep -q "importWatchlist" stability.js
-          grep -q "navigator.onLine" stability.js
-          grep -q "stability.js" index.html
-          grep -q "v009.css" index.html
+      - name: Check v0.0.10 bugfix and polish
+        run: |
+          test -s v0010.css
+          test -s polish.js
+          grep -q "rebindFilterHandlers" polish.js
+          grep -q "saveCompactSnapshot" polish.js
+          grep -q "sanitizeExistingCache" polish.js
+          grep -q "syncPromise" polish.js
+          grep -q "aria-busy" polish.js
+          grep -q "installImageFallback" polish.js
+          grep -q "installImprovedWatchlistImport" polish.js
+          grep -q "updateCalendarLayout" polish.js
+          grep -q "prefers-reduced-motion" v0010.css
+          grep -q "polish.js" index.html
+          grep -q "v0010.css" index.html
+      - name: Check repository hygiene
+        run: |
+          if grep -R -nE '^(<<<<<<<|=======|>>>>>>>)' --exclude-dir=.git .; then
+            echo "Merge conflict marker found"
+            exit 1
+          fi
+          if find . -maxdepth 1 -type f -name 'tmp*' -print -quit | grep -q .; then
+            echo "Temporary root file found"
+            exit 1
+          fi
