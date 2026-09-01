@@ -3,6 +3,7 @@
   const IMAGE_BASE = 'https://image.tmdb.org/t/p';
   const REGION = 'AT';
   const LANGUAGE = 'de-DE';
+  const overrides = window.StreamRadarOriginalOverrides || { getOverride: () => null };
 
   const SERVICE_DEFINITIONS = [
     { name: 'Netflix', aliases: ['Netflix'] },
@@ -19,23 +20,39 @@
   ];
 
   const ORIGINAL_BRANDS = [
-    { name: 'Netflix', network: ['Netflix'], company: ['Netflix'] },
-    { name: 'HBO', network: ['HBO'], company: ['HBO'] },
-    { name: 'HBO Max', network: ['HBO Max', 'Max'], company: ['HBO Max'] },
-    { name: 'Disney+', network: ['Disney+'], company: ['Disney+'] },
-    { name: 'Hulu', network: ['Hulu'], company: ['Hulu'] },
-    { name: 'FX', network: ['FX', 'FXX', 'FX on Hulu'], company: ['FX Productions'] },
-    { name: 'Prime Video', network: ['Prime Video', 'Amazon'], company: ['Amazon Studios', 'Amazon MGM Studios'] },
-    { name: 'Apple TV+', network: ['Apple TV+'], company: ['Apple Studios'] },
-    { name: 'Paramount+', network: ['Paramount+'], company: ['Paramount Television Studios'] },
-    { name: 'Peacock', network: ['Peacock'], company: ['Peacock'] },
-    { name: 'AMC+', network: ['AMC+', 'AMC'], company: ['AMC Studios'] },
-    { name: 'Crunchyroll', network: ['Crunchyroll'], company: ['Crunchyroll'] },
-    { name: 'BBC', network: ['BBC One', 'BBC Two', 'BBC Three', 'BBC iPlayer'], company: ['BBC Studios'] },
-    { name: 'Sky', network: ['Sky Atlantic', 'Sky One', 'Sky Max', 'Sky'], company: ['Sky Studios'] },
-    { name: 'Joyn', network: ['Joyn'], company: ['Joyn'] },
-    { name: 'RTL+', network: ['RTL+'], company: ['RTL'] },
-    { name: 'ORF', network: ['ORF 1', 'ORF 2', 'ORF ON'], company: ['ORF'] }
+    { name:'Netflix', category:'platform', network:['Netflix'], company:['Netflix','Netflix Studios'], companyOriginal:true, priority:30 },
+    { name:'HBO Max', category:'platform', network:['HBO Max','Max'], company:['HBO Max'], companyOriginal:true, priority:30 },
+    { name:'HBO', category:'network', network:['HBO'], company:['HBO'], companyOriginal:true, priority:28 },
+    { name:'Disney+', category:'platform', network:['Disney+'], company:['Disney+'], companyOriginal:true, priority:30 },
+    { name:'Hulu', category:'platform', network:['Hulu','FX on Hulu'], company:['Hulu'], companyOriginal:true, priority:28 },
+    { name:'FX', category:'network', network:['FX','FXX'], company:['FX Productions'], companyOriginal:true, priority:29 },
+    { name:'Prime Video', category:'platform', network:['Prime Video','Amazon Prime Video'], company:['Amazon Studios','Amazon MGM Studios'], companyOriginal:true, priority:30 },
+    { name:'Apple TV+', category:'platform', network:['Apple TV+'], company:['Apple Studios','Apple TV+'], companyOriginal:true, priority:30 },
+    { name:'Paramount+', category:'platform', network:['Paramount+'], company:['Paramount Television Studios'], companyOriginal:true, priority:30 },
+    { name:'Showtime', category:'network', network:['Showtime'], company:['Showtime Networks','Showtime Networks Inc.'], companyOriginal:true, priority:27 },
+    { name:'Peacock', category:'platform', network:['Peacock'], company:['Peacock'], companyOriginal:true, priority:30 },
+    { name:'AMC+', category:'platform', network:['AMC+'], company:['AMC Networks'], companyOriginal:true, priority:29 },
+    { name:'AMC', category:'network', network:['AMC'], company:['AMC Studios'], companyOriginal:true, priority:27 },
+    { name:'Crunchyroll', category:'platform', network:['Crunchyroll'], company:['Crunchyroll'], companyOriginal:true, priority:30 },
+    { name:'Sky', category:'network', network:['Sky Atlantic','Sky One','Sky Max','Sky'], company:['Sky Studios'], companyOriginal:true, priority:27 },
+    { name:'BBC', category:'broadcaster', network:['BBC One','BBC Two','BBC Three','BBC Four','BBC iPlayer'], company:['BBC Studios'], companyOriginal:true, priority:25 },
+    { name:'CANAL+', category:'broadcaster', network:['Canal+','CANAL+'], company:['Canal+','STUDIOCANAL'], companyOriginal:true, priority:25 },
+    { name:'CBS', category:'network', network:['CBS'], company:['CBS Studios','CBS Television Studios'], companyOriginal:true, priority:24 },
+    { name:'NBC', category:'network', network:['NBC'], company:['Universal Television','NBCUniversal'], companyOriginal:false, priority:23 },
+    { name:'ABC', category:'network', network:['ABC'], company:['ABC Studios','ABC Signature'], companyOriginal:true, priority:24 },
+    { name:'FOX', category:'network', network:['FOX','Fox'], company:['Fox Entertainment','20th Television'], companyOriginal:false, priority:23 },
+    { name:'Starz', category:'network', network:['Starz'], company:['Starz'], companyOriginal:true, priority:24 },
+    { name:'Joyn', category:'platform', network:['Joyn'], company:['Joyn'], companyOriginal:true, priority:28 },
+    { name:'RTL+', category:'platform', network:['RTL+'], company:['RTL'], companyOriginal:true, priority:27 },
+    { name:'ORF', category:'broadcaster', network:['ORF 1','ORF 2','ORF III','ORF ON'], company:['ORF'], companyOriginal:true, priority:26 },
+    { name:'Marvel Studios', category:'studio', network:[], company:['Marvel Studios'], companyOriginal:false, priority:20 },
+    { name:'Lucasfilm', category:'studio', network:[], company:['Lucasfilm Ltd.','Lucasfilm'], companyOriginal:false, priority:20 },
+    { name:'Pixar', category:'studio', network:[], company:['Pixar','Pixar Animation Studios'], companyOriginal:false, priority:20 },
+    { name:'Walt Disney Studios', category:'studio', network:[], company:['Walt Disney Pictures','Walt Disney Studios Motion Pictures'], companyOriginal:false, priority:18 },
+    { name:'National Geographic', category:'brand', network:['National Geographic'], company:['National Geographic'], companyOriginal:false, priority:20 },
+    { name:'Warner Bros.', category:'studio', network:[], company:['Warner Bros. Television','Warner Bros. Pictures','Warner Bros. Entertainment'], companyOriginal:false, priority:16 },
+    { name:'Sony Pictures', category:'studio', network:[], company:['Sony Pictures Television','Sony Pictures Entertainment'], companyOriginal:false, priority:16 },
+    { name:'A24', category:'studio', network:[], company:['A24'], companyOriginal:false, priority:16 }
   ];
 
   const MOVIE_RELEASE_TYPES = {
@@ -65,12 +82,17 @@
   }
 
   const normalizeName = (value = '') => value.toLowerCase().replace(/[+&._-]/g, ' ').replace(/\s+/g, ' ').trim();
-  function matchesAlias(value, aliases) {
+  function aliasScore(value, aliases = []) {
     const normalized = normalizeName(value);
-    const candidates = aliases.map(normalizeName);
-    if (candidates.includes(normalized)) return true;
-    return candidates.some(candidate => candidate.length >= 4 && (normalized.includes(candidate) || candidate.includes(normalized)));
+    if (!normalized) return 0;
+    let best = 0;
+    aliases.map(normalizeName).filter(Boolean).forEach(candidate => {
+      if (normalized === candidate) best = Math.max(best, 100);
+      else if (candidate.length >= 4 && (normalized.includes(candidate) || candidate.includes(normalized))) best = Math.max(best, 86);
+    });
+    return best;
   }
+  function matchesAlias(value, aliases) { return aliasScore(value, aliases) > 0; }
 
   function resolveProviderMap(movieProviders, tvProviders) {
     return SERVICE_DEFINITIONS.map(service => {
@@ -157,6 +179,11 @@
       originalConfidence: null,
       originalLogoPath: null,
       originalLogoSource: null,
+      originType: null,
+      originLabel: null,
+      originalScore: null,
+      originalReason: null,
+      overrideApplied: false,
       eventKind: mediaType === 'movie' ? 'movie-premiere' : 'series-premiere',
       eventLabel: mediaType === 'movie' ? 'Film-Premiere' : 'Neue Serie',
       eventSeason: mediaType === 'tv' ? 1 : null,
@@ -210,18 +237,82 @@
     return { releases: mergeReleases(groups), providers: providerMap };
   }
 
-  function inferOriginalBrand(details) {
+  function brandDefinition(name) { return ORIGINAL_BRANDS.find(item => item.name === name) || null; }
+  function originLabelFor(definition, qualifiesAsOriginal) {
+    if (definition?.category === 'studio') return 'Studio / Brand';
+    if (definition?.category === 'brand') return 'Herkunftsmarke';
+    return qualifiesAsOriginal ? 'Original von' : 'Herkunft';
+  }
+
+  function inferOriginalBrand(details, mediaType = 'tv', tmdbId = null, title = '') {
+    const manual = overrides.getOverride?.(mediaType, tmdbId, title || details.name || details.title || '');
+    if (manual?.action === 'deny') {
+      return {
+        brand:null, confidence:'manual', evidence:manual.note || 'Manuell ausgeschlossen', logoPath:null, logoSource:null,
+        originType:'manual', originLabel:'Manuell geprüft', score:100, reason:manual.note || 'Manueller Ausschluss',
+        qualifiesAsOriginal:false, overrideApplied:true
+      };
+    }
+    if (manual?.action === 'force' && manual.brand) {
+      const definition = brandDefinition(manual.brand);
+      const qualifies = manual.qualifiesAsOriginal ?? definition?.companyOriginal ?? true;
+      return {
+        brand:manual.brand, confidence:'manual', evidence:manual.note || 'Manuell bestätigt', logoPath:manual.logoPath || null,
+        logoSource:'manual', originType:manual.originType || definition?.category || 'manual',
+        originLabel:manual.originLabel || originLabelFor(definition, qualifies), score:100,
+        reason:manual.note || 'Manuelle Override-Regel', qualifiesAsOriginal:Boolean(qualifies), overrideApplied:true
+      };
+    }
+
     const networks = details.networks || [];
     const companies = details.production_companies || [];
-    for (const brand of ORIGINAL_BRANDS) {
-      const network = networks.find(item => matchesAlias(item.name || '', brand.network));
-      if (network) return { brand: brand.name, confidence: 'high', evidence: network.name, logoPath: network.logo_path || null, logoSource: 'network' };
+    const candidates = [];
+
+    ORIGINAL_BRANDS.forEach(definition => {
+      networks.forEach(network => {
+        const match = aliasScore(network.name || '', definition.network || []);
+        if (!match) return;
+        const score = Math.min(100, (match === 100 ? 96 : 86) + Math.min(4, definition.priority || 0) / 10);
+        candidates.push({
+          definition, score, evidence:network.name, logoPath:network.logo_path || null, logoSource:'network',
+          originType:definition.category, qualifiesAsOriginal:true,
+          reason:`Network-Treffer: ${network.name}`
+        });
+      });
+
+      companies.forEach(company => {
+        const match = aliasScore(company.name || '', definition.company || []);
+        if (!match) return;
+        const base = match === 100 ? 74 : 63;
+        const score = base + Math.min(5, definition.priority || 0) / 10;
+        candidates.push({
+          definition, score, evidence:company.name, logoPath:company.logo_path || null, logoSource:'production_company',
+          originType:definition.category, qualifiesAsOriginal:Boolean(definition.companyOriginal),
+          reason:`Produktionsfirma: ${company.name}`
+        });
+      });
+    });
+
+    candidates.sort((a, b) => b.score - a.score || (b.definition.priority || 0) - (a.definition.priority || 0));
+    const selected = candidates.find(candidate => candidate.score >= 70);
+    if (!selected) {
+      return { brand:null, confidence:null, evidence:null, logoPath:null, logoSource:null, originType:null, originLabel:null, score:null, reason:null, qualifiesAsOriginal:false, overrideApplied:false };
     }
-    for (const brand of ORIGINAL_BRANDS) {
-      const company = companies.find(item => matchesAlias(item.name || '', brand.company));
-      if (company) return { brand: brand.name, confidence: 'medium', evidence: company.name, logoPath: company.logo_path || null, logoSource: 'production_company' };
-    }
-    return { brand: null, confidence: null, evidence: null, logoPath: null, logoSource: null };
+
+    const confidence = selected.score >= 90 ? 'high' : selected.score >= 70 ? 'medium' : 'low';
+    return {
+      brand:selected.definition.name,
+      confidence,
+      evidence:selected.evidence,
+      logoPath:selected.logoPath,
+      logoSource:selected.logoSource,
+      originType:selected.originType,
+      originLabel:originLabelFor(selected.definition, selected.qualifiesAsOriginal),
+      score:Math.round(selected.score),
+      reason:selected.reason,
+      qualifiesAsOriginal:selected.qualifiesAsOriginal,
+      overrideApplied:false
+    };
   }
 
   function chooseMovieRelease(details, fallbackDate) {
@@ -334,15 +425,20 @@
         const item = queue.shift();
         try {
           const details = await getCoreDetails(item.mediaType, item.tmdbId, token);
-          const original = inferOriginalBrand(details);
+          const origin = inferOriginalBrand(details, item.mediaType, item.tmdbId, item.originalTitle || item.title);
           const classification = classifyRelease(item, details);
           Object.assign(item, classification, {
-            originalBrand: original.brand,
-            originalConfidence: original.confidence,
-            originalEvidence: original.evidence,
-            originalLogoPath: original.logoPath,
-            originalLogoSource: original.logoSource,
-            original: Boolean(original.brand),
+            originalBrand: origin.brand,
+            originalConfidence: origin.confidence,
+            originalEvidence: origin.evidence,
+            originalLogoPath: origin.logoPath,
+            originalLogoSource: origin.logoSource,
+            originType: origin.originType,
+            originLabel: origin.originLabel,
+            originalScore: origin.score,
+            originalReason: origin.reason,
+            overrideApplied: origin.overrideApplied,
+            original: Boolean(origin.brand && origin.qualifiesAsOriginal),
             externalIds: details.external_ids || {},
             networks: (details.networks || []).map(network => network.name),
             productionCompanies: (details.production_companies || []).map(company => company.name)
@@ -366,17 +462,23 @@
     const at = providerData.results?.[REGION] || {};
     const streaming = [...(at.flatrate || []), ...(at.free || []), ...(at.ads || [])];
     const uniqueStreaming = [...new Map(streaming.map(provider => [provider.provider_id, provider])).values()];
-    const original = inferOriginalBrand(details);
+    const origin = inferOriginalBrand(details, mediaType, id, details.original_name || details.original_title || details.name || details.title || '');
     const classification = classifyRelease({ mediaType, releaseDate: details.release_date || details.first_air_date || '' }, details);
     return {
       ...details,
       providers: uniqueStreaming,
       watchLink: at.link || null,
-      inferredOriginalBrand: original.brand,
-      originalConfidence: original.confidence,
-      originalEvidence: original.evidence,
-      inferredOriginalLogoPath: original.logoPath,
-      originalLogoSource: original.logoSource,
+      inferredOriginalBrand: origin.brand,
+      originalConfidence: origin.confidence,
+      originalEvidence: origin.evidence,
+      inferredOriginalLogoPath: origin.logoPath,
+      originalLogoSource: origin.logoSource,
+      originType: origin.originType,
+      originLabel: origin.originLabel,
+      originalScore: origin.score,
+      originalReason: origin.reason,
+      overrideApplied: origin.overrideApplied,
+      qualifiesAsOriginal: origin.qualifiesAsOriginal,
       classification
     };
   }
