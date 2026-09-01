@@ -47,7 +47,7 @@ jobs:
           test -s OldUi/ui-v0.3.0.js
           npm run build:web
           test -s dist/js/catalog.js
-          grep -q 'Streaming Catalog' dist/js/catalog.js
+          grep -q 'StreamRadar Catalog' dist/js/catalog.js
       - name: Commit prepared product files
         run: |
           git config user.name "github-actions[bot]"
