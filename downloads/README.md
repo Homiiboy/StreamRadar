@@ -4,19 +4,19 @@ Hier liegen die direkt installierbaren Windows-Builds von StreamRadar.
 
 ## Aktuelle Windows-Version
 
-### StreamRadar v0.4.0 – Windows x64
+### StreamRadar v0.4.1 – Windows x64
 
-[**StreamRadar_0.4.0_x64_de-DE.msi herunterladen**](StreamRadar_0.4.0_x64_de-DE.msi)
+[**StreamRadar_0.4.1_x64_de-DE.msi herunterladen**](StreamRadar_0.4.1_x64_de-DE.msi)
 
-- Version: `0.4.0`
+- Version: `0.4.1`
 - Plattform: Windows x64
 - Installer: MSI (`de-DE`)
-- SHA-256: `1e2f90fd457203e6b6095c0e282265b6aa7b268650c12f021944fd59dea38089`
+- SHA-256: `b6bd9f82738e914b794565432b6736001c767788f4d1307550d1faaa02eb1d5f`
 
 Der Installer ist aktuell nicht code-signiert. Windows kann deshalb beim Öffnen einen Hinweis auf einen unbekannten Herausgeber anzeigen.
 
 ## Vorherige Version
 
-- [StreamRadar v0.3.0 – Windows x64](StreamRadar_0.3.0_x64_de-DE.msi)
+- [StreamRadar v0.4.0 – Windows x64](StreamRadar_0.4.0_x64_de-DE.msi)
 
 Die aktuelle MSI wird vom GitHub-Actions-Workflow **Build StreamRadar Windows MSI** auf einem Windows-Runner gebaut, geprüft und anschließend automatisch in diesen Ordner veröffentlicht. Das Update-Center der Desktop-App liest genau diesen veröffentlichten Stand aus.
