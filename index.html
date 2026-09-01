@@ -1,0 +1,117 @@
+<!doctype html>
+<html lang="de">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="theme-color" content="#07090d" />
+  <meta name="description" content="StreamRadar – dein persönlicher Release-Radar für Filme und Serien." />
+  <title>StreamRadar · Release Radar</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Space+Grotesk:wght@600;700&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+  <div class="ambient ambient-one"></div>
+  <div class="ambient ambient-two"></div>
+
+  <header class="topbar">
+    <a class="brand" href="#" aria-label="StreamRadar Startseite">
+      <span class="brand-mark" aria-hidden="true"><span></span></span>
+      <span class="brand-copy"><strong>StreamRadar</strong><small>RELEASE INTELLIGENCE</small></span>
+    </a>
+
+    <nav class="main-nav" aria-label="Hauptnavigation">
+      <button class="nav-link active" data-view="discover">Entdecken</button>
+      <button class="nav-link" data-view="upcoming">Demnächst</button>
+      <button class="nav-link" data-view="watchlist">Merkliste <span id="watchlistCount" class="counter">0</span></button>
+    </nav>
+
+    <div class="top-actions">
+      <label class="search-box">
+        <span aria-hidden="true">⌕</span>
+        <input id="searchInput" type="search" placeholder="Titel suchen …" autocomplete="off" />
+      </label>
+      <button class="icon-button" id="themePulse" aria-label="Akzent umschalten">◉</button>
+    </div>
+  </header>
+
+  <main>
+    <section class="hero shell">
+      <div class="hero-copy">
+        <div class="eyebrow"><span class="live-dot"></span> RELEASE RADAR · ÖSTERREICH</div>
+        <h1>Alles Neue.<br /><span>Ein Radar.</span></h1>
+        <p>Filme, Serien und neue Staffeln von deinen wichtigsten Streaming-Marken – gebündelt in einer klaren Übersicht.</p>
+        <div class="hero-actions">
+          <button class="primary-button" data-jump="releases">Releases ansehen <span>→</span></button>
+          <button class="ghost-button" id="showUpcoming">Nächste 30 Tage</button>
+        </div>
+      </div>
+
+      <div class="radar-card" aria-label="StreamRadar Übersicht">
+        <div class="radar-grid">
+          <span class="ring ring-1"></span><span class="ring ring-2"></span><span class="ring ring-3"></span><span class="cross x"></span><span class="cross y"></span>
+          <span class="sweep"></span>
+          <span class="blip b1"></span><span class="blip b2"></span><span class="blip b3"></span><span class="blip b4"></span>
+          <div class="radar-center"><strong id="heroReleaseCount">0</strong><small>RELEASES</small></div>
+        </div>
+        <div class="radar-footer"><span><i></i> Radar aktiv</span><span>v0.0.1</span></div>
+      </div>
+    </section>
+
+    <section class="shell services-section" aria-labelledby="servicesTitle">
+      <div class="section-heading compact">
+        <div><span class="section-kicker">QUELLEN</span><h2 id="servicesTitle">Streaming-Marken</h2></div>
+        <button class="text-button" id="resetServices">Alle anzeigen</button>
+      </div>
+      <div class="service-strip" id="serviceStrip" aria-label="Streaming-Anbieter filtern"></div>
+    </section>
+
+    <section class="shell release-section" id="releases">
+      <div class="section-heading">
+        <div>
+          <span class="section-kicker" id="viewKicker">DEIN FEED</span>
+          <h2 id="viewTitle">Neu & relevant</h2>
+          <p id="resultSummary">Aktuelle Demo-Releases für die erste StreamRadar-Version.</p>
+        </div>
+        <div class="filters">
+          <select id="typeFilter" aria-label="Medientyp filtern">
+            <option value="all">Alle Typen</option>
+            <option value="series">Serien</option>
+            <option value="movie">Filme</option>
+            <option value="anime">Anime</option>
+          </select>
+          <select id="periodFilter" aria-label="Zeitraum filtern">
+            <option value="all">Alle Zeiträume</option>
+            <option value="today">Heute</option>
+            <option value="week">Diese Woche</option>
+            <option value="month">Dieser Monat</option>
+            <option value="upcoming">Demnächst</option>
+          </select>
+          <label class="toggle-filter"><input type="checkbox" id="originalsOnly" /><span></span> Originals</label>
+        </div>
+      </div>
+
+      <div class="release-grid" id="releaseGrid"></div>
+      <div class="empty-state" id="emptyState" hidden>
+        <div>◎</div>
+        <h3>Keine Treffer auf dem Radar</h3>
+        <p>Ändere deine Filter oder suche nach einem anderen Titel.</p>
+        <button class="ghost-button" id="clearFilters">Filter zurücksetzen</button>
+      </div>
+    </section>
+  </main>
+
+  <footer class="shell footer">
+    <div><strong>StreamRadar</strong><span>Personal streaming release tracker.</span></div>
+    <div><span>Region: AT</span><span>Version 0.0.1</span></div>
+  </footer>
+
+  <dialog id="detailDialog" class="detail-dialog">
+    <button class="dialog-close" id="dialogClose" aria-label="Detailansicht schließen">×</button>
+    <div id="dialogContent"></div>
+  </dialog>
+
+  <script src="app.js" defer></script>
+</body>
+</html>
