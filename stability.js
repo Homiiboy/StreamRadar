@@ -383,7 +383,27 @@
     restoreCache,
     cacheIsFresh,
     getPreferredProviders: () => [...preferredProviders],
+    getAllProviders: () => [...allProviderNames],
+    setPreferredProviders: (names, options = {}) => {
+      const allowed = new Set(allProviderNames);
+      preferredProviders = new Set((Array.isArray(names) ? names : []).map(String).filter(name => allowed.has(name)));
+      localStorage.setItem(PROVIDERS_KEY, JSON.stringify([...preferredProviders]));
+      renderProviderPreferences();
+      updatePersonalMode();
+      updateSettingsSummary();
+      if (options.render !== false) renderReleases();
+      return [...preferredProviders];
+    },
     isPreferredProvidersOnly: () => preferredProvidersOnly,
+    setPreferredProvidersOnly: (value, options = {}) => {
+      preferredProvidersOnly = Boolean(value);
+      localStorage.setItem(PROVIDERS_ONLY_KEY, String(preferredProvidersOnly));
+      const input = $('#preferredProvidersOnly');
+      if (input) input.checked = preferredProvidersOnly;
+      updatePersonalMode();
+      if (options.render !== false) renderReleases();
+      return preferredProvidersOnly;
+    },
     getSortMode: () => sortMode
   };
 })();

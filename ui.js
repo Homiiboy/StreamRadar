@@ -1,4 +1,4 @@
-/* StreamRadar consolidated UI runtime — current version 0.1.2 */
+/* StreamRadar consolidated UI runtime — current version 0.2.0 */
 (() => {
   const VERSION = '0.1.1';
   const baseRenderReleases = renderReleases;
@@ -461,4 +461,351 @@
   document.addEventListener('visibilitychange', () => { if (document.visibilityState === 'hidden') persistVisit(); });
 
   window.StreamRadarUI012 = Object.freeze({ VERSION, openSearch, renderNewSince, persistVisit });
+})();
+
+/* StreamRadar v0.2.0 — Personalization & Settings */
+(() => {
+  const VERSION = '0.2.0';
+  const CONFIG_KEY = 'streamradar-personalization-v2';
+  const ONBOARDING_KEY = 'streamradar-onboarding-v2-complete';
+  const LAST_VIEW_KEY = 'streamradar-last-view-v2';
+  const TOKEN_STORAGE_KEY = 'streamradar-tmdb-token';
+  const PROVIDERS_STORAGE_KEY = 'streamradar-preferred-providers';
+  const PROVIDERS_ONLY_STORAGE_KEY = 'streamradar-preferred-providers-only';
+  const defaultConfig = {
+    rememberLastView: true,
+    defaultView: 'discover',
+    density: 'comfortable',
+    mediaPreferences: ['movie', 'series', 'anime'],
+    originalsBoost: true,
+    showEpisodesHome: true,
+    horizonDays: 30
+  };
+  let config = loadConfig();
+  let settingsTab = 'general';
+  const baseRenderReleases = renderReleases;
+  const baseSetView = setView;
+
+  const ICONS = {
+    general:'<svg viewBox="0 0 24 24"><path d="M4 5h16M4 12h16M4 19h16"/><circle cx="8" cy="5" r="2"/><circle cx="15" cy="12" r="2"/><circle cx="10" cy="19" r="2"/></svg>',
+    providers:'<svg viewBox="0 0 24 24"><rect x="3" y="5" width="18" height="14" rx="3"/><path d="m10 9 5 3-5 3z"/></svg>',
+    content:'<svg viewBox="0 0 24 24"><path d="M12 3 5 7v10l7 4 7-4V7z"/><path d="m8 10 4 2 4-2M12 12v5"/></svg>',
+    data:'<svg viewBox="0 0 24 24"><ellipse cx="12" cy="5" rx="7" ry="3"/><path d="M5 5v6c0 1.7 3.1 3 7 3s7-1.3 7-3V5M5 11v6c0 1.7 3.1 3 7 3s7-1.3 7-3v-6"/></svg>',
+    about:'<svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 11v6M12 7h.01"/></svg>'
+  };
+
+  function loadConfig() {
+    const saved = safeJSON(localStorage.getItem(CONFIG_KEY) || '{}', {});
+    const merged = { ...defaultConfig, ...(saved && typeof saved === 'object' ? saved : {}) };
+    merged.mediaPreferences = Array.isArray(merged.mediaPreferences) && merged.mediaPreferences.length ? merged.mediaPreferences.filter(value => ['movie','series','anime'].includes(value)) : [...defaultConfig.mediaPreferences];
+    if (!['comfortable','compact'].includes(merged.density)) merged.density = 'comfortable';
+    if (!['discover','calendar','upcoming','watchlist'].includes(merged.defaultView)) merged.defaultView = 'discover';
+    if (![14,30,60,90].includes(Number(merged.horizonDays))) merged.horizonDays = 30;
+    return merged;
+  }
+
+  function persistConfig({ render = true } = {}) {
+    localStorage.setItem(CONFIG_KEY, JSON.stringify(config));
+    applyConfigSurface();
+    if (render) renderReleases();
+  }
+
+  function applyConfigSurface() {
+    document.body.dataset.density = config.density;
+    document.documentElement.dataset.streamradarVersion = VERSION;
+    window.StreamRadarVersion = VERSION;
+  }
+
+  function providerNames() {
+    return window.StreamRadarStability?.getAllProviders?.() || tmdb.SERVICE_DEFINITIONS.map(service => service.name);
+  }
+
+  function preferredProviders() {
+    return window.StreamRadarStability?.getPreferredProviders?.() || safeJSON(localStorage.getItem(PROVIDERS_STORAGE_KEY) || '[]', []);
+  }
+
+  function providerLogo(name) {
+    try {
+      const provider = providerFor(name);
+      return provider?.logoPath || provider?.logo_path || '';
+    } catch {
+      const service = tmdb.SERVICE_DEFINITIONS.find(item => item.name === name);
+      return service?.logoPath || '';
+    }
+  }
+
+  function setProviders(names, rerender = true) {
+    const api = window.StreamRadarStability;
+    if (api?.setPreferredProviders) api.setPreferredProviders(names, { render:rerender });
+    else {
+      localStorage.setItem(PROVIDERS_STORAGE_KEY, JSON.stringify(names));
+      if (rerender) renderReleases();
+    }
+  }
+
+  function setProvidersOnly(value, rerender = true) {
+    const api = window.StreamRadarStability;
+    if (api?.setPreferredProvidersOnly) api.setPreferredProvidersOnly(Boolean(value), { render:rerender });
+    else {
+      localStorage.setItem(PROVIDERS_ONLY_STORAGE_KEY, String(Boolean(value)));
+      if (rerender) renderReleases();
+    }
+  }
+
+  function providersOnly() {
+    return window.StreamRadarStability?.isPreferredProvidersOnly?.() ?? localStorage.getItem(PROVIDERS_ONLY_STORAGE_KEY) === 'true';
+  }
+
+  function personalScore(item) {
+    let score = 0;
+    const prefs = new Set(config.mediaPreferences);
+    const preferred = new Set(preferredProviders());
+    if ((item.services || []).some(service => preferred.has(service))) score += 42;
+    if (prefs.has(item.type)) score += 25;
+    if (config.originalsBoost && item.original) score += 18;
+    if (state.watchlist.has(watchKey(item))) score += 9;
+    const distance = dayDistance(item.releaseDate);
+    if (distance >= 0 && distance <= 7) score += 18 - distance * 2;
+    else if (distance > 7 && distance <= config.horizonDays) score += Math.max(2, 12 - Math.floor(distance / 5));
+    score += Math.min(12, Math.round((item.popularity || 0) / 20));
+    return score;
+  }
+
+  function personalSource() {
+    const selected = new Set(config.mediaPreferences);
+    const horizon = Number(config.horizonDays) || 30;
+    return state.releases
+      .filter(item => item.radarEligible !== false)
+      .filter(item => selected.has(item.type))
+      .filter(item => config.showEpisodesHome || item.eventKind !== 'episode')
+      .filter(item => dayDistance(item.releaseDate) >= -2 && dayDistance(item.releaseDate) <= horizon)
+      .map(item => ({ item, score:personalScore(item) }))
+      .sort((a,b) => b.score - a.score || sortByRadarRelevance(a.item,b.item));
+  }
+
+  function personalCard(entry) {
+    const item = entry.item;
+    const path = item.backdropPath || item.posterPath;
+    const art = path ? `<img src="${tmdb.image(path, item.backdropPath ? 'w780' : 'w500')}" alt="" loading="lazy"/>` : `<span class="rail-monogram">${escapeHTML(item.title.slice(0,2))}</span>`;
+    return `<article class="rail-card v020-personal-card" tabindex="0" role="button" data-v020-id="${escapeHTML(item.id)}" style="--rail-accent:${item.accent}"><div class="rail-art">${art}<span class="rail-gradient"></span><span class="personal-score">MATCH ${Math.min(99, Math.max(50, entry.score))}</span><span class="rail-event">${escapeHTML(eventLabel(item))}</span></div><div class="rail-copy"><strong>${escapeHTML(item.title)}</strong><span>${escapeHTML(item.services?.[0] || item.originalBrand || 'Streaming')} · ${escapeHTML(formatReleaseDate(item.releaseDate))}</span></div></article>`;
+  }
+
+  function renderPersonalizedHome() {
+    const root = $('#homeRails');
+    if (!root || state.view !== 'discover') return;
+    root.querySelectorAll('.v020-personal-rail').forEach(node => node.remove());
+    const blocked = Boolean($('#searchInput')?.value.trim() || $('#typeFilter')?.value !== 'all' || $('#eventFilter')?.value !== 'all' || $('#periodFilter')?.value !== 'all' || $('#brandFilter')?.value !== 'all' || $('#originalsOnly')?.checked || state.service !== 'all');
+    if (blocked) return;
+    const scored = personalSource();
+    if (!scored.length) return;
+    const preferred = new Set(preferredProviders());
+    const forYou = scored.slice(0, 12);
+    const atProviders = scored.filter(entry => (entry.item.services || []).some(service => preferred.has(service))).slice(0, 12);
+    const selectedText = config.mediaPreferences.map(type => ({movie:'Filme',series:'Serien',anime:'Anime'})[type]).join(' · ');
+    const rows = [`<section class="media-rail v020-personal-rail"><div class="rail-heading"><div><span class="section-kicker">PERSONALISIERT</span><h2>Dein Radar-Mix</h2><div class="personalization-summary"><b>${preferred.size}</b> Anbieter · ${escapeHTML(selectedText)} · ${config.originalsBoost ? 'Originals priorisiert' : 'neutrale Herkunft'}</div></div></div><div class="rail-track">${forYou.map(personalCard).join('')}</div></section>`];
+    if (atProviders.length && preferred.size < providerNames().length) rows.push(`<section class="media-rail v020-personal-rail"><div class="rail-heading"><div><span class="section-kicker">DEINE ANBIETER</span><h2>Bei deinen Diensten</h2></div></div><div class="rail-track">${atProviders.map(personalCard).join('')}</div></section>`);
+    const newSince = root.querySelector('.new-since-rail');
+    if (newSince) newSince.insertAdjacentHTML('afterend', rows.join(''));
+    else root.insertAdjacentHTML('afterbegin', rows.join(''));
+    root.querySelectorAll('.v020-personal-card').forEach(card => {
+      card.onclick = () => openDetails(card.dataset.v020Id);
+      card.onkeydown = event => { if (event.key === 'Enter' || event.key === ' ') { event.preventDefault(); openDetails(card.dataset.v020Id); } };
+    });
+  }
+
+  function notify(message, type = 'info') {
+    let root = $('#toastStack');
+    if (!root) {
+      root = document.createElement('div'); root.id = 'toastStack'; root.className = 'toast-stack'; document.body.appendChild(root);
+    }
+    const toast = document.createElement('div'); toast.className = `radar-toast ${type}`; toast.textContent = message; root.appendChild(toast);
+    requestAnimationFrame(() => toast.classList.add('show'));
+    setTimeout(() => { toast.classList.remove('show'); setTimeout(() => toast.remove(), 220); }, 3200);
+  }
+
+  function providerGridMarkup(scope = 'settings') {
+    const selected = new Set(preferredProviders());
+    return providerNames().map(name => {
+      const logo = providerLogo(name);
+      return `<label class="settings-provider ${scope === 'onboarding' ? 'onboarding-provider' : ''}">${logo ? `<img src="${tmdb.image(logo,'w92')}" alt="" loading="lazy"/>` : '<i></i>'}<span>${escapeHTML(name)}</span><input type="checkbox" value="${escapeHTML(name)}" ${selected.has(name) ? 'checked' : ''}/></label>`;
+    }).join('');
+  }
+
+  function settingsMarkup() {
+    return `<div class="settings-center">
+      <aside class="settings-nav"><div class="settings-nav-brand"><strong>StreamRadar</strong><span>PERSONALIZATION CENTER</span></div><nav class="settings-tabs">
+        <button class="settings-tab" data-settings-tab="general">${ICONS.general}<span>Allgemein</span></button>
+        <button class="settings-tab" data-settings-tab="providers">${ICONS.providers}<span>Anbieter</span></button>
+        <button class="settings-tab" data-settings-tab="content">${ICONS.content}<span>Inhalte</span></button>
+        <button class="settings-tab" data-settings-tab="data">${ICONS.data}<span>Daten & Backup</span></button>
+        <button class="settings-tab" data-settings-tab="about">${ICONS.about}<span>Über</span></button>
+      </nav><div class="settings-nav-foot">Einstellungen werden lokal auf diesem Gerät gespeichert.<br/>Version ${VERSION}</div></aside>
+      <div class="settings-main">
+        <section class="settings-page" data-settings-page="general"><div class="settings-page-head"><span class="section-kicker">ALLGEMEIN</span><h2>StreamRadar für dich</h2><p>Lege fest, wie die Desktop-App startet und wie dicht Informationen dargestellt werden.</p></div>
+          <div class="settings-group"><div class="setting-row"><div class="setting-copy"><strong>Letzte Ansicht merken</strong><span>Öffnet StreamRadar dort, wo du zuletzt gearbeitet hast.</span></div><label class="setting-switch"><input id="prefRememberView" type="checkbox" ${config.rememberLastView?'checked':''}/><span></span></label></div>
+          <div class="setting-row"><div class="setting-copy"><strong>Standardansicht</strong><span>Wird verwendet, wenn die letzte Ansicht nicht gemerkt wird.</span></div><select class="setting-select" id="prefDefaultView"><option value="discover">Entdecken</option><option value="calendar">Kalender</option><option value="upcoming">Demnächst</option><option value="watchlist">Merkliste</option></select></div>
+          <div class="setting-row"><div class="setting-copy"><strong>Informationsdichte</strong><span>Kompakt zeigt mehr Inhalte gleichzeitig.</span></div><select class="setting-select" id="prefDensity"><option value="comfortable">Komfortabel</option><option value="compact">Kompakt</option></select></div></div>
+        </section>
+        <section class="settings-page" data-settings-page="providers"><div class="settings-page-head"><span class="section-kicker">MEINE ANBIETER</span><h2>Deine Streaming-Dienste</h2><p>Diese Auswahl fließt in deinen persönlichen Home-Feed ein und kann den gesamten Radar auf abonnierte Dienste begrenzen.</p></div><div class="settings-group"><div class="setting-row"><div class="setting-copy"><strong>Nur meine Anbieter im Radar</strong><span>Blendet andere Streaming-Dienste aus Feed und Kalender aus.</span></div><label class="setting-switch"><input id="settingsProvidersOnly" type="checkbox" ${providersOnly()?'checked':''}/><span></span></label></div><div class="settings-provider-actions"><button class="text-button" id="settingsProvidersAll">Alle wählen</button><button class="text-button" id="settingsProvidersNone">Keine wählen</button></div><div class="settings-provider-grid" id="settingsProviderGrid">${providerGridMarkup()}</div></div></section>
+        <section class="settings-page" data-settings-page="content"><div class="settings-page-head"><span class="section-kicker">INHALTE</span><h2>Was soll wichtiger sein?</h2><p>Diese Präferenzen verändern die Gewichtung auf der Startseite, ohne Inhalte aus der Datenbank zu löschen.</p></div><div class="settings-group"><h3>Medienarten</h3><p>Wähle mindestens eine Medienart für deinen persönlichen Mix.</p><div class="pref-chip-grid"><label class="pref-chip"><input type="checkbox" data-media-pref="movie" ${config.mediaPreferences.includes('movie')?'checked':''}/><span>🎬 Filme</span></label><label class="pref-chip"><input type="checkbox" data-media-pref="series" ${config.mediaPreferences.includes('series')?'checked':''}/><span>▣ Serien</span></label><label class="pref-chip"><input type="checkbox" data-media-pref="anime" ${config.mediaPreferences.includes('anime')?'checked':''}/><span>◈ Anime</span></label></div></div><div class="settings-group"><div class="setting-row"><div class="setting-copy"><strong>Originals stärker gewichten</strong><span>Originals deiner bevorzugten Plattformen bekommen mehr Relevanz.</span></div><label class="setting-switch"><input id="prefOriginalsBoost" type="checkbox" ${config.originalsBoost?'checked':''}/><span></span></label></div><div class="setting-row"><div class="setting-copy"><strong>Episoden auf Home anzeigen</strong><span>Deaktivieren, wenn Home stärker auf Filme und Staffelstarts fokussieren soll.</span></div><label class="setting-switch"><input id="prefEpisodesHome" type="checkbox" ${config.showEpisodesHome?'checked':''}/><span></span></label></div><div class="setting-row"><div class="setting-copy"><strong>Persönlicher Zeitraum</strong><span>Wie weit der „Für dich“-Mix in die Zukunft schauen soll.</span></div><select class="setting-select" id="prefHorizon"><option value="14">14 Tage</option><option value="30">30 Tage</option><option value="60">60 Tage</option><option value="90">90 Tage</option></select></div></div></section>
+        <section class="settings-page" data-settings-page="data"><div class="settings-page-head"><span class="section-kicker">DATEN & BACKUP</span><h2>Verbindung und Sicherung</h2><p>TMDB bleibt lokal verbunden. Backups enthalten bewusst keinen API-Token.</p></div><div class="settings-group"><h3>TMDB API Read Access Token</h3><p>Der Token wird nur im lokalen Browser-/App-Speicher hinterlegt.</p><div class="token-inline"><input type="password" id="tmdbToken" placeholder="eyJhbGciOiJIUzI1NiJ9…" autocomplete="off" spellcheck="false"/><button class="primary-button" id="saveToken">Verbinden</button></div><div class="settings-inline-status" id="settingsStatus"></div><button class="text-button" id="clearToken" type="button">Token entfernen</button></div><div class="settings-group"><h3>StreamRadar Backup</h3><p>Exportiert Personalisierung, Anbieter und Merkliste in eine portable JSON-Datei. Der TMDB-Token ist ausgeschlossen.</p><div class="backup-grid"><div class="backup-card"><strong>Backup exportieren</strong><p>Für Umzug, Neuinstallation oder Versionswechsel.</p><button class="ghost-button" id="exportStreamRadarBackup">Backup speichern</button></div><div class="backup-card"><strong>Backup importieren</strong><p>Stellt Einstellungen und Merkliste aus einem StreamRadar-Backup wieder her.</p><button class="ghost-button" id="importStreamRadarBackup">Backup auswählen</button><input type="file" id="streamRadarBackupFile" accept="application/json,.json" hidden/></div></div></div></section>
+        <section class="settings-page" data-settings-page="about"><div class="settings-page-head"><span class="section-kicker">ÜBER STREAMRADAR</span><h2>Personal Streaming Release Intelligence</h2><p>Privater Release-Radar für Österreich mit TMDB, JustWatch-Providern und TVmaze-Schedule.</p></div><div class="about-version-card"><div class="about-version-mark">SR</div><div><strong>StreamRadar ${VERSION}</strong><span>Personalization & Settings · Windows Desktop / Web</span></div></div><div class="settings-group"><div class="setting-row"><div class="setting-copy"><strong>Aktive UI-Dateien</strong><span>styles.css + ui.js · historische Snapshots liegen ausschließlich im Archiv.</span></div></div><div class="setting-row"><div class="setting-copy"><strong>Datenregion</strong><span>Österreich (AT) · Sprache de-DE/de-AT.</span></div></div><div class="setting-row"><div class="setting-copy"><strong>Installer</strong><span>Windows x64 MSI · für persönliche Nutzung aktuell unsigniert.</span></div></div></div></section>
+      </div></div>`;
+  }
+
+  function activateSettingsTab(tab) {
+    settingsTab = tab;
+    $$('.settings-tab').forEach(button => button.classList.toggle('active', button.dataset.settingsTab === tab));
+    $$('.settings-page').forEach(page => page.classList.toggle('active', page.dataset.settingsPage === tab));
+  }
+
+  function syncConfigFromSettings() {
+    config.rememberLastView = Boolean($('#prefRememberView')?.checked);
+    config.defaultView = $('#prefDefaultView')?.value || config.defaultView;
+    config.density = $('#prefDensity')?.value || config.density;
+    config.originalsBoost = Boolean($('#prefOriginalsBoost')?.checked);
+    config.showEpisodesHome = Boolean($('#prefEpisodesHome')?.checked);
+    config.horizonDays = Number($('#prefHorizon')?.value || config.horizonDays);
+    const media = $$('[data-media-pref]:checked').map(input => input.dataset.mediaPref);
+    if (media.length) config.mediaPreferences = media;
+    persistConfig();
+  }
+
+  async function connectToken() {
+    const input = $('#tmdbToken');
+    const status = $('#settingsStatus');
+    const button = $('#saveToken');
+    const token = input?.value.trim() || '';
+    if (!token) { if (status) { status.textContent = 'Bitte zuerst einen Token eintragen.'; status.className = 'settings-inline-status warning'; } return; }
+    if (button) button.disabled = true;
+    try {
+      await tmdb.validateToken(token);
+      localStorage.setItem(TOKEN_STORAGE_KEY, token);
+      if (status) { status.textContent = 'TMDB verbunden. Live-Daten werden aktualisiert …'; status.className = 'settings-inline-status success'; }
+      await loadLiveData({ closeSettings:false });
+    } catch (error) {
+      if (status) { status.textContent = error?.status === 401 || error?.status === 403 ? 'Token ungültig oder nicht autorisiert.' : 'TMDB konnte nicht erreicht werden.'; status.className = 'settings-inline-status warning'; }
+    } finally { if (button) button.disabled = false; }
+  }
+
+  function removeToken() {
+    localStorage.removeItem(TOKEN_STORAGE_KEY);
+    if ($('#tmdbToken')) $('#tmdbToken').value = '';
+    useDemo('TMDB-Verbindung wurde entfernt.');
+    if ($('#settingsStatus')) { $('#settingsStatus').textContent = 'Token entfernt.'; $('#settingsStatus').className = 'settings-inline-status'; }
+  }
+
+  function exportBackup() {
+    const payload = {
+      app:'StreamRadar', format:2, version:VERSION, exportedAt:new Date().toISOString(),
+      personalization:config,
+      preferredProviders:preferredProviders(),
+      preferredProvidersOnly:providersOnly(),
+      watchlist:[...state.watchlist]
+    };
+    const blob = new Blob([JSON.stringify(payload,null,2)],{type:'application/json;charset=utf-8'});
+    const url = URL.createObjectURL(blob); const link = document.createElement('a'); link.href=url; link.download=`streamradar-backup-${new Date().toISOString().slice(0,10)}.json`; document.body.appendChild(link); link.click(); link.remove(); URL.revokeObjectURL(url);
+    notify('StreamRadar-Backup wurde erstellt.');
+  }
+
+  async function importBackup(event) {
+    const file = event.target.files?.[0]; event.target.value=''; if (!file) return;
+    try {
+      const data = JSON.parse(await file.text());
+      if (data?.app !== 'StreamRadar' || !data.personalization || !Array.isArray(data.watchlist)) throw new Error('FORMAT');
+      config = { ...defaultConfig, ...data.personalization };
+      localStorage.setItem(CONFIG_KEY, JSON.stringify(config));
+      if (Array.isArray(data.preferredProviders)) setProviders(data.preferredProviders, false);
+      if (typeof data.preferredProvidersOnly === 'boolean') setProvidersOnly(data.preferredProvidersOnly, false);
+      state.watchlist = new Set(data.watchlist.map(String).filter(Boolean)); localStorage.setItem(WATCHLIST_KEY, JSON.stringify([...state.watchlist]));
+      applyConfigSurface(); installSettingsCenter(); renderReleases(); notify('Backup erfolgreich wiederhergestellt.');
+    } catch { notify('Diese Datei ist kein gültiges StreamRadar-Backup.', 'warning'); }
+  }
+
+  function installSettingsCenter() {
+    const dialog = $('#settingsDialog'); const root = dialog?.querySelector('.settings-content'); if (!dialog || !root) return;
+    dialog.classList.add('v020-settings'); root.innerHTML = settingsMarkup();
+    $$('.settings-tab').forEach(button => button.onclick = () => activateSettingsTab(button.dataset.settingsTab));
+    activateSettingsTab(settingsTab);
+    $('#prefDefaultView').value = config.defaultView; $('#prefDensity').value = config.density; $('#prefHorizon').value = String(config.horizonDays);
+    ['prefRememberView','prefDefaultView','prefDensity','prefOriginalsBoost','prefEpisodesHome','prefHorizon'].forEach(id => { const node=$(`#${id}`); if (node) node.onchange=syncConfigFromSettings; });
+    $$('[data-media-pref]').forEach(input => input.onchange = event => { const checked=$$('[data-media-pref]:checked'); if (!checked.length) { event.target.checked=true; notify('Mindestens eine Medienart muss aktiv bleiben.', 'warning'); return; } syncConfigFromSettings(); });
+    $('#settingsProvidersOnly').onchange = event => setProvidersOnly(event.target.checked);
+    $('#settingsProvidersAll').onclick = () => { setProviders(providerNames(), false); installSettingsCenter(); renderReleases(); };
+    $('#settingsProvidersNone').onclick = () => { setProviders([], false); installSettingsCenter(); renderReleases(); };
+    $$('#settingsProviderGrid input').forEach(input => input.onchange = () => setProviders($$('#settingsProviderGrid input:checked').map(node => node.value)));
+    $('#tmdbToken').value = localStorage.getItem(TOKEN_STORAGE_KEY) || '';
+    $('#settingsStatus').textContent = state.mode === 'live' ? 'Verbunden. Live-Daten sind aktiv.' : 'Noch nicht mit TMDB verbunden.';
+    $('#saveToken').onclick = connectToken; $('#clearToken').onclick = removeToken;
+    $('#exportStreamRadarBackup').onclick = exportBackup; $('#importStreamRadarBackup').onclick = () => $('#streamRadarBackupFile').click(); $('#streamRadarBackupFile').onchange = importBackup;
+  }
+
+  function onboardingMarkup() {
+    const tokenExists = Boolean(localStorage.getItem(TOKEN_STORAGE_KEY));
+    return `<div class="onboarding-overlay" id="onboardingOverlay"><div class="onboarding-card"><aside class="onboarding-aside"><div class="onboarding-logo">Stream<span>Radar</span></div><div class="onboarding-progress"><div data-progress="0"><i>1</i><span>Willkommen</span></div><div data-progress="1"><i>2</i><span>TMDB</span></div><div data-progress="2"><i>3</i><span>Anbieter</span></div><div data-progress="3"><i>4</i><span>Für dich</span></div></div></aside><main class="onboarding-main">
+      <section class="onboarding-step" data-onboarding-step="0"><span class="section-kicker">V0.2.0 · PERSONALIZATION</span><h1>Dein Radar.<br/><span>Deine Regeln.</span></h1><p>In wenigen Schritten richtet StreamRadar deinen persönlichen Release-Radar ein. Alles wird lokal auf diesem Gerät gespeichert.</p><div class="onboarding-feature-grid"><div class="onboarding-feature"><strong>Deine Anbieter</strong><span>Priorisiere nur die Dienste, die für dich relevant sind.</span></div><div class="onboarding-feature"><strong>Deine Inhalte</strong><span>Filme, Serien, Anime und Originals nach deinen Präferenzen.</span></div><div class="onboarding-feature"><strong>Deine Daten</strong><span>Token und Einstellungen bleiben lokal.</span></div></div></section>
+      <section class="onboarding-step" data-onboarding-step="1"><span class="section-kicker">DATENQUELLE</span><h1>TMDB <span>verbinden</span></h1><p>${tokenExists?'Dein vorhandener TMDB-Token wurde erkannt. Du kannst direkt fortfahren oder ihn ersetzen.':'Für Live-Daten benötigt StreamRadar deinen TMDB API Read Access Token. Du kannst diesen Schritt auch überspringen und zunächst den Demo-Modus verwenden.'}</p><div class="onboarding-token"><input type="password" id="onboardingToken" placeholder="${tokenExists?'Vorhandener Token wird beibehalten':'TMDB API Read Access Token'}" autocomplete="off"/><div class="onboarding-hint">Der Token wird nicht in Backups oder das GitHub-Repository geschrieben.</div><div class="onboarding-error" id="onboardingTokenError"></div></div></section>
+      <section class="onboarding-step" data-onboarding-step="2"><span class="section-kicker">MEINE ANBIETER</span><h1>Was nutzt <span>du?</span></h1><p>Wähle deine Streaming-Dienste. Du kannst diese Auswahl später jederzeit im Einstellungs-Center ändern.</p><div class="settings-provider-actions"><button class="text-button" id="onboardingProvidersAll">Alle wählen</button><button class="text-button" id="onboardingProvidersNone">Keine wählen</button></div><div class="onboarding-provider-grid" id="onboardingProviderGrid">${providerGridMarkup('onboarding')}</div></section>
+      <section class="onboarding-step" data-onboarding-step="3"><span class="section-kicker">DEIN MIX</span><h1>Was ist dir <span>wichtig?</span></h1><p>Diese Auswahl beeinflusst die Reihenfolge im persönlichen Home-Feed. Nichts wird dauerhaft ausgeblendet.</p><div class="pref-chip-grid"><label class="pref-chip"><input type="checkbox" data-onboarding-media="movie" ${config.mediaPreferences.includes('movie')?'checked':''}/><span>🎬 Filme</span></label><label class="pref-chip"><input type="checkbox" data-onboarding-media="series" ${config.mediaPreferences.includes('series')?'checked':''}/><span>▣ Serien</span></label><label class="pref-chip"><input type="checkbox" data-onboarding-media="anime" ${config.mediaPreferences.includes('anime')?'checked':''}/><span>◈ Anime</span></label></div><div class="settings-group"><div class="setting-row"><div class="setting-copy"><strong>Originals priorisieren</strong><span>Gibt Originals im persönlichen Mix mehr Gewicht.</span></div><label class="setting-switch"><input id="onboardingOriginals" type="checkbox" ${config.originalsBoost?'checked':''}/><span></span></label></div><div class="setting-row"><div class="setting-copy"><strong>Neue Episoden auf Home</strong><span>Zeigt episodische Releases auch im persönlichen Mix.</span></div><label class="setting-switch"><input id="onboardingEpisodes" type="checkbox" ${config.showEpisodesHome?'checked':''}/><span></span></label></div></div></section>
+      <div class="onboarding-actions"><button class="text-button" id="onboardingSkip" type="button">Später einrichten</button><div class="onboarding-actions-right"><button class="ghost-button" id="onboardingBack" type="button">Zurück</button><button class="primary-button" id="onboardingNext" type="button">Weiter</button></div></div></main></div></div>`;
+  }
+
+  function showOnboarding() {
+    if (localStorage.getItem(ONBOARDING_KEY) === 'true' || $('#onboardingOverlay')) return;
+    document.body.insertAdjacentHTML('beforeend', onboardingMarkup());
+    let step = 0;
+    const render = () => {
+      $$('[data-onboarding-step]').forEach(node => node.classList.toggle('active', Number(node.dataset.onboardingStep) === step));
+      $$('[data-progress]').forEach(node => { const index=Number(node.dataset.progress); node.classList.toggle('active', index===step); node.classList.toggle('done', index<step); });
+      $('#onboardingBack').style.visibility = step ? 'visible' : 'hidden'; $('#onboardingNext').textContent = step === 3 ? 'StreamRadar starten' : 'Weiter';
+    };
+    const finish = async () => {
+      const token = $('#onboardingToken')?.value.trim();
+      if (token) {
+        try { $('#onboardingNext').disabled=true; await tmdb.validateToken(token); localStorage.setItem(TOKEN_STORAGE_KEY,token); }
+        catch { $('#onboardingTokenError').textContent='Dieser Token konnte nicht validiert werden.'; step=1; render(); $('#onboardingNext').disabled=false; return; }
+      }
+      const selectedProviders = $$('#onboardingProviderGrid input:checked').map(input => input.value); if (selectedProviders.length) setProviders(selectedProviders,false);
+      const media = $$('[data-onboarding-media]:checked').map(input => input.dataset.onboardingMedia); if (media.length) config.mediaPreferences=media;
+      config.originalsBoost=Boolean($('#onboardingOriginals')?.checked); config.showEpisodesHome=Boolean($('#onboardingEpisodes')?.checked); persistConfig({render:false});
+      localStorage.setItem(ONBOARDING_KEY,'true'); $('#onboardingOverlay')?.remove(); installSettingsCenter(); renderReleases(); if (localStorage.getItem(TOKEN_STORAGE_KEY)) loadLiveData(); notify('Dein persönlicher StreamRadar ist eingerichtet.');
+    };
+    $('#onboardingNext').onclick = async () => { if (step < 3) { step += 1; render(); } else await finish(); };
+    $('#onboardingBack').onclick = () => { step=Math.max(0,step-1); render(); };
+    $('#onboardingSkip').onclick = () => { localStorage.setItem(ONBOARDING_KEY,'true'); $('#onboardingOverlay').remove(); notify('Einrichtung übersprungen. Du kannst sie in den Einstellungen nachholen.'); };
+    $('#onboardingProvidersAll').onclick = () => $$('#onboardingProviderGrid input').forEach(input => input.checked=true);
+    $('#onboardingProvidersNone').onclick = () => $$('#onboardingProviderGrid input').forEach(input => input.checked=false);
+    render();
+  }
+
+  renderReleases = function() {
+    const result = baseRenderReleases();
+    renderPersonalizedHome();
+    return result;
+  };
+
+  setView = function(view) {
+    if (config.rememberLastView && ['discover','calendar','seasons','episodes','upcoming','watchlist'].includes(view)) localStorage.setItem(LAST_VIEW_KEY, view);
+    return baseSetView(view);
+  };
+
+  function restoreStartupView() {
+    const view = config.rememberLastView ? localStorage.getItem(LAST_VIEW_KEY) : config.defaultView;
+    const target = ['discover','calendar','seasons','episodes','upcoming','watchlist'].includes(view) ? view : config.defaultView;
+    if (target && target !== state.view) { state.view = target; renderReleases(); }
+  }
+
+  applyConfigSurface();
+  installSettingsCenter();
+  restoreStartupView();
+  renderReleases();
+  queueMicrotask(showOnboarding);
+
+  window.StreamRadarPersonalization = Object.freeze({
+    VERSION,
+    getConfig: () => ({...config}),
+    openSettings: tab => { settingsTab = tab || 'general'; installSettingsCenter(); openSettings(); activateSettingsTab(settingsTab); },
+    exportBackup,
+    renderPersonalizedHome
+  });
 })();
