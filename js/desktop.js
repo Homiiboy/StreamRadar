@@ -247,7 +247,11 @@
   }
 
   function installSettingsObserver() {
-    const observer = new MutationObserver(() => ensureUpdateCenter());
+    const observer = new MutationObserver(() => {
+      const settingsReady = Boolean(document.querySelector('.settings-center'));
+      const updateCenterMissing = !document.querySelector('#settingsUpdateTab') || !document.querySelector('#settingsUpdatePage');
+      if (settingsReady && updateCenterMissing) ensureUpdateCenter();
+    });
     observer.observe(document.body, { childList:true, subtree:true });
     ensureUpdateCenter();
   }
