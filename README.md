@@ -2,25 +2,20 @@
 
 StreamRadar ist ein persönlicher Release-Radar für neue Filme, Serien, Anime, Originals und neue Staffeln aus wichtigen Streaming-Marken – optimiert für Österreich.
 
-## Aktuelle Version: v0.0.3
+## Aktuelle Version: v0.0.4
 
 ### Neu
 
-- Original-Brand-Erkennung auf Basis von TMDB Networks und Produktionsfirmen
-- klare Trennung zwischen **„Original von“** und **„läuft in Österreich bei“**
-- Original-Filter und eigener Filter nach Original-Marke
-- unterstützte Original-Marken u. a. Netflix, HBO, HBO Max, Disney+, Hulu, FX, Prime Video, Apple TV+, Paramount+, Peacock, AMC+, Crunchyroll, BBC, Sky, Joyn, RTL+ und ORF
-- Erkennungssicherheit (`high` / `medium`) statt einer vorgetäuschten 100-%-Zuordnung
-- TVmaze-Anbindung für Serien
-- Anzeige der nächsten Episode
-- Erkennung eines neuen Staffelstarts, wenn die nächste Episode Episode 1 einer höheren Staffel ist
-- bis zu 8 kommende Episoden werden intern ausgewertet
-- TVmaze-Network/Web-Channel in der Detailansicht
-- Version zentral als `0.0.3` geführt und Changelog eingeführt
+- echte Original-Network-/Studio-Logos direkt aus TMDB
+- Original-Logos auf Release-Karten und in der Detailansicht
+- Markenleiste verwendet nach Möglichkeit das echte Logo für Streaming-Provider und Original-Marken
+- vollständige Original-Markenliste in der Markenleiste, inklusive eigenständiger Herkunftsmarken wie HBO und Sky
+- weiterhin klare Trennung zwischen **„Original von“** und **„läuft in Österreich bei“**
+- vollständiger Changelog zurück bis v0.0.1
 
 ## Datenquellen
 
-- **TMDB** – Titel, Metadaten, Bilder, Networks, Produktionsfirmen, externe IDs und Watch-Provider
+- **TMDB** – Titel, Metadaten, Bilder, Networks, Produktionsfirmen, Network-/Studio-Logos, externe IDs und Watch-Provider
 - **JustWatch via TMDB** – Streaming-Verfügbarkeit in Österreich
 - **TVmaze** – Episoden, Staffeln und kommende Episoden
 
@@ -33,10 +28,12 @@ Die Original-Zuordnung ist bewusst heuristisch:
 - Network-Treffer, z. B. `FX`, `HBO`, `Netflix` → hohe Sicherheit
 - Produktionsfirmen, z. B. `FX Productions` oder `Amazon MGM Studios` → mittlere Sicherheit
 
-Damit kann StreamRadar beispielsweise unterscheiden:
+Ab v0.0.4 übernimmt StreamRadar zusätzlich den von TMDB gelieferten `logo_path` des erkannten Networks bzw. der passenden Produktionsfirma. Dadurch kann die UI neben dem Namen auch das echte Herkunftslogo anzeigen.
+
+Beispiel:
 
 ```text
-Original von: FX
+Original von: FX   [FX-Logo]
 Läuft in Österreich bei: Disney+
 ```
 
@@ -52,17 +49,17 @@ Dann `http://localhost:8080` öffnen und unter ⚙ den TMDB **API Read Access To
 
 ## Versionierung
 
-StreamRadar verwendet ab jetzt konsequent **Semantic Versioning (SemVer)** im Schema:
+StreamRadar verwendet konsequent **Semantic Versioning (SemVer)** im Schema:
 
 ```text
 MAJOR.MINOR.PATCH
 ```
 
-- `PATCH`: Fehlerbehebungen ohne neue öffentliche Funktion
-- `MINOR`: rückwärtskompatible Features
+- `PATCH`: Fehlerbehebungen und kleine kompatible Verbesserungen
+- `MINOR`: größere rückwärtskompatible Feature-Pakete
 - `MAJOR`: Breaking Changes / grundlegende Neustrukturierung
 
-Während `0.x` befindet sich StreamRadar noch in der frühen Entwicklungsphase. Die vom Projekt gewünschte Release-Reihenfolge bleibt dennoch eindeutig (`0.0.1` → `0.0.2` → `0.0.3`).
+Während `0.x` befindet sich StreamRadar noch in der frühen Entwicklungsphase. Die Release-Reihenfolge bleibt dennoch eindeutig (`0.0.1` → `0.0.2` → `0.0.3` → `0.0.4`).
 
 Siehe auch [`CHANGELOG.md`](CHANGELOG.md) und [`VERSION`](VERSION).
 
@@ -74,6 +71,7 @@ StreamRadar/
 ├── index.html
 ├── styles.css
 ├── v003.css
+├── v004.css
 ├── tmdb.js
 ├── tvmaze.js
 ├── app.js
@@ -82,8 +80,9 @@ StreamRadar/
 └── README.md
 ```
 
-## Grenzen von v0.0.3
+## Grenzen von v0.0.4
 
+- TMDB liefert nicht für jedes Network bzw. jede Produktionsfirma ein Logo; in diesem Fall fällt StreamRadar sauber auf die Textdarstellung zurück.
 - Filme lassen sich nicht immer eindeutig als Streaming-Original klassifizieren; Produktionsfirmen sind nur ein Indiz.
 - TVmaze kann nicht jede internationale Streamingserie perfekt abbilden.
 - Neue Staffeln werden aktuell in der Detailansicht erkannt; ein globaler Staffel-Feed folgt später.
@@ -91,4 +90,4 @@ StreamRadar/
 
 ## Status
 
-`v0.0.3` – Originals & TV episode intelligence
+`v0.0.4` – Original brand logos & complete release history
