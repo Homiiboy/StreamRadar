@@ -1,95 +1,102 @@
 # StreamRadar
 
-StreamRadar ist ein persönlicher Release-Radar für neue Filme, Serien, Anime, Originals, neue Staffeln und Episoden aus wichtigen Streaming-Marken – optimiert für Österreich.
+StreamRadar ist ein persönlicher Release-Radar für Filme, Serien, Anime, Originals, neue Staffeln und Episoden – optimiert für Österreich.
 
-## Aktuelle Version: v0.0.6
+## Aktuelle Version: v0.0.7
 
-### Neu
+### Neu in v0.0.7
 
-- globaler Staffel- und Episoden-Radar über den **TVmaze Web Schedule**
-- TVmaze wird jetzt nicht nur in der Detailansicht, sondern als aktive Feed-Datenquelle verwendet
-- Streaming-Schedule von gestern bis 14 Tage in die Zukunft
-- Matching gegen österreichisch relevante TMDB-Kandidaten über IMDb-ID, TVDB-ID und Titel-Fallback
-- neue Staffelstarts und Episoden erscheinen direkt auf der Startseite
-- eigene Hauptansichten **Staffeln** und **Episoden**
-- Radar-Zusammenfassung für **Heute**, **Staffelstarts**, **Episoden** und **Premieren**
-- `TVMAZE ✓` auf Schedule-bestätigten Karten
-- Web-Channel, Laufzeit, Sendezeit und direkter Episodenlink aus TVmaze
-- bestehende TMDB-Deduplizierung verschmilzt identische TMDB-/TVmaze-Events
-- bis zu vier kommende Schedule-Ereignisse pro Serie, damit der Feed ausgewogen bleibt
-- Retry-Behandlung für TVmaze-Rate-Limits
-- neues Styling in `v006.css`
+- gewichtete **Origin Intelligence** statt „erster Treffer gewinnt“
+- klare Trennung zwischen **Streaming-Original**, **Network/Broadcaster**, **Studio** und **Herkunftsmarke**
+- Studios wie **Marvel Studios, Lucasfilm, Pixar, Warner Bros., Sony Pictures und A24** werden nicht automatisch als Streaming-Original klassifiziert
+- deutlich erweiterte Network-/Brand-Abdeckung, u. a. **Showtime, CBS, NBC, ABC, FOX, Starz und CANAL+**
+- Bewertung über Network- und Produktionsfirmen-Evidenz mit nachvollziehbarem Score
+- Detailansicht zeigt Herkunftstyp, Evidenz, Score und Erkennungssicherheit
+- separate manuelle Korrekturschicht in `original-overrides.js`
+- Overrides können einzelne TMDB-IDs erzwingen oder eine automatische Zuordnung ausdrücklich ablehnen
+- Herkunftsbadges unterscheiden `ORIGINAL`, `STUDIO`, `BRAND` und `MANUELL`
+- der Filter **Nur Originals** berücksichtigt nur Zuordnungen, die tatsächlich als Original-Signal qualifizieren
+- globaler TVmaze Staffel-/Episodenradar aus v0.0.6 bleibt vollständig erhalten
 
-## Wie v0.0.6 Daten zusammenführt
+## Origin Intelligence
 
-StreamRadar verwendet jetzt zwei Ebenen:
+TMDB liefert bei Serien Networks und bei Filmen/Serien Produktionsfirmen. StreamRadar bewertet diese Signale ab v0.0.7 getrennt.
+
+Beispiele:
 
 ```text
-TMDB + JustWatch
-        ↓
-Welche Titel/Provider sind für Österreich relevant?
-        ↓
-TVmaze Web Schedule
-        ↓
-Wann erscheinen konkrete Streaming-Episoden?
-        ↓
-Deduplizierung / Release Intelligence
-        ↓
-StreamRadar Feed
+Network: FX
+→ Original von FX
+→ hohe Sicherheit
 ```
 
-Der TVmaze-Schedule wird **nicht ungefiltert** in StreamRadar übernommen. Ein TVmaze-Titel muss zu einer Serie passen, die bereits durch die TMDB-/Provider-Discovery als österreichisch relevant erkannt wurde.
+```text
+Production Company: Marvel Studios
+→ Studio / Brand: Marvel Studios
+→ kein automatisches Streaming-Original
+```
 
-Dadurch kann StreamRadar beispielsweise aus einer Serie, die bereits bei Disney+ Österreich erkannt wurde, mehrere konkrete kommende Episodenereignisse erzeugen, ohne gleichzeitig tausende internationale TVmaze-Titel in den Feed zu übernehmen.
+```text
+Network: HBO
+Provider Österreich: HBO Max
+→ Original von HBO
+→ läuft in Österreich bei HBO Max
+```
 
-## Release-Intelligence
+Network-Treffer sind stärker gewichtet als Produktionsfirmen. Produktionsfirmen können weiterhin ein Original-Signal liefern, wenn sie eng an eine Streaming-Plattform gebunden sind, z. B. Apple Studios oder Amazon MGM Studios. Klassische Studios und Franchisemarken bleiben dagegen Herkunftsinformation.
 
-StreamRadar behandelt Titel als **Release-Events**. Mögliche Ereignisse sind:
+## Manuelle Overrides
+
+`original-overrides.js` ist die Korrekturschicht für Sonderfälle. Regeln sind absichtlich von der allgemeinen Heuristik getrennt.
+
+```js
+EXACT['tv:12345'] = {
+  action: 'force',
+  brand: 'FX',
+  originType: 'network',
+  qualifiesAsOriginal: true,
+  note: 'Manuell bestätigt.'
+};
+```
+
+Oder eine falsche automatische Zuordnung ausschließen:
+
+```js
+EXACT['movie:67890'] = {
+  action: 'deny',
+  note: 'Produktionsfirma ist hier kein belastbares Original-Signal.'
+};
+```
+
+Standardmäßig enthält die Datei keine erfundenen Titelkorrekturen. Overrides werden erst ergänzt, wenn ein konkreter Fehlfall bekannt ist.
+
+## Release- und Episodenradar
+
+StreamRadar behandelt Titel als Release-Events:
 
 - **Film-Premiere** / Digital- oder TV-Premiere
 - **Neue Serie**
 - **Neue Staffel**
 - **Neue Episode**
 
-TVmaze-Schedule-Ereignisse enthalten zusätzlich – sofern vorhanden – Web-Channel, Episodenname, Laufzeit, Sendezeit und einen Link zur konkreten Episode.
-
-## Staffel- und Episodenradar
-
-Der globale Web-Schedule wird in v0.0.6 standardmäßig für dieses Fenster geladen:
-
-```text
-Gestern → Heute → nächste 14 Tage
-```
-
-Pro Serie werden maximal vier Schedule-Events in den Radar übernommen. Dies verhindert, dass Serien mit täglichen Episoden den kompletten Feed dominieren.
-
-S1E1 wird als **Neue Serie** klassifiziert. Episode 1 einer Staffel größer 1 wird als **Neue Staffel** klassifiziert. Alle anderen Treffer werden als **Neue Episode** geführt.
+TMDB/JustWatch bestimmen die österreichische Provider-Relevanz. TVmaze ergänzt einen globalen Web-/Streaming-Schedule von gestern bis 14 Tage in die Zukunft. TVmaze-Ereignisse werden nur übernommen, wenn sie zu einem bereits österreichisch relevanten TMDB-Titel passen.
 
 ## Datenquellen
 
-- **TMDB** – Titel, Metadaten, Bilder, Networks, Produktionsfirmen, Release-Dates, Staffeln, Episodenmetadaten, Network-/Studio-Logos und Watch-Provider
-- **JustWatch via TMDB** – Streaming-Verfügbarkeit in Österreich, inklusive staffelspezifischer Provider wenn verfügbar
+- **TMDB** – Titel, Metadaten, Bilder, Networks, Produktionsfirmen, Release-Dates, Staffeln, Episodenmetadaten, Logos und Watch-Provider
+- **JustWatch via TMDB** – Streaming-Verfügbarkeit in Österreich
 - **TVmaze** – globaler Web-/Streaming-Schedule, Episoden, Staffeln, Web-Channels und kommende Episoden
 
-TVmaze benötigt keinen API-Key. Der TMDB API Read Access Token wird nur lokal im Browser gespeichert.
-
-## Original-Erkennung
-
-Die Original-Zuordnung ist weiterhin bewusst heuristisch:
-
-- Network-Treffer, z. B. `FX`, `HBO`, `Netflix` → hohe Sicherheit
-- Produktionsfirmen, z. B. `FX Productions` oder `Amazon MGM Studios` → mittlere Sicherheit
-
-Seit v0.0.4 übernimmt StreamRadar zusätzlich den von TMDB gelieferten `logo_path` des erkannten Networks bzw. der passenden Produktionsfirma.
+Der TMDB API Read Access Token wird nur lokal im Browser gespeichert. TVmaze benötigt keinen API-Key.
 
 ## Deduplizierung
 
 Release-Ereignisse werden zweistufig zusammengeführt:
 
 - primär über TMDB-ID + Release-Typ + Datum + Staffel/Episode
-- sekundär über einen exakten Fingerprint aus normalisiertem Titel, Datum, Release-Typ und Staffel/Episode
+- sekundär über einen Fingerprint aus normalisiertem Titel, Datum, Release-Typ und Staffel/Episode
 
-Wenn TMDB und TVmaze dasselbe Event melden, bleiben TMDB-Provider, Original-Marken und Bilder erhalten, während TVmaze Schedule-Bestätigung, Episodenname, Channel, Laufzeit und Link ergänzt.
+TMDB- und TVmaze-Treffer desselben Events werden verschmolzen; Provider, Herkunftsmetadaten, Logos und Schedule-Daten bleiben dabei erhalten.
 
 ## Starten
 
@@ -101,7 +108,7 @@ Dann `http://localhost:8080` öffnen und unter ⚙ den TMDB **API Read Access To
 
 ## Versionierung
 
-StreamRadar verwendet konsequent **Semantic Versioning (SemVer)** im Schema:
+StreamRadar verwendet konsequent **Semantic Versioning (SemVer)**:
 
 ```text
 MAJOR.MINOR.PATCH
@@ -111,9 +118,9 @@ MAJOR.MINOR.PATCH
 - `MINOR`: größere rückwärtskompatible Feature-Pakete
 - `MAJOR`: Breaking Changes / grundlegende Neustrukturierung
 
-Während `0.x` befindet sich StreamRadar noch in der frühen Entwicklungsphase. Die Release-Reihenfolge bleibt eindeutig (`0.0.1` → `0.0.2` → `0.0.3` → `0.0.4` → `0.0.5` → `0.0.6`).
+Während `0.x` befindet sich StreamRadar in der frühen Entwicklungsphase. Release-Reihenfolge: `0.0.1` → `0.0.2` → `0.0.3` → `0.0.4` → `0.0.5` → `0.0.6` → `0.0.7`.
 
-Siehe auch [`CHANGELOG.md`](CHANGELOG.md) und [`VERSION`](VERSION).
+Siehe [`CHANGELOG.md`](CHANGELOG.md) und [`VERSION`](VERSION).
 
 ## Projektstruktur
 
@@ -126,6 +133,8 @@ StreamRadar/
 ├── v004.css
 ├── v005.css
 ├── v006.css
+├── v007.css
+├── original-overrides.js
 ├── tmdb.js
 ├── tvmaze.js
 ├── app.js
@@ -134,15 +143,14 @@ StreamRadar/
 └── README.md
 ```
 
-## Grenzen von v0.0.6
+## Grenzen von v0.0.7
 
-- Der globale Episodenradar deckt aktuell 14 Tage in die Zukunft ab; die spätere Kalender-/Timeline-Version wird einen längeren Planungshorizont bekommen.
-- TVmaze kann nicht jede internationale Streamingserie perfekt abbilden oder mit TMDB verknüpfen.
-- Ein exakter IMDb-/TVDB-ID-Treffer wird bevorzugt; Titelmatching ist nur der Fallback.
-- TMDB kann je nach Titel/Region unvollständige Release-, Staffel- oder Providerdaten haben.
-- Der TVmaze Web Schedule zeigt den Veröffentlichungs-/Ausstrahlungsplan des Web-Channels; die österreichische Verfügbarkeit wird weiterhin separat über TMDB/JustWatch bestimmt.
-- Für eine öffentlich gehostete Multi-User-Version sollte TMDB über ein Backend/Proxy angebunden werden.
+- TMDB Networks und Produktionsfirmen sind Metadaten, kein universeller offizieller „Original“-Schalter.
+- Produktionsfirmen können an einzelnen Titeln beteiligt sein, ohne Exklusivität zu bedeuten; deshalb ist deren Gewicht geringer.
+- Manuelle Overrides müssen anhand konkreter Fehlklassifizierungen gepflegt werden.
+- TVmaze kann nicht jede internationale Streamingserie perfekt mit TMDB verknüpfen.
+- Für eine öffentlich gehostete Multi-User-Version sollte TMDB später über ein Backend/Proxy angebunden werden.
 
 ## Status
 
-`v0.0.6` – Global season & episode radar
+`v0.0.7` – Origin intelligence, scoring & overrides
