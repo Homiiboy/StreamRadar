@@ -1,6 +1,6 @@
 {
   "name": "streamradar",
-  "version": "0.2.0",
+  "version": "0.2.1",
   "private": true,
   "type": "module",
   "description": "StreamRadar - Streaming Release Tracker",
@@ -8,9 +8,11 @@
     "build:web": "node scripts/build-desktop.mjs",
     "icons": "tauri icon assets/streamradar-icon.svg",
     "tauri": "tauri",
-    "desktop:build": "npm run icons && tauri build --bundles msi"
+    "desktop:build": "npm run icons && tauri build --bundles msi",
+    "test:e2e": "playwright test --config=tests/playwright.config.js"
   },
   "devDependencies": {
-    "@tauri-apps/cli": "2.11.4"
+    "@tauri-apps/cli": "2.11.4",
+    "@playwright/test": "1.55.0"
   }
 }

@@ -1,5 +1,5 @@
 (() => {
-  const VERSION = '0.2.0';
+  const VERSION = '0.2.1';
   const isDesktop = Boolean(window.__TAURI_INTERNALS__);
 
   document.documentElement.dataset.streamradarVersion = VERSION;
