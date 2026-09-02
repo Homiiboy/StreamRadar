@@ -7,6 +7,7 @@ const dist = resolve(root, 'dist');
 const files = [
   'index.html',
   'styles.css',
+  'themes.css',
   'js/original-overrides.js',
   'js/tmdb.js',
   'js/tvmaze.js',
@@ -16,7 +17,8 @@ const files = [
   'js/polish.js',
   'js/desktop.js',
   'js/ui.js',
-  'js/catalog.js'
+  'js/catalog.js',
+  'js/themes.js'
 ];
 
 await rm(dist, { recursive: true, force: true });
