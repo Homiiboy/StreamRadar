@@ -4,19 +4,20 @@ Hier liegen die direkt installierbaren Windows-Builds von StreamRadar.
 
 ## Aktuelle Windows-Version
 
-### StreamRadar v0.5.2 – Windows x64
+### StreamRadar v0.5.3 – Windows x64
 
-[**StreamRadar_0.5.2_x64_de-DE.msi herunterladen**](StreamRadar_0.5.2_x64_de-DE.msi)
+[**StreamRadar_0.5.3_x64_de-DE.msi herunterladen**](StreamRadar_0.5.3_x64_de-DE.msi)
 
-- Version: `0.5.2`
+- Version: `0.5.3`
 - Plattform: Windows x64
 - Installer: MSI (`de-DE`)
-- SHA-256: `e4aaf3144bdcdd90c0c83cb83f37fa2612a62b6de8126705088e842739b933b8`
+- SHA-256: `a1bd678324f401f902db70bfd81708caadd79a5ba6c31575bcc95e0e8adc136a`
 
 Der Installer ist aktuell nicht code-signiert. Windows kann deshalb beim Öffnen einen Hinweis auf einen unbekannten Herausgeber anzeigen.
 
 ## Verfügbare Windows-Releases
 
+- [StreamRadar v0.5.3](StreamRadar_0.5.3_x64_de-DE.msi) — Poster Visibility Fix
 - [StreamRadar v0.5.2](StreamRadar_0.5.2_x64_de-DE.msi) — Themes & Visual Personalization
 - [StreamRadar v0.5.1](StreamRadar_0.5.1_x64_de-DE.msi) — Selectable Themes
 - [StreamRadar v0.5.0](StreamRadar_0.5.0_x64_de-DE.msi) — Clean Catalog & International Providers
