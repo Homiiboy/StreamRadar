@@ -2,31 +2,26 @@
 
 StreamRadar ist ein persönlicher Streaming-Katalog und Release-Radar für Filme, Serien und Anime. Die App kombiniert anbieter-spezifische Kataloge, Release Intelligence, Staffel-/Episodeninformationen, Kalender, Merkliste und lokale Personalisierung in einer Windows-Desktop-App auf Basis von Tauri v2.
 
-## Aktuelle Version: v0.5.2
+## Aktuelle Version: v0.5.3
 
-**v0.5.2 – Themes & Visual Personalization** erweitert das in v0.5.1 eingeführte Theme-System auf sieben deutlich unterschiedliche Designs. Die Oberfläche kann direkt in den Einstellungen umgeschaltet werden; die Auswahl bleibt lokal gespeichert.
+**v0.5.3 – Poster Visibility Fix** behebt einen Layoutfehler der großen Katalog-Poster: Das Anbieter-Band bleibt wieder kompakt am unteren Bildrand, sodass das Artwork vollständig sichtbar ist. Die sieben Designs aus v0.5.2 bleiben unverändert erhalten.
 
-### Neu in v0.5.2
+### Neu in v0.5.3
 
-- sieben auswählbare Designs statt vier
-- neue Themes **Netflix**, **Cyberpunk** und **Apple TV Glass**
-- Netflix: Schwarz/Rot, kompaktere Flächen und stärkerer Poster-Fokus
-- Cyberpunk: Neon-Cyan/Magenta, schärfere Kanten und futuristische Raster-/Glow-Akzente
-- Apple TV Glass: größere Radien, Frosted Glass, Blur und transparentere Oberflächen
-- bestehende Designs **Radar**, **Cinema**, **Midnight** und **OLED** bleiben erhalten
-- Theme-Auswahl wird über `localStorage` gespeichert und nach einem Neustart wiederhergestellt
-- Palette-Button in der Topbar schaltet zyklisch durch alle Designs
-- alle Theme-Styles wurden in die zentrale `styles.css` integriert; eine separate `themes.css` ist nicht mehr nötig
-- Browser-Regressionstests prüfen alle sieben Themes, direkte Auswahl und Persistenz
-- Release-/Build-Konfiguration auf v0.5.2 aktualisiert
+- Poster-Artwork wird nicht mehr durch ein gestrecktes Anbieter-Overlay verdeckt
+- `JETZT AUF …` sitzt als kompakte Provider-Leiste am unteren Posterrand
+- Rating und Merkliste-Button verwenden eindeutige absolute Positionierung
+- automatischer Browser-Regressionstest prüft die reale Overlay-Höhe
+- alle sieben Designs aus v0.5.2 bleiben erhalten
+- Release-/Build-Konfiguration auf v0.5.3 aktualisiert
 
 ## Download
 
 ### Windows x64
 
-[**StreamRadar v0.5.2 als MSI herunterladen**](downloads/StreamRadar_0.5.2_x64_de-DE.msi)
+[**StreamRadar v0.5.3 als MSI herunterladen**](downloads/StreamRadar_0.5.3_x64_de-DE.msi)
 
-Alle noch im Repository verfügbaren MSI-Versionen und die SHA-256-Prüfsumme des neuesten Builds liegen im Ordner [`downloads/`](downloads/). Zusätzlich ist v0.5.2 inklusive MSI im nativen [GitHub-Releases-Bereich](../../releases) veröffentlicht.
+Alle noch im Repository verfügbaren MSI-Versionen und die SHA-256-Prüfsumme des neuesten Builds liegen im Ordner [`downloads/`](downloads/). Zusätzlich werden stabile Windows-Versionen im nativen [GitHub-Releases-Bereich](../../releases) dokumentiert.
 
 Der Installer ist für die persönliche Nutzung nicht code-signiert. Windows kann deshalb beim Öffnen einen Hinweis auf einen unbekannten Herausgeber anzeigen.
 
@@ -52,6 +47,7 @@ Die komplette StreamRadar-Historie seit dem ersten MVP:
 
 | Version | Schwerpunkt | Windows MSI |
 | --- | --- | --- |
+| **v0.5.3** | Poster Visibility Fix | [MSI](downloads/StreamRadar_0.5.3_x64_de-DE.msi) |
 | **v0.5.2** | Themes & Visual Personalization | [MSI](downloads/StreamRadar_0.5.2_x64_de-DE.msi) |
 | **v0.5.1** | Selectable Themes | [MSI](downloads/StreamRadar_0.5.1_x64_de-DE.msi) |
 | **v0.5.0** | Clean Catalog & International Providers | [MSI](downloads/StreamRadar_0.5.0_x64_de-DE.msi) |
@@ -77,7 +73,7 @@ Die komplette StreamRadar-Historie seit dem ersten MVP:
 
 Ausführliche Änderungen pro Version stehen in [`CHANGELOG.md`](CHANGELOG.md).
 
-Alle **22 Versionen von v0.0.1 bis v0.5.2** sind zusätzlich als native [GitHub Releases](../../releases) veröffentlicht. Die Windows-Versionen ab v0.1.0 enthalten jeweils die zugehörige historische MSI als Release-Asset; die frühen v0.0.x-Versionen waren Web-/Runtime-Releases ohne MSI. Die Installer bleiben parallel im Repository-Ordner `downloads/` erhalten.
+Alle bisherigen Versionen von **v0.0.1 bis v0.5.3** sind zusätzlich als native [GitHub Releases](../../releases) veröffentlicht. Die Windows-Versionen ab v0.1.0 enthalten jeweils die zugehörige historische MSI als Release-Asset; die frühen v0.0.x-Versionen waren Web-/Runtime-Releases ohne MSI. Die Installer bleiben parallel im Repository-Ordner `downloads/` erhalten.
 
 ## Funktionsumfang
 

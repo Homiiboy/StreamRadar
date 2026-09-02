@@ -1,6 +1,6 @@
-/* StreamRadar v0.5.2 — selectable visual themes */
+/* StreamRadar v0.5.3 — selectable visual themes + poster geometry fix */
 (() => {
-  const VERSION = '0.5.2';
+  const VERSION = '0.5.3';
   const STORAGE_KEY = 'streamradar-theme-v1';
   const ORDER = ['radar', 'cinema', 'midnight', 'oled', 'netflix', 'cyberpunk', 'glass'];
   const THEMES = Object.freeze({
