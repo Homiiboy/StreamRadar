@@ -2,6 +2,29 @@
 
 Alle relevanten Änderungen an StreamRadar werden hier ab der ersten Version nach Semantic Versioning dokumentiert.
 
+## [0.5.0] - 2026-09-02
+
+### Added
+- Multi-Region-Providerarchitektur für getrennte Kataloge in Österreich (`AT`), USA (`US`) und Japan (`JP`).
+- Sidebar-Bereich **International** mit US- und Japan-Anbietern.
+- Österreich: `discovery+` ergänzt; `Sky / WOW` wird ohne die bisherige Sidebar-Begrenzung vollständig angezeigt.
+- USA: Hulu, Peacock, AMC+, Starz, Tubi und The Roku Channel.
+- Japan: d Anime Store, ABEMA und U-NEXT.
+- Provider-Network-Bereiche für Peacock und discovery+.
+- Regionsbewusste Detail-Verfügbarkeit für internationale Titel.
+- UI-Snapshots `OldCss/styles-v0.4.1.css` und `OldUi/catalog-v0.4.1.js`.
+
+### Changed
+- Startseite vollständig vereinfacht; die dekorative Radar-Grafik wurde entfernt.
+- Katalog-Reihen verwenden große Poster statt kleiner Backdrop-Karten.
+- Responsive Poster-Dichte: 5 / 4 / 3 / 2 Karten je nach Fensterbreite.
+- Visuelles System ruhiger gestaltet: weniger Glow, weniger Rahmen, neutralere Flächen und klarere Typografie.
+- Release-Radar bleibt bewusst auf Region Österreich beschränkt.
+- App-, Tauri-, Desktop- und MSI-Version auf `0.5.0` angehoben.
+
+### Quality
+- Browser-QA erweitert um Clean-Home, große Poster, Sky/discovery+, internationale Providergruppen und Peacock-Networks.
+
 ## [0.4.1] - 2026-09-01
 
 ### Added

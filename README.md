@@ -2,27 +2,33 @@
 
 StreamRadar ist ein persönlicher Streaming-Katalog und Release-Radar für Filme, Serien und Anime – mit anbieter-spezifischen Katalogen, Releases, Staffeln, Episoden und Kalender für Österreich.
 
-## Aktuelle Version: v0.4.1
+## Aktuelle Version: v0.5.0
 
-**v0.4.1 – Provider Sidebar Fixes** verbessert die Anbieter-Navigation des v0.4.0-Katalogs: Crunchyroll ist jetzt zuverlässig im Anbieterblock erreichbar und die linke Sidebar lässt sich vollständig vertikal scrollen.
+**v0.5.0 – Clean Catalog & International Providers** macht StreamRadar ruhiger, übersichtlicher und internationaler: größere Poster, eine stark vereinfachte Startseite sowie getrennte Streaming-Kataloge für Österreich, USA und Japan.
 
 ## Download
 
 ### Windows x64
 
-[**StreamRadar v0.4.1 als MSI herunterladen**](downloads/StreamRadar_0.4.1_x64_de-DE.msi)
+[**StreamRadar v0.5.0 als MSI herunterladen**](downloads/StreamRadar_0.5.0_x64_de-DE.msi)
 
 Weitere Builds und die SHA-256-Prüfsumme liegen im Ordner [`downloads/`](downloads/).
 
 Der Installer ist für die persönliche Nutzung weiterhin nicht code-signiert. Windows kann deshalb beim Öffnen einen Hinweis auf einen unbekannten Herausgeber anzeigen.
 
-## Neu in v0.4.1
+## Neu in v0.5.0
 
-- **Crunchyroll** wird in der Anbieter-Sidebar zusätzlich aufgenommen, sobald TMDB den Dienst für Österreich als verfügbar meldet
-- die bisherige Begrenzung der Anbieter-Sidebar auf sechs Einträge ist entfernt
-- die komplette linke Sidebar ist vertikal scrollbar und bleibt damit auch bei kleinen Fensterhöhen vollständig bedienbar
-- sichtbare Scrollbar ist dezent an das StreamRadar-Design angepasst
-- Browser-Regressionstest prüft Crunchyroll und echtes vertikales Sidebar-Scrolling
+- cleaner Dark-UI-Look mit weniger Glow, Rahmen und visueller Unruhe
+- alte Radar-Grafik auf der Startseite entfernt; direkter Einstieg in den Streaming-Katalog
+- deutlich größere Poster: 4 pro normaler Desktop-Breite, 5 auf sehr breiten Displays, 3 auf kleineren Desktops und 2 mobil
+- österreichische Anbieter ergänzt bzw. sichtbar gemacht: **Sky / WOW** und **discovery+**
+- neuer Sidebar-Bereich **International** mit getrennten Katalogen für **USA** und **Japan**
+- USA: Hulu, Peacock, AMC+, Starz, Tubi und The Roku Channel
+- Japan: d Anime Store, ABEMA und U-NEXT
+- internationale Providerseiten zeigen ihre echte Watch-Region und weisen darauf hin, dass dies keine Aussage über österreichische Verfügbarkeit ist
+- Peacock zeigt die zugehörigen Networks NBC, Bravo, USA Network, Syfy, Telemundo und Universal Kids
+- discovery+ zeigt Discovery Channel, TLC, HGTV, Food Network, Animal Planet und Investigation Discovery
+- Release-Radar und Kalender bleiben weiterhin ausschließlich auf Österreich ausgerichtet
 
 ## Funktionsumfang
 

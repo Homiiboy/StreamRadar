@@ -1,5 +1,5 @@
 (() => {
-  const VERSION = '0.5.0';
+  const VERSION = '0.4.1';
   const TOKEN_KEY = 'streamradar-tmdb-token';
   const PROVIDERS_KEY = 'streamradar-preferred-providers';
   const CATALOG_META_KEY = 'streamradar-catalog-watchlist-v1';
@@ -13,49 +13,32 @@
   const releaseSearchFocus = searchInput?.onfocus || null;
 
   const themes = {
-    'Netflix': { accent:'#e50914', glow:'rgba(229,9,20,.16)', label:'NETFLIX' },
-    'Disney+': { accent:'#5b7cff', glow:'rgba(91,124,255,.15)', label:'DISNEY+' },
-    'Prime Video': { accent:'#1aa8e8', glow:'rgba(26,168,232,.15)', label:'PRIME VIDEO' },
-    'HBO Max': { accent:'#8b5cf6', glow:'rgba(139,92,246,.16)', label:'HBO MAX' },
-    'Apple TV+': { accent:'#f4f5f7', glow:'rgba(225,230,238,.10)', label:'APPLE TV+' },
-    'Paramount+': { accent:'#2f73ff', glow:'rgba(47,115,255,.15)', label:'PARAMOUNT+' },
-    'Crunchyroll': { accent:'#f47521', glow:'rgba(244,117,33,.15)', label:'CRUNCHYROLL' },
-    'Sky / WOW': { accent:'#ff4fd8', glow:'rgba(255,79,216,.14)', label:'SKY / WOW' },
-    'discovery+': { accent:'#40a6ff', glow:'rgba(64,166,255,.14)', label:'DISCOVERY+' },
-    'Joyn': { accent:'#f4d44d', glow:'rgba(244,212,77,.12)', label:'JOYN' },
-    'RTL+': { accent:'#36d49b', glow:'rgba(54,212,155,.12)', label:'RTL+' },
-    'ORF': { accent:'#ef4f5c', glow:'rgba(239,79,92,.13)', label:'ORF' },
-    'Hulu': { accent:'#1ce783', glow:'rgba(28,231,131,.15)', label:'HULU' },
-    'Peacock': { accent:'#8b7cff', glow:'rgba(139,124,255,.15)', label:'PEACOCK' },
-    'AMC+': { accent:'#f2b45f', glow:'rgba(242,180,95,.13)', label:'AMC+' },
-    'Starz': { accent:'#f0f0f0', glow:'rgba(240,240,240,.10)', label:'STARZ' },
-    'Tubi': { accent:'#ff4f91', glow:'rgba(255,79,145,.13)', label:'TUBI' },
-    'The Roku Channel': { accent:'#7b2cff', glow:'rgba(123,44,255,.14)', label:'ROKU CHANNEL' },
-    'd Anime Store': { accent:'#35a7ff', glow:'rgba(53,167,255,.14)', label:'D ANIME STORE' },
-    'ABEMA': { accent:'#2bd6be', glow:'rgba(43,214,190,.13)', label:'ABEMA' },
-    'U-NEXT': { accent:'#00b9ff', glow:'rgba(0,185,255,.13)', label:'U-NEXT' }
-  };
-
-  const REGION_LABELS = { AT:'Österreich', US:'USA', JP:'Japan' };
-  const NETWORKS_BY_PROVIDER = {
-    'Peacock': ['NBC', 'Bravo', 'USA Network', 'Syfy', 'Telemundo', 'Universal Kids'],
-    'discovery+': ['Discovery Channel', 'TLC', 'HGTV', 'Food Network', 'Animal Planet', 'Investigation Discovery']
+    'Netflix': { accent:'#e50914', glow:'rgba(229,9,20,.34)', label:'NETFLIX' },
+    'Disney+': { accent:'#4b79ff', glow:'rgba(75,121,255,.34)', label:'DISNEY+' },
+    'Prime Video': { accent:'#00a8e1', glow:'rgba(0,168,225,.30)', label:'PRIME VIDEO' },
+    'HBO Max': { accent:'#8b5cf6', glow:'rgba(139,92,246,.32)', label:'HBO MAX' },
+    'Apple TV+': { accent:'#f4f5f7', glow:'rgba(225,230,238,.22)', label:'APPLE TV+' },
+    'Paramount+': { accent:'#1b64f2', glow:'rgba(27,100,242,.32)', label:'PARAMOUNT+' },
+    'Crunchyroll': { accent:'#f47521', glow:'rgba(244,117,33,.30)', label:'CRUNCHYROLL' },
+    'Sky / WOW': { accent:'#ff4fd8', glow:'rgba(255,79,216,.28)', label:'SKY / WOW' },
+    'Joyn': { accent:'#f4d44d', glow:'rgba(244,212,77,.25)', label:'JOYN' },
+    'RTL+': { accent:'#36d49b', glow:'rgba(54,212,155,.25)', label:'RTL+' },
+    'ORF': { accent:'#ef4f5c', glow:'rgba(239,79,92,.26)', label:'ORF' }
   };
 
   const demoCatalog = [
-    {id:'catalog-movie-1001',entityId:'movie-1001',tmdbId:null,mediaType:'movie',type:'movie',title:'Midnight Protocol',description:'Demo-Katalogfilm.',releaseDate:'2024-03-14',rating:7.8,popularity:98,services:['Netflix'],watchRegion:'AT',catalogAvailable:true,source:'demo-catalog'},
-    {id:'catalog-movie-1002',entityId:'movie-1002',tmdbId:null,mediaType:'movie',type:'movie',title:'Northern Lights',description:'Demo-Katalogfilm.',releaseDate:'2022-11-02',rating:7.2,popularity:91,services:['Netflix'],watchRegion:'AT',catalogAvailable:true,source:'demo-catalog'},
-    {id:'catalog-tv-2001',entityId:'tv-2001',tmdbId:null,mediaType:'tv',type:'series',title:'Terminal Zero',description:'Demo-Katalogserie.',releaseDate:'2023-07-11',rating:8.1,popularity:96,services:['Netflix'],watchRegion:'AT',catalogAvailable:true,source:'demo-catalog'},
-    {id:'catalog-movie-1003',entityId:'movie-1003',tmdbId:null,mediaType:'movie',type:'movie',title:'Atlas Run',description:'Demo-Katalogfilm.',releaseDate:'2021-09-20',rating:7.4,popularity:89,services:['Prime Video'],watchRegion:'AT',catalogAvailable:true,source:'demo-catalog'},
-    {id:'catalog-tv-2002',entityId:'tv-2002',tmdbId:null,mediaType:'tv',type:'series',title:'The Long Signal',description:'Demo-Katalogserie.',releaseDate:'2024-01-19',rating:8.0,popularity:88,services:['Prime Video'],watchRegion:'AT',catalogAvailable:true,source:'demo-catalog'},
-    {id:'catalog-tv-3001',entityId:'tv-3001',tmdbId:null,mediaType:'tv',type:'anime',title:'Starlight Blade',description:'Demo-Anime.',releaseDate:'2023-10-06',rating:8.4,popularity:92,services:['Crunchyroll'],watchRegion:'AT',catalogAvailable:true,source:'demo-catalog'},
-    {id:'catalog-tv-2100',entityId:'tv-2100',tmdbId:null,mediaType:'tv',type:'series',title:'Alpine Crime',description:'Demo für Sky.',releaseDate:'2023-02-12',rating:7.6,popularity:79,services:['Sky / WOW'],watchRegion:'AT',catalogAvailable:true,source:'demo-catalog'},
-    {id:'catalog-tv-2200',entityId:'tv-2200',tmdbId:null,mediaType:'tv',type:'series',title:'Wild Horizons',description:'Demo für discovery+.',releaseDate:'2022-04-20',rating:7.9,popularity:81,services:['discovery+'],watchRegion:'AT',catalogAvailable:true,source:'demo-catalog'},
-    {id:'catalog-tv-4001',entityId:'tv-4001',tmdbId:null,mediaType:'tv',type:'series',title:'Liberty Line',description:'US-Demo von Hulu.',releaseDate:'2024-01-11',rating:8.0,popularity:90,services:['Hulu'],watchRegion:'US',catalogAvailable:true,source:'demo-catalog'},
-    {id:'catalog-tv-4002',entityId:'tv-4002',tmdbId:null,mediaType:'tv',type:'series',title:'Metro Unit',description:'US-Demo von Peacock.',releaseDate:'2024-05-17',rating:7.8,popularity:88,services:['Peacock'],watchRegion:'US',catalogAvailable:true,source:'demo-catalog'},
-    {id:'catalog-movie-4003',entityId:'movie-4003',tmdbId:null,mediaType:'movie',type:'movie',title:'Desert Frequency',description:'US-Demo von Tubi.',releaseDate:'2021-03-09',rating:7.1,popularity:74,services:['Tubi'],watchRegion:'US',catalogAvailable:true,source:'demo-catalog'},
-    {id:'catalog-tv-5001',entityId:'tv-5001',tmdbId:null,mediaType:'tv',type:'anime',title:'Moonblade Academy',description:'Japan-Demo von d Anime Store.',releaseDate:'2025-01-08',rating:8.6,popularity:94,services:['d Anime Store'],watchRegion:'JP',catalogAvailable:true,source:'demo-catalog'},
-    {id:'catalog-tv-5002',entityId:'tv-5002',tmdbId:null,mediaType:'tv',type:'anime',title:'Tokyo Signal',description:'Japan-Demo von ABEMA.',releaseDate:'2024-10-03',rating:8.2,popularity:89,services:['ABEMA'],watchRegion:'JP',catalogAvailable:true,source:'demo-catalog'}
+    {id:'catalog-movie-1001',entityId:'movie-1001',tmdbId:null,mediaType:'movie',type:'movie',title:'Midnight Protocol',description:'Demo-Katalogfilm.',releaseDate:'2024-03-14',rating:7.8,popularity:98,services:['Netflix'],catalogAvailable:true,source:'demo-catalog'},
+    {id:'catalog-movie-1002',entityId:'movie-1002',tmdbId:null,mediaType:'movie',type:'movie',title:'Northern Lights',description:'Demo-Katalogfilm.',releaseDate:'2022-11-02',rating:7.2,popularity:91,services:['Netflix'],catalogAvailable:true,source:'demo-catalog'},
+    {id:'catalog-tv-2001',entityId:'tv-2001',tmdbId:null,mediaType:'tv',type:'series',title:'Terminal Zero',description:'Demo-Katalogserie.',releaseDate:'2023-07-11',rating:8.1,popularity:96,services:['Netflix'],catalogAvailable:true,source:'demo-catalog'},
+    {id:'catalog-movie-1003',entityId:'movie-1003',tmdbId:null,mediaType:'movie',type:'movie',title:'Atlas Run',description:'Demo-Katalogfilm.',releaseDate:'2021-09-20',rating:7.4,popularity:89,services:['Prime Video'],catalogAvailable:true,source:'demo-catalog'},
+    {id:'catalog-tv-2002',entityId:'tv-2002',tmdbId:null,mediaType:'tv',type:'series',title:'The Long Signal',description:'Demo-Katalogserie.',releaseDate:'2024-01-19',rating:8.0,popularity:88,services:['Prime Video'],catalogAvailable:true,source:'demo-catalog'},
+    {id:'catalog-movie-1004',entityId:'movie-1004',tmdbId:null,mediaType:'movie',type:'movie',title:'Blue Kingdom',description:'Demo-Katalogfilm.',releaseDate:'2020-12-01',rating:7.5,popularity:86,services:['Disney+'],catalogAvailable:true,source:'demo-catalog'},
+    {id:'catalog-tv-2003',entityId:'tv-2003',tmdbId:null,mediaType:'tv',type:'series',title:'Harbor Nine',description:'Demo-Katalogserie.',releaseDate:'2022-05-09',rating:7.9,popularity:84,services:['Disney+'],catalogAvailable:true,source:'demo-catalog'},
+    {id:'catalog-tv-3001',entityId:'tv-3001',tmdbId:null,mediaType:'tv',type:'anime',title:'Starlight Blade',description:'Demo-Anime.',releaseDate:'2023-10-06',rating:8.4,popularity:92,services:['Crunchyroll'],catalogAvailable:true,source:'demo-catalog'},
+    {id:'catalog-tv-2004',entityId:'tv-2004',tmdbId:null,mediaType:'tv',type:'series',title:'White Room',description:'Demo-Katalogserie.',releaseDate:'2024-02-23',rating:8.2,popularity:87,services:['Apple TV+'],catalogAvailable:true,source:'demo-catalog'},
+    {id:'catalog-movie-1005',entityId:'movie-1005',tmdbId:null,mediaType:'movie',type:'movie',title:'After the Rain',description:'Demo-Katalogfilm.',releaseDate:'2022-08-16',rating:7.7,popularity:82,services:['Apple TV+'],catalogAvailable:true,source:'demo-catalog'},
+    {id:'catalog-tv-2005',entityId:'tv-2005',tmdbId:null,mediaType:'tv',type:'series',title:'Black Meridian',description:'Demo-Katalogserie.',releaseDate:'2021-06-08',rating:8.0,popularity:80,services:['HBO Max'],catalogAvailable:true,source:'demo-catalog'},
+    {id:'catalog-movie-1006',entityId:'movie-1006',tmdbId:null,mediaType:'movie',type:'movie',title:'Silent Avenue',description:'Demo-Katalogfilm.',releaseDate:'2023-04-10',rating:7.1,popularity:78,services:['Paramount+'],catalogAvailable:true,source:'demo-catalog'}
   ];
 
   const catalogState = {
@@ -79,7 +62,7 @@
       title:item.title, originalTitle:item.originalTitle || '', description:item.description || '', releaseDate:item.releaseDate || '',
       posterPath:item.posterPath || null, backdropPath:item.backdropPath || null, rating:item.rating || 0, popularity:item.popularity || 0,
       genreIds:item.genreIds || [], originalLanguage:item.originalLanguage || '', services:[...(item.services || [])], serviceLogos:{...(item.serviceLogos || {})},
-      watchRegion:item.watchRegion || 'AT', catalogAvailable:true, source:item.source || 'tmdb-catalog'
+      catalogAvailable:true, source:item.source || 'tmdb-catalog'
     };
   }
 
@@ -113,31 +96,23 @@
     renderCurrent();
   }
 
-  function providersForRegion(region) {
-    return catalogState.providerMap.filter(provider => provider.available && (provider.region || 'AT') === region);
-  }
-
   function preferredAvailableProviders() {
-    const available = providersForRegion('AT');
+    const available = catalogState.providerMap.filter(provider => provider.available);
     const preferred = new Set(storedProviders());
     const selected = available.filter(provider => preferred.has(provider.name));
     return (selected.length ? selected : available).slice(0, 8);
   }
 
-  function sidebarProvidersForRegion(region) {
-    return providersForRegion(region);
-  }
-
   async function ensureProviderMap() {
-    const hasAllRegions = ['AT','US','JP'].every(region => catalogState.providerMap.some(provider => (provider.region || 'AT') === region));
-    if (hasAllRegions) return catalogState.providerMap;
+    if (state.providerMap?.length) catalogState.providerMap = state.providerMap;
+    if (catalogState.providerMap.length) return catalogState.providerMap;
     if (providerMapPromise) return providerMapPromise;
     const token = localStorage.getItem(TOKEN_KEY)?.trim();
     if (!token) {
       catalogState.providerMap = tmdb.SERVICE_DEFINITIONS.map(service => ({...service,available:true,movieProviderId:null,tvProviderId:null,logoPath:null}));
       return catalogState.providerMap;
     }
-    providerMapPromise = tmdb.getAllProviderMaps(token)
+    providerMapPromise = tmdb.getProviderMap(token)
       .then(map => { catalogState.providerMap = map; return map; })
       .finally(() => { providerMapPromise = null; });
     return providerMapPromise;
@@ -147,22 +122,19 @@
     return provider?.logoPath ? `<img src="${tmdb.image(provider.logoPath,size)}" alt="" loading="lazy"/>` : `<strong>${escapeHTML(themeFor(provider?.name).label)}</strong>`;
   }
 
-  function providerNavMarkup(providers) {
-    return providers.map(provider => `<button class="nav-link sidebar-link provider-nav-link" data-view="provider-${slug(provider.name)}" data-provider-name="${escapeHTML(provider.name)}" data-provider-region="${escapeHTML(provider.region || 'AT')}"><span class="provider-nav-logo">${providerLogo(provider,'w92')}</span><span>${escapeHTML(provider.name)}</span></button>`).join('');
-  }
-
-  function bindProviderNav(root) {
-    root?.querySelectorAll('[data-provider-name]').forEach(button => button.onclick = () => setView(button.dataset.view));
+  function sidebarProviders() {
+    const providers = [...preferredAvailableProviders()];
+    const crunchyroll = catalogState.providerMap.find(provider => provider.name === 'Crunchyroll' && provider.available);
+    if (crunchyroll && !providers.some(provider => provider.name === 'Crunchyroll')) providers.push(crunchyroll);
+    return providers;
   }
 
   function buildProviderNav() {
-    const localRoot = $('#providerNav');
-    const usRoot = $('#internationalProviderNavUS');
-    const jpRoot = $('#internationalProviderNavJP');
-    if (localRoot) localRoot.innerHTML = providerNavMarkup(sidebarProvidersForRegion('AT'));
-    if (usRoot) usRoot.innerHTML = providerNavMarkup(sidebarProvidersForRegion('US'));
-    if (jpRoot) jpRoot.innerHTML = providerNavMarkup(sidebarProvidersForRegion('JP'));
-    bindProviderNav(localRoot); bindProviderNav(usRoot); bindProviderNav(jpRoot);
+    const root = $('#providerNav');
+    if (!root) return;
+    const providers = sidebarProviders();
+    root.innerHTML = providers.map(provider => `<button class="nav-link sidebar-link provider-nav-link" data-view="provider-${slug(provider.name)}" data-provider-name="${escapeHTML(provider.name)}"><span class="provider-nav-logo">${providerLogo(provider,'w92')}</span><span>${escapeHTML(provider.name)}</span></button>`).join('');
+    root.querySelectorAll('[data-provider-name]').forEach(button => button.onclick = () => setView(button.dataset.view));
   }
 
   function setCatalogChrome(view) {
@@ -176,7 +148,7 @@
       surface.style.setProperty('--provider-glow', theme.glow);
       surface.dataset.provider = providerName ? slug(providerName) : 'all';
     }
-    if (view === 'catalog-home') $('.hero')?.removeAttribute('hidden'); else $('.hero')?.setAttribute('hidden','');
+    $('.hero')?.setAttribute('hidden','');
     $('#homeDashboard')?.setAttribute('hidden','');
     $('.services-section')?.setAttribute('hidden','');
     $('#releases')?.setAttribute('hidden','');
@@ -191,8 +163,7 @@
       'catalog-anime':['ANIME','Anime streamen'],
       'catalog-watchlist':['MERKLISTE','Deine gespeicherten Titel']
     };
-    const activeProvider = providerName ? catalogState.providerMap.find(provider => provider.name === providerName) : null;
-    const pair = providerName ? [activeProvider?.region === 'AT' ? 'ANBIETER' : `INTERNATIONAL · ${activeProvider?.region || ''}`, providerName] : (titles[view] || titles['catalog-home']);
+    const pair = providerName ? ['ANBIETER', providerName] : (titles[view] || titles['catalog-home']);
     if ($('#topbarKicker')) $('#topbarKicker').textContent = pair[0];
     if ($('#topbarTitle')) $('#topbarTitle').textContent = pair[1];
   }
@@ -202,7 +173,6 @@
     document.body.dataset.catalogProvider = 'all';
     $('#releases')?.removeAttribute('hidden');
     $('.services-section')?.removeAttribute('hidden');
-    $('.hero')?.setAttribute('hidden','');
   }
 
   function imageMarkup(item, kind='poster') {
@@ -234,28 +204,20 @@
 
   function rail(title, kicker, items, action='') {
     if (!items.length) return '';
-    return `<section class="catalog-rail"><div class="catalog-section-head"><div><span class="section-kicker">${escapeHTML(kicker)}</span><h2>${escapeHTML(title)}</h2></div>${action?`<button class="text-button" data-catalog-action="${escapeHTML(action)}">Alle anzeigen →</button>`:''}</div><div class="catalog-rail-track">${items.slice(0,12).map(item => catalogCard(item,'poster')).join('')}</div></section>`;
+    return `<section class="catalog-rail"><div class="catalog-section-head"><div><span class="section-kicker">${escapeHTML(kicker)}</span><h2>${escapeHTML(title)}</h2></div>${action?`<button class="text-button" data-catalog-action="${escapeHTML(action)}">Alle anzeigen →</button>`:''}</div><div class="catalog-rail-track">${items.slice(0,12).map(item => catalogCard(item,'backdrop')).join('')}</div></section>`;
   }
 
   function headerMarkup(providerName=null) {
     if (providerName) {
       const provider = catalogState.providerMap.find(entry => entry.name === providerName);
       const theme = themeFor(providerName);
-      const region = provider?.region || 'AT';
-      const regionLabel = REGION_LABELS[region] || region;
-      const international = region !== 'AT';
-      const copy = international
-        ? `Internationaler Katalog von ${escapeHTML(providerName)} für ${escapeHTML(regionLabel)}. Diese Ansicht zeigt, was dort läuft – nicht, ob der Titel in Österreich verfügbar ist.`
-        : `Filme, Serien und verfügbare Titel von ${escapeHTML(providerName)} in Österreich – unabhängig davon, wann sie erschienen sind.`;
-      return `<header class="catalog-provider-hero"><div class="provider-hero-logo">${providerLogo(provider,'w300')}</div><div class="provider-hero-copy"><span class="section-kicker">${international ? 'INTERNATIONALER KATALOG' : 'DEIN KATALOG'}</span><h1>${escapeHTML(providerName)}</h1><p>${copy}</p><div class="provider-hero-pills"><span>FILME</span><span>SERIEN</span><span>REGION ${escapeHTML(region)}</span></div></div><div class="provider-hero-orb" style="--provider-accent:${theme.accent}"></div></header>`;
+      return `<header class="catalog-provider-hero"><div class="provider-hero-logo">${providerLogo(provider,'w300')}</div><div class="provider-hero-copy"><span class="section-kicker">DEIN KATALOG</span><h1>${escapeHTML(providerName)}</h1><p>Filme, Serien und verfügbare Titel von ${escapeHTML(providerName)} in Österreich – unabhängig davon, wann sie erschienen sind.</p><div class="provider-hero-pills"><span>FILME</span><span>SERIEN</span><span>AT</span></div></div><div class="provider-hero-orb" style="--provider-accent:${theme.accent}"></div></header>`;
     }
-    return `<header class="catalog-main-hero"><div><span class="section-kicker">STREAMING-KATALOG · ÖSTERREICH</span><h1>Dein gesamtes Streaming-Angebot.</h1><p>Filme, Serien und Anime aus deinen österreichischen Diensten. Internationale Kataloge findest du separat in der Sidebar.</p></div><div class="catalog-hero-stat"><strong>${catalogState.allItems.size || demoCatalog.filter(item => item.watchRegion === 'AT').length}</strong><span>geladene Titel</span><small>weitere Seiten jederzeit nachladen</small></div></header>`;
+    return `<header class="catalog-main-hero"><div><span class="section-kicker">STREAMING-KATALOG · ÖSTERREICH</span><h1>Alles, was du<br/><em>streamen kannst.</em></h1><p>Durchsuche das verfügbare Angebot deiner Dienste. Release-Daten sind Zusatzinformationen – der Katalog zeigt auch ältere Filme und Serien.</p></div><div class="catalog-hero-stat"><strong>${catalogState.allItems.size || demoCatalog.length}</strong><span>geladene Titel</span><small>weitere Seiten jederzeit nachladen</small></div></header>`;
   }
 
   function loadingMarkup() {
-    const activeProvider = catalogState.provider ? catalogState.providerMap.find(provider => provider.name === catalogState.provider) : null;
-    const region = activeProvider?.region || 'AT';
-    return `<div class="catalog-loading"><span></span><span></span><span></span><div><strong>Katalog wird geladen</strong><p>TMDB & JustWatch Provider · Region ${escapeHTML(region)}</p></div></div>`;
+    return `<div class="catalog-loading"><span></span><span></span><span></span><div><strong>Katalog wird geladen</strong><p>TMDB & JustWatch Provider · Region AT</p></div></div>`;
   }
 
   function filterLoaded(items) {
@@ -271,7 +233,7 @@
     const anime = source.filter(item => item.type === 'anime');
     const providers = preferredAvailableProviders().slice(0,5);
     const providerRows = providers.map(provider => rail(provider.name, 'ANBIETER', source.filter(item => item.services?.includes(provider.name)), `provider-${slug(provider.name)}`)).join('');
-    return `<div class="catalog-home-section-title"><div><span class="section-kicker">DEINE DIENSTE</span><h2>Direkt losstreamen</h2></div><button class="text-button" data-catalog-action="catalog-all">Gesamtes Angebot →</button></div><div class="catalog-provider-picker">${preferredAvailableProviders().map(provider => `<button data-catalog-action="provider-${slug(provider.name)}">${providerLogo(provider,'w92')}<span>${escapeHTML(provider.name)}</span></button>`).join('')}</div>${rail('Beliebt bei deinen Diensten','FÜR DICH',source,'catalog-all')}${rail('Filme','FILME',movies,'catalog-movies')}${rail('Serien','SERIEN',series,'catalog-series')}${anime.length?rail('Anime','ANIME',anime,'catalog-anime'):''}${providerRows}`;
+    return `${headerMarkup()}<div class="catalog-provider-picker">${preferredAvailableProviders().map(provider => `<button data-catalog-action="provider-${slug(provider.name)}">${providerLogo(provider,'w92')}<span>${escapeHTML(provider.name)}</span></button>`).join('')}</div>${rail('Beliebt bei deinen Diensten','FÜR DICH',source,'catalog-all')}${rail('Filme','FILME',movies,'catalog-movies')}${rail('Serien','SERIEN',series,'catalog-series')}${anime.length?rail('Anime','ANIME',anime,'catalog-anime'):''}${providerRows}`;
   }
 
   function renderGrid(title, kicker, items, copy) {
@@ -283,9 +245,7 @@
     const filtered = filterLoaded(items);
     const movies = filtered.filter(item => item.type === 'movie');
     const series = filtered.filter(item => item.type === 'series' || item.type === 'anime');
-    const networks = NETWORKS_BY_PROVIDER[providerName] || [];
-    const networkMarkup = networks.length ? `<section class="provider-networks"><div class="catalog-section-head"><div><span class="section-kicker">NETWORKS</span><h2>Zugehörige Networks</h2><p>Diese Marken gehören zum Anbieter-Umfeld; die konkrete Streaming-Verfügbarkeit kann je Titel variieren.</p></div></div><div class="provider-network-list">${networks.map(network => `<span class="provider-network-chip">${escapeHTML(network)}</span>`).join('')}</div></section>` : '';
-    return `${headerMarkup(providerName)}${networkMarkup}${rail('Filme','JETZT VERFÜGBAR',movies)}${rail('Serien & Anime','JETZT VERFÜGBAR',series)}<section class="catalog-grid-section provider-all"><div class="catalog-section-head"><div><span class="section-kicker">GESAMTES ANGEBOT</span><h2>Mehr von ${escapeHTML(providerName)}</h2></div><div class="catalog-count"><strong>${filtered.length}</strong><span>geladen</span></div></div><div class="catalog-grid">${filtered.map(item => catalogCard(item)).join('')}</div>${catalogState.hasMore?'<button class="catalog-load-more" id="catalogLoadMore"><span>Mehr von diesem Anbieter laden</span><small>Nächste Katalogseite</small></button>':''}</section>`;
+    return `${headerMarkup(providerName)}${rail('Filme','JETZT VERFÜGBAR',movies)}${rail('Serien & Anime','JETZT VERFÜGBAR',series)}<section class="catalog-grid-section provider-all"><div class="catalog-section-head"><div><span class="section-kicker">GESAMTES ANGEBOT</span><h2>Mehr von ${escapeHTML(providerName)}</h2></div><div class="catalog-count"><strong>${filtered.length}</strong><span>geladen</span></div></div><div class="catalog-grid">${filtered.map(item => catalogCard(item)).join('')}</div>${catalogState.hasMore?'<button class="catalog-load-more" id="catalogLoadMore"><span>Mehr von diesem Anbieter laden</span><small>Nächste Katalogseite</small></button>':''}</section>`;
   }
 
   function watchlistItems() {
@@ -410,7 +370,7 @@
     let details = null;
     const token = localStorage.getItem(TOKEN_KEY)?.trim();
     if (token && item.tmdbId) {
-      try { details = await tmdb.getDetails(item.mediaType,item.tmdbId,token,item.watchRegion || catalogState.providerMap.find(provider => provider.name === item.services?.[0])?.region || 'AT'); }
+      try { details = await tmdb.getDetails(item.mediaType,item.tmdbId,token); }
       catch (error) { console.warn('StreamRadar Catalog details:',error); }
     }
     const providers = details?.providers || [];
@@ -488,8 +448,7 @@
 
   loadLiveData = async function(...args) {
     const result = await releaseLoadLiveData(...args);
-    catalogState.providerMap = [];
-    await ensureProviderMap();
+    catalogState.providerMap = state.providerMap || [];
     buildProviderNav();
     if (isCatalogView(state.view)) await loadView(state.view,true);
     return result;

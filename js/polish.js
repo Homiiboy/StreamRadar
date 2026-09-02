@@ -1,5 +1,5 @@
 (() => {
-  const VERSION = '0.4.1';
+  const VERSION = '0.5.0';
   const CACHE_KEY = 'streamradar-radar-cache-v1';
   const PROVIDERS_KEY = 'streamradar-preferred-providers';
   const WATCHLIST_KEY = 'streamradar-watchlist';

@@ -467,7 +467,7 @@
 
 /* StreamRadar v0.2.0+ — Personalization & Settings */
 (() => {
-  const VERSION = '0.4.1';
+  const VERSION = '0.5.0';
   const CONFIG_KEY = 'streamradar-personalization-v2';
   const ONBOARDING_KEY = 'streamradar-onboarding-v2-complete';
   const LAST_VIEW_KEY = 'streamradar-last-view-v2';
