@@ -3,20 +3,33 @@
   const IMAGE_BASE = 'https://image.tmdb.org/t/p';
   const REGION = 'AT';
   const LANGUAGE = 'de-DE';
+  const PROVIDER_REGIONS = ['AT', 'US', 'JP'];
   const overrides = window.StreamRadarOriginalOverrides || { getOverride: () => null };
 
   const SERVICE_DEFINITIONS = [
-    { name: 'Netflix', aliases: ['Netflix'] },
-    { name: 'Disney+', aliases: ['Disney Plus', 'Disney+'] },
-    { name: 'Prime Video', aliases: ['Amazon Prime Video', 'Prime Video'] },
-    { name: 'HBO Max', aliases: ['HBO Max', 'Max'] },
-    { name: 'Apple TV+', aliases: ['Apple TV Plus', 'Apple TV+'] },
-    { name: 'Paramount+', aliases: ['Paramount Plus', 'Paramount+'] },
-    { name: 'Crunchyroll', aliases: ['Crunchyroll'] },
-    { name: 'Sky / WOW', aliases: ['Sky X', 'Sky Go', 'WOW'] },
-    { name: 'Joyn', aliases: ['Joyn Plus', 'Joyn'] },
-    { name: 'RTL+', aliases: ['RTL+', 'RTL Plus'] },
-    { name: 'ORF', aliases: ['ORF ON', 'ORF'] }
+    { name: 'Netflix', region:'AT', group:'local', aliases: ['Netflix'] },
+    { name: 'Disney+', region:'AT', group:'local', aliases: ['Disney Plus', 'Disney+'] },
+    { name: 'Prime Video', region:'AT', group:'local', aliases: ['Amazon Prime Video', 'Prime Video'] },
+    { name: 'HBO Max', region:'AT', group:'local', aliases: ['HBO Max', 'Max'] },
+    { name: 'Apple TV+', region:'AT', group:'local', aliases: ['Apple TV Plus', 'Apple TV+'] },
+    { name: 'Paramount+', region:'AT', group:'local', aliases: ['Paramount Plus', 'Paramount+'] },
+    { name: 'Crunchyroll', region:'AT', group:'local', aliases: ['Crunchyroll'] },
+    { name: 'Sky / WOW', region:'AT', group:'local', aliases: ['Sky X', 'Sky Go', 'WOW'] },
+    { name: 'discovery+', region:'AT', group:'local', aliases: ['Discovery Plus', 'Discovery+', 'discovery+'] },
+    { name: 'Joyn', region:'AT', group:'local', aliases: ['Joyn Plus', 'Joyn'] },
+    { name: 'RTL+', region:'AT', group:'local', aliases: ['RTL+', 'RTL Plus'] },
+    { name: 'ORF', region:'AT', group:'local', aliases: ['ORF ON', 'ORF'] },
+
+    { name: 'Hulu', region:'US', group:'international', country:'USA', aliases: ['Hulu'] },
+    { name: 'Peacock', region:'US', group:'international', country:'USA', aliases: ['Peacock Premium Plus', 'Peacock Premium', 'Peacock'] },
+    { name: 'AMC+', region:'US', group:'international', country:'USA', aliases: ['AMC Plus Apple TV Channel', 'AMC+ Amazon Channel', 'AMC Plus', 'AMC+'] },
+    { name: 'Starz', region:'US', group:'international', country:'USA', aliases: ['Starz Apple TV Channel', 'Starz Amazon Channel', 'Starz Roku Premium Channel', 'Starz'] },
+    { name: 'Tubi', region:'US', group:'international', country:'USA', aliases: ['Tubi TV', 'Tubi'] },
+    { name: 'The Roku Channel', region:'US', group:'international', country:'USA', aliases: ['The Roku Channel'] },
+
+    { name: 'd Anime Store', region:'JP', group:'international', country:'Japan', aliases: ['d Anime Store for Prime Video', 'd Anime Store', 'dアニメストア'] },
+    { name: 'ABEMA', region:'JP', group:'international', country:'Japan', aliases: ['ABEMA', 'AbemaTV', 'Abema'] },
+    { name: 'U-NEXT', region:'JP', group:'international', country:'Japan', aliases: ['U-NEXT'] }
   ];
 
   const ORIGINAL_BRANDS = [
@@ -94,13 +107,14 @@
   }
   function matchesAlias(value, aliases) { return aliasScore(value, aliases) > 0; }
 
-  function resolveProviderMap(movieProviders, tvProviders) {
-    return SERVICE_DEFINITIONS.map(service => {
+  function resolveProviderMap(movieProviders, tvProviders, definitions = SERVICE_DEFINITIONS, region = REGION) {
+    return definitions.map(service => {
       const movie = movieProviders.find(provider => matchesAlias(provider.provider_name, service.aliases));
       const tv = tvProviders.find(provider => matchesAlias(provider.provider_name, service.aliases));
       const source = movie || tv;
       return {
         ...service,
+        region: service.region || region,
         movieProviderId: movie?.provider_id || null,
         tvProviderId: tv?.provider_id || null,
         logoPath: source?.logo_path || null,
@@ -216,6 +230,7 @@
       originalLanguage: item.original_language || '',
       services: [service.name],
       serviceLogos: service.logoPath ? { [service.name]: service.logoPath } : {},
+      watchRegion: service.region || REGION,
       catalogAvailable: true,
       radarEligible: false,
       eventKind: null,
@@ -249,16 +264,17 @@
     const providerId = mediaType === 'movie' ? service.movieProviderId : service.tvProviderId;
     if (!providerId) return { items:[], page:Number(options.page || 1), totalPages:0, totalResults:0, service:service.name };
     const page = Math.max(1, Math.min(500, Number(options.page || 1)));
+    const watchRegion = service.region || REGION;
     const params = {
       language: LANGUAGE,
-      watch_region: REGION,
+      watch_region: watchRegion,
       with_watch_providers: providerId,
       with_watch_monetization_types: 'flatrate|free|ads',
       include_adult: false,
       page,
       sort_by: options.sortBy || 'popularity.desc'
     };
-    if (mediaType === 'movie') params.region = REGION;
+    if (mediaType === 'movie') params.region = watchRegion;
     if (options.anime) {
       params.with_genres = '16';
       params.with_original_language = 'ja';
@@ -321,12 +337,18 @@
   }
 
   async function validateToken(token) { await request('/configuration', token); return true; }
-  async function getProviderMap(token) {
+  async function getProviderMap(token, region = REGION) {
+    const definitions = SERVICE_DEFINITIONS.filter(service => (service.region || REGION) === region);
     const [movieData, tvData] = await Promise.all([
-      request('/watch/providers/movie', token, { language: LANGUAGE, watch_region: REGION }),
-      request('/watch/providers/tv', token, { language: LANGUAGE, watch_region: REGION })
+      request('/watch/providers/movie', token, { language: LANGUAGE, watch_region: region }),
+      request('/watch/providers/tv', token, { language: LANGUAGE, watch_region: region })
     ]);
-    return resolveProviderMap(movieData.results || [], tvData.results || []);
+    return resolveProviderMap(movieData.results || [], tvData.results || [], definitions, region);
+  }
+
+  async function getAllProviderMaps(token, regions = PROVIDER_REGIONS) {
+    const maps = await Promise.all(regions.map(region => getProviderMap(token, region)));
+    return maps.flat();
   }
 
   async function loadRadar(token, onProgress) {
@@ -566,20 +588,20 @@
     return releases;
   }
 
-  async function getDetails(mediaType, id, token) {
+  async function getDetails(mediaType, id, token, region = REGION) {
     const [details, providerData] = await Promise.all([
       getCoreDetails(mediaType, id, token),
       request(`/${mediaType}/${id}/watch/providers`, token)
     ]);
-    const at = providerData.results?.[REGION] || {};
-    const streaming = [...(at.flatrate || []), ...(at.free || []), ...(at.ads || [])];
+    const regional = providerData.results?.[region] || {};
+    const streaming = [...(regional.flatrate || []), ...(regional.free || []), ...(regional.ads || [])];
     const uniqueStreaming = [...new Map(streaming.map(provider => [provider.provider_id, provider])).values()];
     const origin = inferOriginalBrand(details, mediaType, id, details.original_name || details.original_title || details.name || details.title || '');
     const classification = classifyRelease({ mediaType, releaseDate: details.release_date || details.first_air_date || '' }, details);
     return {
       ...details,
       providers: uniqueStreaming,
-      watchLink: at.link || null,
+      watchLink: regional.link || null,
       inferredOriginalBrand: origin.brand,
       originalConfidence: origin.confidence,
       originalEvidence: origin.evidence,
@@ -613,11 +635,13 @@
   window.StreamRadarTMDB = {
     REGION,
     LANGUAGE,
+    PROVIDER_REGIONS,
     SERVICE_DEFINITIONS,
     ORIGINAL_BRANDS,
     MOVIE_RELEASE_TYPES,
     validateToken,
     getProviderMap,
+    getAllProviderMaps,
     loadRadar,
     loadCatalogPage,
     discoverCatalogForProvider,

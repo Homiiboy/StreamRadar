@@ -1,10 +1,10 @@
 const tmdb = window.StreamRadarTMDB;
 const tvmaze = window.StreamRadarTVMaze;
-const APP_VERSION = '0.4.1';
+const APP_VERSION = '0.5.0';
 const TOKEN_KEY = 'streamradar-tmdb-token';
 const WATCHLIST_KEY = 'streamradar-watchlist';
 const brandNames = tmdb.ORIGINAL_BRANDS.map(brand => brand.name);
-const serviceNames = [...new Set([...tmdb.SERVICE_DEFINITIONS.map(service => service.name), ...brandNames])];
+const serviceNames = [...new Set([...tmdb.SERVICE_DEFINITIONS.filter(service => (service.region || 'AT') === 'AT').map(service => service.name), ...brandNames])];
 
 const $ = selector => document.querySelector(selector);
 const $$ = selector => [...document.querySelectorAll(selector)];
@@ -183,7 +183,7 @@ function setDataStatus(kind, label, text) {
   $('#dataStatus').dataset.state = kind;
   $('#dataStatusLabel').textContent = label;
   $('#dataStatusText').textContent = text;
-  $('#radarState').textContent = kind === 'live' ? 'Origin Intelligence' : kind === 'loading' ? 'Synchronisiere …' : 'Radar aktiv';
+  if ($('#radarState')) $('#radarState').textContent = kind === 'live' ? 'Origin Intelligence' : kind === 'loading' ? 'Synchronisiere …' : 'Radar aktiv';
   $('#statusAction').textContent = kind === 'live' ? 'Einstellungen' : 'TMDB verbinden';
 }
 function setLoading(value) {
@@ -293,7 +293,7 @@ function renderReleases() {
   });
 
   const eligibleCount = state.releases.filter(item => item.radarEligible !== false).length;
-  $('#heroReleaseCount').textContent = eligibleCount;
+  if ($('#heroReleaseCount')) $('#heroReleaseCount').textContent = eligibleCount;
   $('#watchlistCount').textContent = state.watchlist.size;
   $('#resultSummary').textContent = state.loading
     ? 'TMDB-Daten werden geladen …'
@@ -579,7 +579,7 @@ $('#originalsOnly').onchange = renderReleases;
 $('#resetServices').onclick = () => { state.service = 'all'; renderServices(); renderReleases(); };
 $('#clearFilters').onclick = resetFilters;
 $('#showUpcoming').onclick = () => setView('upcoming');
-$('[data-jump="releases"]').onclick = () => $('#releases').scrollIntoView({ behavior:'smooth' });
+const jumpToReleases = $('[data-jump="releases"]'); if (jumpToReleases) jumpToReleases.onclick = () => $('#releases').scrollIntoView({ behavior:'smooth' });
 $('#dialogClose').onclick = () => $('#detailDialog').close();
 $('#detailDialog').onclick = event => { if (event.target === $('#detailDialog')) $('#detailDialog').close(); };
 $('#openSettings').onclick = openSettings;
