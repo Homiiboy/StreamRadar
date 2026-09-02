@@ -140,11 +140,13 @@
     const button = document.querySelector('#themePulse');
     if (!button || button.dataset.themeCycleInstalled === 'true') return;
     button.dataset.themeCycleInstalled = 'true';
-    button.onclick = () => {
+    button.addEventListener('click', event => {
+      event.preventDefault();
+      event.stopImmediatePropagation();
       const active = currentTheme();
       const index = ORDER.indexOf(active);
       applyTheme(ORDER[(index + 1) % ORDER.length], { announce: true });
-    };
+    }, true);
   }
 
   function refreshInjectedSurface() {
