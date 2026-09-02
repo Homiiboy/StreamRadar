@@ -87,25 +87,14 @@ jobs:
             printf '%s' "$target"
           }
 
-          notes_for() {
-            version="$1"
-            notes_file="$2"
-            awk -v version="$version" '
-              $0 ~ "^## \\[" version "\\]" { found=1; next }
-              found && /^## \\[/ { exit }
-              found { print }
-            ' CHANGELOG.md > "$notes_file"
-            if [[ ! -s "$notes_file" ]]; then
-              printf 'StreamRadar v%s\n' "$version" > "$notes_file"
-            fi
-          }
-
           for version in "${versions[@]}"; do
             tag="v${version}"
-            title="StreamRadar v${version} – $(summary_for "$version")"
+            summary="$(summary_for "$version")"
+            title="StreamRadar v${version} – ${summary}"
             notes_file="$(mktemp)"
-            notes_for "$version" "$notes_file"
             asset="downloads/StreamRadar_${version}_x64_de-DE.msi"
+
+            printf '## StreamRadar v%s\n\n**%s**\n\nThis native GitHub Release mirrors the documented StreamRadar release history. See `CHANGELOG.md` in the repository for the complete version notes.\n' "$version" "$summary" > "$notes_file"
 
             if [[ -f "$asset" ]]; then
               hash="$(sha256sum "$asset" | awk '{print $1}')"
