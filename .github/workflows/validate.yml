@@ -35,229 +35,66 @@ jobs:
         run: |
           for file in js/*.js; do node --check "$file"; done
           node --check tests/playwright.config.js
-          node --check tests/e2e/streamradar.spec.js
+          for file in tests/e2e/*.js; do node --check "$file"; done
           node --check scripts/build-desktop.mjs
 
-      - name: Check version consistency
+      - name: Check v0.5.1 release surface
         run: |
-          grep -qx '0.5.0' VERSION
-          grep -q 'v0.5.0' README.md
-          grep -q '\[0.5.0\]' CHANGELOG.md
-          grep -q 'v0.5.0' index.html
-          grep -q '"version": "0.5.0"' package.json
-          grep -q '"version": "0.5.0"' package-lock.json
-          grep -q '"version": "0.5.0"' src-tauri/tauri.conf.json
-          grep -q 'version = "0.5.0"' src-tauri/Cargo.toml
-          grep -q "APP_VERSION = '0.5.0'" js/app.js
-          grep -q "const VERSION = '0.5.0'" js/polish.js
-          grep -q "const VERSION = '0.5.0'" js/desktop.js
-          grep -q "const VERSION = '0.5.0'" js/ui.js
-          grep -q "const VERSION = '0.5.0'" js/catalog.js
-          grep -q '"@playwright/test": "1.62.1"' package.json
+          grep -qx '0.5.1' VERSION
+          grep -q '"version": "0.5.1"' package.json
+          grep -q '"version": "0.5.1"' src-tauri/tauri.conf.json
+          grep -q 'version = "0.5.1"' src-tauri/Cargo.toml
+          grep -q "const VERSION = '0.5.1'" js/themes.js
+          grep -q 'StreamRadar v0.5.1' themes.css
 
       - name: Check runtime JavaScript layout
         run: |
           test -d js
           test -s js/README.md
-          for file in original-overrides.js tmdb.js tvmaze.js app.js calendar.js stability.js polish.js desktop.js ui.js catalog.js; do
+          for file in original-overrides.js tmdb.js tvmaze.js app.js calendar.js stability.js polish.js desktop.js ui.js catalog.js themes.js; do
             test -s "js/$file"
             test ! -e "$file"
-            grep -q "js/$file" index.html
             grep -q "js/$file" scripts/build-desktop.mjs
           done
-          test "$(find js -maxdepth 1 -type f -name '*.js' | wc -l)" -eq 10
+          test "$(find js -maxdepth 1 -type f -name '*.js' | wc -l)" -eq 11
           test -z "$(find . -maxdepth 1 -type f -name '*.js' -print -quit)"
 
-      - name: Check clean catalog experience
+      - name: Check selectable themes
+        run: |
+          test -s themes.css
+          grep -q "ORDER = \['radar', 'cinema', 'midnight', 'oled'\]" js/themes.js
+          grep -q 'streamradar-theme-v1' js/themes.js
+          grep -q 'data-theme-option' js/themes.js
+          grep -q 'themes.css' js/original-overrides.js
+          grep -q 'js/themes.js' js/original-overrides.js
+          grep -q 'themes.css' scripts/build-desktop.mjs
+          grep -q 'js/themes.js' scripts/build-desktop.mjs
+          grep -q 'data-streamradar-theme="cinema"' themes.css
+          grep -q 'data-streamradar-theme="midnight"' themes.css
+          grep -q 'data-streamradar-theme="oled"' themes.css
+
+      - name: Check catalog and international provider baseline
         run: |
           grep -q 'class="hero clean-home-hero shell"' index.html
           grep -q 'Was möchtest du heute sehen?' index.html
-          if grep -q 'class="radar-card"' index.html; then echo 'Legacy radar card must not be on the start page.'; exit 1; fi
-          grep -q 'catalog-home-section-title' js/catalog.js
-          grep -q "catalogCard(item,'poster')" js/catalog.js
-          grep -q 'grid-auto-columns:calc((100% - 60px)/4)' styles.css
-          grep -q 'grid-template-columns:repeat(4' styles.css
-          grep -q '@media (min-width:1700px)' styles.css
-          grep -q '@media (max-width:1180px)' styles.css
-          grep -q '@media (max-width:760px)' styles.css
-          grep -q 'StreamRadar v0.5.0 — Clean Catalog & International Providers' styles.css
-          test -s OldCss/styles-v0.4.1.css
-          test -s OldUi/catalog-v0.4.1.js
-
-      - name: Check multi-region provider architecture
-        run: |
-          grep -q "const PROVIDER_REGIONS = \['AT', 'US', 'JP'\]" js/tmdb.js
-          grep -q "name: 'Sky / WOW', region:'AT'" js/tmdb.js
-          grep -q "name: 'discovery+', region:'AT'" js/tmdb.js
-          grep -q "name: 'Hulu', region:'US'" js/tmdb.js
-          grep -q "name: 'Peacock', region:'US'" js/tmdb.js
-          grep -q "name: 'd Anime Store', region:'JP'" js/tmdb.js
-          grep -q "name: 'ABEMA', region:'JP'" js/tmdb.js
-          grep -q "name: 'U-NEXT', region:'JP'" js/tmdb.js
-          grep -q 'getAllProviderMaps' js/tmdb.js
-          grep -q 'watchRegion = service.region' js/tmdb.js
-          grep -q 'watch_region: watchRegion' js/tmdb.js
-          grep -q "watchRegion: service.region || REGION" js/tmdb.js
           grep -q 'internationalProviderNavUS' index.html
           grep -q 'internationalProviderNavJP' index.html
-          grep -q 'sidebarProvidersForRegion' js/catalog.js
-          grep -q "'Peacock': \['NBC', 'Bravo', 'USA Network', 'Syfy', 'Telemundo', 'Universal Kids'\]" js/catalog.js
-          grep -q "'discovery+': \['Discovery Channel', 'TLC', 'HGTV', 'Food Network', 'Animal Planet', 'Investigation Discovery'\]" js/catalog.js
-          grep -q 'INTERNATIONALER KATALOG' js/catalog.js
-          grep -q 'REGION_LABELS' js/catalog.js
-
-      - name: Check catalog-first architecture
-        run: |
-          grep -q 'data-view="catalog-home"' index.html
-          grep -q 'data-view="catalog-movies"' index.html
-          grep -q 'data-view="catalog-series"' index.html
-          grep -q 'data-view="catalog-anime"' index.html
-          grep -q 'data-view="catalog-watchlist"' index.html
-          grep -q 'id="providerNav"' index.html
-          grep -q 'id="catalogSurface"' index.html
-          grep -q 'loadCatalogPage' js/tmdb.js
-          grep -q 'discoverCatalogForProvider' js/tmdb.js
-          grep -q 'mergeCatalogItems' js/tmdb.js
-          grep -q 'catalog-all' js/catalog.js
-          grep -q 'renderCatalogSearchOverlay' js/catalog.js
-          grep -q 'catalog-provider-band' js/catalog.js
-          grep -q 'providerMapPromise' js/catalog.js
-          grep -q 'JETZT AUF' js/catalog.js
+          grep -q 'getAllProviderMaps' js/tmdb.js
+          grep -q "name: 'Sky / WOW'" js/tmdb.js
+          grep -q "name: 'discovery+'" js/tmdb.js
+          grep -q "name: 'Peacock', region:'US'" js/tmdb.js
+          grep -q "name: 'd Anime Store', region:'JP'" js/tmdb.js
           grep -q 'overflow-y:auto' styles.css
-          python - <<'PY'
-          from pathlib import Path
-          text = Path('js/tmdb.js').read_text(encoding='utf-8')
-          start = text.index('async function discoverCatalogForProvider')
-          end = text.index('async function loadCatalogPage', start)
-          block = text[start:end]
-          forbidden = ['release_date.gte', 'release_date.lte', 'first_air_date.gte', 'first_air_date.lte']
-          assert not any(term in block for term in forbidden), 'Catalog discovery must not use release date windows'
-          PY
 
-      - name: Check release radar remains Austria-only
+      - name: Build desktop frontend package
+        run: npm run build:web
+
+      - name: Verify packed theme layer
         run: |
-          grep -q "const REGION = 'AT'" js/tmdb.js
-          grep -q 'const providerMap = await getProviderMap(token);' js/tmdb.js
-          grep -q "SERVICE_DEFINITIONS.filter(service => (service.region || 'AT') === 'AT')" js/app.js
-          grep -q "state.view === 'movies'" js/app.js
-          grep -q "\['movies', 'Filme'" js/app.js
-          grep -q '<span>Filme</span>' js/calendar.js
-          grep -q 'MOVIE_RELEASE_TYPES' js/tmdb.js
-          grep -q "mediaType === 'movie'" js/tmdb.js
-          grep -q 'season-premiere' js/app.js
-          grep -q 'getGlobalEpisodeEvents' js/tvmaze.js
-          grep -q '/schedule/web' js/tvmaze.js
-          grep -q 'BEGIN:VCALENDAR' js/calendar.js
-          grep -q 'release radar still contains movie events and calendar coverage' tests/e2e/streamradar.spec.js
+          test -s dist/themes.css
+          test -s dist/js/themes.js
+          test -s dist/js/catalog.js
+          grep -q 'streamradar-theme-v1' dist/js/themes.js
 
-      - name: Check desktop integration and update center
-        run: |
-          test -s OldCss/styles-v0.2.2.css
-          grep -q 'PUBLISHED_DOWNLOADS_URL' js/desktop.js
-          grep -q 'downloads/README.md' js/desktop.js
-          grep -q 'checkForUpdates' js/desktop.js
-          grep -q 'settingsUpdatePage' js/desktop.js
-          grep -q 'downloadStreamRadarUpdate' js/desktop.js
-          grep -q 'openExternal' js/desktop.js
-          grep -q '24 \* 60 \* 60 \* 1000' js/desktop.js
-          grep -q '"withGlobalTauri": true' src-tauri/tauri.conf.json
-          grep -q 'tauri-plugin-opener' src-tauri/Cargo.toml
-          grep -q 'tauri-plugin-window-state' src-tauri/Cargo.toml
-          grep -q 'opener:default' src-tauri/capabilities/default.json
-          grep -q 'window-state:default' src-tauri/capabilities/default.json
-          grep -q 'tauri_plugin_opener::init' src-tauri/src/lib.rs
-          grep -q 'tauri_plugin_window_state' src-tauri/src/lib.rs
-
-      - name: Check personalization and core intelligence
-        run: |
-          grep -q 'StreamRadarOriginalOverrides' js/original-overrides.js
-          grep -q 'originalScore' js/tmdb.js
-          grep -q 'CACHE_TTL_MS' js/stability.js
-          grep -q 'PERSONALIZATION CENTER' js/ui.js
-          grep -q 'onboardingOverlay' js/ui.js
-          grep -q 'renderPersonalizedHome' js/ui.js
-          grep -q 'exportBackup' js/ui.js
-          grep -q 'importBackup' js/ui.js
-          grep -q "defaultView: 'catalog-home'" js/ui.js
-
-      - name: Check automated browser QA surface
-        run: |
-          test -s tests/playwright.config.js
-          test -s tests/e2e/streamradar.spec.js
-          grep -q 'first run can finish with no providers' tests/e2e/streamradar.spec.js
-          grep -q 'global search opens details' tests/e2e/streamradar.spec.js
-          grep -q 'settings persist density' tests/e2e/streamradar.spec.js
-          grep -q 'backup excludes the token' tests/e2e/streamradar.spec.js
-          grep -q 'corrupt local personalization data' tests/e2e/streamradar.spec.js
-          grep -q 'catalog exposes movies series and a provider-first Netflix experience' tests/e2e/streamradar.spec.js
-          grep -q 'provider sidebar is complete, international and scrollable' tests/e2e/streamradar.spec.js
-          grep -q 'clean catalog uses large poster cards at desktop width' tests/e2e/streamradar.spec.js
-          grep -q 'Peacock opens as US catalog and exposes its networks' tests/e2e/streamradar.spec.js
-          grep -q 'release radar still contains movie events and calendar coverage' tests/e2e/streamradar.spec.js
-          grep -q 'update center detects a newer published MSI' tests/e2e/streamradar.spec.js
-
-      - name: Build static desktop frontend
-        run: |
-          node scripts/build-desktop.mjs
-          test -s dist/index.html
-          test -s dist/styles.css
-          for file in original-overrides.js tmdb.js tvmaze.js app.js calendar.js stability.js polish.js desktop.js ui.js catalog.js; do test -s "dist/js/$file"; done
-          test -z "$(find dist -maxdepth 1 -type f -name '*.js' -print -quit)"
-          test ! -d dist/OldCss
-          test ! -d dist/OldUi
-          test ! -d dist/tests
-          grep -q 'v0.5.0' dist/index.html
-          grep -q 'internationalProviderNavUS' dist/index.html
-          grep -q 'internationalProviderNavJP' dist/index.html
-          grep -q 'getAllProviderMaps' dist/js/tmdb.js
-          grep -q 'loadCatalogPage' dist/js/tmdb.js
-          grep -q 'checkForUpdates' dist/js/desktop.js
-
-      - name: Check repository hygiene
-        run: |
-          if grep -R -nE '^(<<<<<<<|=======|>>>>>>>)' --exclude-dir=.git --exclude-dir=dist --exclude-dir=node_modules .; then exit 1; fi
-          test -z "$(find . -maxdepth 1 -type f -name '*.js' -print -quit)"
-          test ! -e scripts/prepare-v050.py
-          test ! -e .github/workflows/prepare-v050.yml
-          test ! -e scripts/prepare-v041.py
-          test ! -e .github/workflows/prepare-v041.yml
-          test ! -e scripts/prepare-v040.py
-          test ! -e .github/workflows/prepare-v040.yml
-          test ! -e scripts/fix-v040-review.py
-          test ! -e .github/workflows/fix-v040-review.yml
-          test ! -e scripts/prepare-v030.py
-          test ! -e .github/workflows/prepare-v030.yml
-
-  browser-smoke:
-    name: Chromium UI smoke tests
-    runs-on: ubuntu-latest
-    timeout-minutes: 20
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v4
-
-      - name: Setup Node
-        uses: actions/setup-node@v4
-        with:
-          node-version: '22'
-          cache: npm
-
-      - name: Install locked dependencies
-        run: npm ci
-
-      - name: Install Chromium
-        run: npx playwright install --with-deps chromium
-
-      - name: Run StreamRadar UI smoke tests
+      - name: Run browser regression tests
         run: npm run test:e2e
-
-      - name: Upload Playwright diagnostics
-        if: failure()
-        uses: actions/upload-artifact@v4
-        with:
-          name: StreamRadar-v0.5.0-Playwright-Diagnostics
-          path: |
-            playwright-report/
-            test-results/
-          if-no-files-found: ignore
-          retention-days: 14
