@@ -24,8 +24,10 @@
 
   window.StreamRadarOriginalOverrides = { EXACT, TITLE_RULES, getOverride };
 
-  // v0.5.1 theme layer is loaded here so existing HTML remains backward-compatible.
-  if (!document.querySelector('link[data-streamradar-themes]')) {
+  // v0.5.2: themes are consolidated into styles.css. Keep a compatibility
+  // fallback for older checkouts where the theme variables still live in themes.css.
+  const themeCssBundled = getComputedStyle(document.documentElement).getPropertyValue('--theme-accent').trim();
+  if (!themeCssBundled && !document.querySelector('link[data-streamradar-themes]')) {
     const link = document.createElement('link');
     link.rel = 'stylesheet';
     link.href = 'themes.css';
