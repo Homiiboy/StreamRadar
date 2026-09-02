@@ -74,13 +74,11 @@ test('provider band stays compact and never covers the poster artwork', async ({
     if (!artEl || !bandEl) return null;
     const artRect = artEl.getBoundingClientRect();
     const bandRect = bandEl.getBoundingClientRect();
-    const style = getComputedStyle(bandEl);
     return {
       artHeight: artRect.height,
       bandHeight: bandRect.height,
-      top: style.top,
-      bottom: style.bottom,
-      gapToBottom: Math.abs(artRect.bottom - bandRect.bottom)
+      gapToBottom: Math.abs(artRect.bottom - bandRect.bottom),
+      gapToTop: bandRect.top - artRect.top
     };
   });
 
@@ -88,8 +86,8 @@ test('provider band stays compact and never covers the poster artwork', async ({
   expect(geometry.artHeight).toBeGreaterThan(250);
   expect(geometry.bandHeight).toBeLessThan(80);
   expect(geometry.bandHeight / geometry.artHeight).toBeLessThan(0.22);
-  expect(geometry.top).toBe('auto');
   expect(geometry.gapToBottom).toBeLessThan(20);
+  expect(geometry.gapToTop).toBeGreaterThan(geometry.artHeight * 0.65);
 });
 '''
 if 'provider band stays compact and never covers the poster artwork' in tests:
