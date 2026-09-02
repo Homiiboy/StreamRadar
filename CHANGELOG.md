@@ -2,6 +2,45 @@
 
 Alle relevanten Änderungen an StreamRadar werden hier ab der ersten Version nach Semantic Versioning dokumentiert.
 
+## [0.5.2] - 2026-09-02
+
+### Added
+- Theme-System von vier auf sieben auswählbare Designs erweitert.
+- Neues **Netflix**-Theme mit Schwarz/Rot, kompakteren Flächen und stärkerem Poster-Fokus.
+- Neues **Cyberpunk**-Theme mit Neon-Cyan/Magenta, Grid-Hintergrund, schärferen Kanten und Glow-Akzenten.
+- Neues **Apple TV Glass**-Theme mit großen Radien, Frosted Glass, Blur und transparenteren Flächen.
+- Browser-Regressionstest für alle sieben Theme-Optionen und direkte Auswahl der drei neuen Designs.
+- README-Release-Historie von v0.0.1 bis v0.5.2.
+- Vollständige Windows-Release-Liste im automatisch erzeugten `downloads/README.md`.
+
+### Changed
+- Theme-Palette schaltet zyklisch durch Radar, Cinema, Midnight, OLED, Netflix, Cyberpunk und Apple TV Glass.
+- Theme-Vorschaukarten wurden für die drei neuen Designs erweitert.
+- Tauri-, Rust-, Package-, Runtime- und MSI-Release-Konfiguration auf `0.5.2` angehoben.
+- Windows-Build prüft explizit, dass alle sieben Themes im Desktop-Paket vorhanden sind.
+
+### Quality
+- Validate-Workflow prüft v0.5.2-Version, sieben Theme-IDs, Theme-CSS und Browser-Persistenz.
+- README und Build-Publisher dokumentieren sämtliche vorhandenen MSI-Versionen ab v0.1.0.
+
+## [0.5.1] - 2026-09-02
+
+### Added
+- Erstes auswählbares StreamRadar-Theme-System.
+- Designs **Radar**, **Cinema**, **Midnight** und **OLED**.
+- Visuelle Theme-Vorschaukarten unter **Einstellungen → Allgemein → Design**.
+- Theme-Auswahl wird lokal gespeichert und nach Reload/App-Neustart wiederhergestellt.
+- Palette-Button in der Topbar schaltet durch vollständige Themes statt nur einzelne Akzentfarben.
+- Eigene Runtime `js/themes.js` und isolierte Theme-Styles in `themes.css`.
+- Playwright-Tests für Theme-Auswahl, Persistenz und Palette-Button.
+
+### Fixed
+- GitHub-Actions-Browser-QA installiert Playwright Chromium auf CI automatisch.
+- Fehlerhafter Theme-Persistenztest korrigiert, der den gespeicherten Theme-Wert beim Reload selbst gelöscht hatte.
+
+### Quality
+- Theme-Runtime und Theme-Styles werden im Desktop-Build explizit verifiziert.
+
 ## [0.5.0] - 2026-09-02
 
 ### Added
