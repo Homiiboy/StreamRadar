@@ -1,0 +1,16 @@
+{
+  "name": "streamradar",
+  "version": "0.1.2",
+  "private": true,
+  "type": "module",
+  "description": "StreamRadar - Streaming Release Tracker",
+  "scripts": {
+    "build:web": "node scripts/build-desktop.mjs",
+    "icons": "tauri icon assets/streamradar-icon.svg",
+    "tauri": "tauri",
+    "desktop:build": "npm run icons && tauri build --bundles msi"
+  },
+  "devDependencies": {
+    "@tauri-apps/cli": "2.11.4"
+  }
+}
