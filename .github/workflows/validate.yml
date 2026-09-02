@@ -40,19 +40,19 @@ jobs:
 
       - name: Check version consistency
         run: |
-          grep -qx '0.4.1' VERSION
-          grep -q 'v0.4.1' README.md
-          grep -q '\[0.4.1\]' CHANGELOG.md
-          grep -q 'v0.4.1' index.html
-          grep -q '"version": "0.4.1"' package.json
-          grep -q '"version": "0.4.1"' package-lock.json
-          grep -q '"version": "0.4.1"' src-tauri/tauri.conf.json
-          grep -q 'version = "0.4.1"' src-tauri/Cargo.toml
-          grep -q "APP_VERSION = '0.4.1'" js/app.js
-          grep -q "const VERSION = '0.4.1'" js/polish.js
-          grep -q "const VERSION = '0.4.1'" js/desktop.js
-          grep -q "const VERSION = '0.4.1'" js/ui.js
-          grep -q "const VERSION = '0.4.1'" js/catalog.js
+          grep -qx '0.5.0' VERSION
+          grep -q 'v0.5.0' README.md
+          grep -q '\[0.5.0\]' CHANGELOG.md
+          grep -q 'v0.5.0' index.html
+          grep -q '"version": "0.5.0"' package.json
+          grep -q '"version": "0.5.0"' package-lock.json
+          grep -q '"version": "0.5.0"' src-tauri/tauri.conf.json
+          grep -q 'version = "0.5.0"' src-tauri/Cargo.toml
+          grep -q "APP_VERSION = '0.5.0'" js/app.js
+          grep -q "const VERSION = '0.5.0'" js/polish.js
+          grep -q "const VERSION = '0.5.0'" js/desktop.js
+          grep -q "const VERSION = '0.5.0'" js/ui.js
+          grep -q "const VERSION = '0.5.0'" js/catalog.js
           grep -q '"@playwright/test": "1.62.1"' package.json
 
       - name: Check runtime JavaScript layout
@@ -67,6 +67,44 @@ jobs:
           done
           test "$(find js -maxdepth 1 -type f -name '*.js' | wc -l)" -eq 10
           test -z "$(find . -maxdepth 1 -type f -name '*.js' -print -quit)"
+
+      - name: Check clean catalog experience
+        run: |
+          grep -q 'class="hero clean-home-hero shell"' index.html
+          grep -q 'Was möchtest du heute sehen?' index.html
+          if grep -q 'class="radar-card"' index.html; then echo 'Legacy radar card must not be on the start page.'; exit 1; fi
+          grep -q 'catalog-home-section-title' js/catalog.js
+          grep -q "catalogCard(item,'poster')" js/catalog.js
+          grep -q 'grid-auto-columns:calc((100% - 60px)/4)' styles.css
+          grep -q 'grid-template-columns:repeat(4' styles.css
+          grep -q '@media (min-width:1700px)' styles.css
+          grep -q '@media (max-width:1180px)' styles.css
+          grep -q '@media (max-width:760px)' styles.css
+          grep -q 'StreamRadar v0.5.0 — Clean Catalog & International Providers' styles.css
+          test -s OldCss/styles-v0.4.1.css
+          test -s OldUi/catalog-v0.4.1.js
+
+      - name: Check multi-region provider architecture
+        run: |
+          grep -q "const PROVIDER_REGIONS = \['AT', 'US', 'JP'\]" js/tmdb.js
+          grep -q "name: 'Sky / WOW', region:'AT'" js/tmdb.js
+          grep -q "name: 'discovery+', region:'AT'" js/tmdb.js
+          grep -q "name: 'Hulu', region:'US'" js/tmdb.js
+          grep -q "name: 'Peacock', region:'US'" js/tmdb.js
+          grep -q "name: 'd Anime Store', region:'JP'" js/tmdb.js
+          grep -q "name: 'ABEMA', region:'JP'" js/tmdb.js
+          grep -q "name: 'U-NEXT', region:'JP'" js/tmdb.js
+          grep -q 'getAllProviderMaps' js/tmdb.js
+          grep -q 'watchRegion = service.region' js/tmdb.js
+          grep -q 'watch_region: watchRegion' js/tmdb.js
+          grep -q "watchRegion: service.region || REGION" js/tmdb.js
+          grep -q 'internationalProviderNavUS' index.html
+          grep -q 'internationalProviderNavJP' index.html
+          grep -q 'sidebarProvidersForRegion' js/catalog.js
+          grep -q "'Peacock': \['NBC', 'Bravo', 'USA Network', 'Syfy', 'Telemundo', 'Universal Kids'\]" js/catalog.js
+          grep -q "'discovery+': \['Discovery Channel', 'TLC', 'HGTV', 'Food Network', 'Animal Planet', 'Investigation Discovery'\]" js/catalog.js
+          grep -q 'INTERNATIONALER KATALOG' js/catalog.js
+          grep -q 'REGION_LABELS' js/catalog.js
 
       - name: Check catalog-first architecture
         run: |
@@ -85,13 +123,7 @@ jobs:
           grep -q 'catalog-provider-band' js/catalog.js
           grep -q 'providerMapPromise' js/catalog.js
           grep -q 'JETZT AUF' js/catalog.js
-          grep -q 'sidebarProviders' js/catalog.js
-          grep -q "provider.name === 'Crunchyroll'" js/catalog.js
           grep -q 'overflow-y:auto' styles.css
-          grep -q 'provider sidebar includes Crunchyroll and scrolls vertically' tests/e2e/streamradar.spec.js
-          grep -q 'StreamRadar v0.4.1 — Provider Sidebar Fixes' styles.css
-          test -s OldCss/styles-v0.3.0.css
-          test -s OldUi/ui-v0.3.0.js
           python - <<'PY'
           from pathlib import Path
           text = Path('js/tmdb.js').read_text(encoding='utf-8')
@@ -102,8 +134,11 @@ jobs:
           assert not any(term in block for term in forbidden), 'Catalog discovery must not use release date windows'
           PY
 
-      - name: Check release radar and calendar remain independent
+      - name: Check release radar remains Austria-only
         run: |
+          grep -q "const REGION = 'AT'" js/tmdb.js
+          grep -q 'const providerMap = await getProviderMap(token);' js/tmdb.js
+          grep -q "SERVICE_DEFINITIONS.filter(service => (service.region || 'AT') === 'AT')" js/app.js
           grep -q "state.view === 'movies'" js/app.js
           grep -q "\['movies', 'Filme'" js/app.js
           grep -q '<span>Filme</span>' js/calendar.js
@@ -155,7 +190,9 @@ jobs:
           grep -q 'backup excludes the token' tests/e2e/streamradar.spec.js
           grep -q 'corrupt local personalization data' tests/e2e/streamradar.spec.js
           grep -q 'catalog exposes movies series and a provider-first Netflix experience' tests/e2e/streamradar.spec.js
-          grep -q 'provider sidebar includes Crunchyroll and scrolls vertically' tests/e2e/streamradar.spec.js
+          grep -q 'provider sidebar is complete, international and scrollable' tests/e2e/streamradar.spec.js
+          grep -q 'clean catalog uses large poster cards at desktop width' tests/e2e/streamradar.spec.js
+          grep -q 'Peacock opens as US catalog and exposes its networks' tests/e2e/streamradar.spec.js
           grep -q 'release radar still contains movie events and calendar coverage' tests/e2e/streamradar.spec.js
           grep -q 'update center detects a newer published MSI' tests/e2e/streamradar.spec.js
 
@@ -169,8 +206,10 @@ jobs:
           test ! -d dist/OldCss
           test ! -d dist/OldUi
           test ! -d dist/tests
-          grep -q 'v0.4.1' dist/index.html
-          grep -q 'data-view="catalog-movies"' dist/index.html
+          grep -q 'v0.5.0' dist/index.html
+          grep -q 'internationalProviderNavUS' dist/index.html
+          grep -q 'internationalProviderNavJP' dist/index.html
+          grep -q 'getAllProviderMaps' dist/js/tmdb.js
           grep -q 'loadCatalogPage' dist/js/tmdb.js
           grep -q 'checkForUpdates' dist/js/desktop.js
 
@@ -178,6 +217,8 @@ jobs:
         run: |
           if grep -R -nE '^(<<<<<<<|=======|>>>>>>>)' --exclude-dir=.git --exclude-dir=dist --exclude-dir=node_modules .; then exit 1; fi
           test -z "$(find . -maxdepth 1 -type f -name '*.js' -print -quit)"
+          test ! -e scripts/prepare-v050.py
+          test ! -e .github/workflows/prepare-v050.yml
           test ! -e scripts/prepare-v041.py
           test ! -e .github/workflows/prepare-v041.yml
           test ! -e scripts/prepare-v040.py
@@ -214,7 +255,7 @@ jobs:
         if: failure()
         uses: actions/upload-artifact@v4
         with:
-          name: StreamRadar-v0.4.1-Playwright-Diagnostics
+          name: StreamRadar-v0.5.0-Playwright-Diagnostics
           path: |
             playwright-report/
             test-results/
