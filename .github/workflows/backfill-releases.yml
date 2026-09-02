@@ -26,6 +26,8 @@ jobs:
         run: |
           set -euo pipefail
           git fetch --tags --force
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
 
           versions=(
             0.0.1 0.0.2 0.0.3 0.0.4 0.0.5 0.0.6 0.0.7 0.0.8 0.0.9 0.0.10
@@ -62,18 +64,21 @@ jobs:
 
           target_for() {
             version="$1"
-            target=""
+            if [[ "$version" == "0.5.2" ]]; then
+              printf '%s' 'ef8d890dc7de0530a82df81e7b3ec9f5ae1a4e67'
+              return
+            fi
 
+            target=""
             while IFS= read -r sha; do
               value="$(git show "${sha}:VERSION" 2>/dev/null | tr -d '\r\n' || true)"
               if [[ "$value" == "$version" ]]; then
                 target="$sha"
-                break
               fi
-            done < <(git log --reverse --format='%H' -- VERSION)
+            done < <(git rev-list --reverse HEAD)
 
             if [[ -z "$target" ]]; then
-              target="$(git log --all --reverse --format='%H' --grep="$version" | head -n 1 || true)"
+              target="$(git log --all --reverse --format='%H' --grep="$version" | tail -n 1 || true)"
             fi
             if [[ -z "$target" && "$version" == "0.0.1" ]]; then
               target="$(git rev-list --max-parents=0 HEAD | head -n 1)"
@@ -82,9 +87,31 @@ jobs:
               target="$(git rev-list --reverse HEAD | sed -n '2p')"
             fi
             if [[ -z "$target" ]]; then
-              target="$(git rev-parse HEAD)"
+              echo "Could not resolve historical commit for v$version" >&2
+              exit 1
             fi
             printf '%s' "$target"
+          }
+
+          release_snapshot_for() {
+            version="$1"
+            original="$2"
+
+            if ! git ls-tree -r --name-only "$original" | grep -q '^\.github/workflows/'; then
+              printf '%s' "$original"
+              return
+            fi
+
+            index_file="$(mktemp)"
+            rm -f "$index_file"
+            GIT_INDEX_FILE="$index_file" git read-tree "$original"
+            GIT_INDEX_FILE="$index_file" git rm -r --cached --ignore-unmatch .github/workflows >/dev/null 2>&1 || true
+            GIT_INDEX_FILE="$index_file" git rm --cached --ignore-unmatch .github/release-backfill-trigger >/dev/null 2>&1 || true
+            tree="$(GIT_INDEX_FILE="$index_file" git write-tree)"
+            rm -f "$index_file"
+
+            snapshot="$(printf 'StreamRadar v%s release snapshot\n\nBased on original commit %s. CI workflow files are intentionally omitted from this release-only snapshot.\n' "$version" "$original" | git commit-tree "$tree")"
+            printf '%s' "$snapshot"
           }
 
           for version in "${versions[@]}"; do
@@ -94,25 +121,31 @@ jobs:
             notes_file="$(mktemp)"
             asset="downloads/StreamRadar_${version}_x64_de-DE.msi"
 
-            printf '## StreamRadar v%s\n\n**%s**\n\nThis native GitHub Release mirrors the documented StreamRadar release history. See `CHANGELOG.md` in the repository for the complete version notes.\n' "$version" "$summary" > "$notes_file"
-
-            if [[ -f "$asset" ]]; then
-              hash="$(sha256sum "$asset" | awk '{print $1}')"
-              printf '\n### Windows x64\n\n- MSI installer attached below\n- File: `StreamRadar_%s_x64_de-DE.msi`\n- SHA-256: `%s`\n- Installer language: `de-DE`\n\n> The installer is currently unsigned, so Windows may display an unknown publisher warning.\n' "$version" "$hash" >> "$notes_file"
-            else
-              printf '\n### Distribution\n\nThis was an early web/runtime release. No Windows MSI was published for this version.\n' >> "$notes_file"
-            fi
-
             if gh release view "$tag" >/dev/null 2>&1; then
               echo "$tag already has a GitHub Release; skipping."
               rm -f "$notes_file"
               continue
             fi
 
-            target="$(target_for "$version")"
-            echo "Creating $tag at $target"
+            original="$(target_for "$version")"
+            snapshot="$(release_snapshot_for "$version" "$original")"
 
-            args=("$tag" --target "$target" --title "$title" --notes-file "$notes_file")
+            printf '## StreamRadar v%s\n\n**%s**\n\nHistorischer StreamRadar-Release. Der Release-Tag basiert auf dem Quellstand `%s`. CI-Workflow-Dateien sind im Release-Snapshot aus technischen Berechtigungsgründen nicht enthalten; der App-Quellcode bleibt versionsgetreu. Vollständige Änderungen stehen in `CHANGELOG.md`.\n' "$version" "$summary" "$original" > "$notes_file"
+
+            if [[ -f "$asset" ]]; then
+              hash="$(sha256sum "$asset" | awk '{print $1}')"
+              printf '\n### Windows x64\n\n- MSI-Installer als Release-Asset angehängt\n- Datei: `StreamRadar_%s_x64_de-DE.msi`\n- SHA-256: `%s`\n- Installer-Sprache: `de-DE`\n\n> Der Installer ist aktuell nicht code-signiert; Windows kann deshalb einen Hinweis auf einen unbekannten Herausgeber anzeigen.\n' "$version" "$hash" >> "$notes_file"
+            else
+              printf '\n### Distribution\n\nDiese frühe Version war ein Web-/Runtime-Release; dafür wurde noch kein Windows-MSI veröffentlicht.\n' >> "$notes_file"
+            fi
+
+            if ! git rev-parse -q --verify "refs/tags/$tag" >/dev/null; then
+              echo "Creating $tag release snapshot $snapshot from original $original"
+              git tag "$tag" "$snapshot"
+              git push origin "refs/tags/$tag"
+            fi
+
+            args=("$tag" --verify-tag --title "$title" --notes-file "$notes_file")
             if [[ "$version" == "0.5.2" ]]; then
               args+=(--latest)
             fi
