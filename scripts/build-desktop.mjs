@@ -1,4 +1,4 @@
-import { cp, mkdir, rm } from 'node:fs/promises';
+import { access, cp, mkdir, rm } from 'node:fs/promises';
 import { dirname, resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
 
@@ -7,7 +7,6 @@ const dist = resolve(root, 'dist');
 const files = [
   'index.html',
   'styles.css',
-  'themes.css',
   'js/original-overrides.js',
   'js/tmdb.js',
   'js/tvmaze.js',
@@ -20,6 +19,12 @@ const files = [
   'js/catalog.js',
   'js/themes.js'
 ];
+
+// Compatibility only: older source checkouts may still contain themes.css.
+try {
+  await access(resolve(root, 'themes.css'));
+  files.push('themes.css');
+} catch {}
 
 await rm(dist, { recursive: true, force: true });
 await mkdir(dist, { recursive: true });
