@@ -9,7 +9,7 @@
     "icons": "tauri icon assets/streamradar-icon.svg",
     "tauri": "tauri",
     "desktop:build": "npm run icons && tauri build --bundles msi",
-    "test:e2e": "playwright test --config=tests/playwright.config.js"
+    "test:e2e": "node scripts/test-e2e.mjs"
   },
   "devDependencies": {
     "@tauri-apps/cli": "2.11.4",
