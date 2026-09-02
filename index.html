@@ -1,0 +1,139 @@
+<!doctype html>
+<html lang="de">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="theme-color" content="#07090d" />
+  <meta name="description" content="StreamRadar – Streaming-Katalog, Release-Radar, Kalender und Desktop-App für Filme, Serien, Staffeln und Episoden." />
+  <title>StreamRadar · Streaming Catalog</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link rel="preconnect" href="https://image.tmdb.org" />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Space+Grotesk:wght@600;700&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body data-streamradar-view="catalog-home">
+  <div class="ambient ambient-one"></div><div class="ambient ambient-two"></div>
+  <div class="sidebar-backdrop" id="sidebarBackdrop" aria-hidden="true"></div>
+
+  <aside class="app-sidebar" aria-label="StreamRadar Navigation">
+    <a class="brand" href="#" aria-label="StreamRadar Startseite">
+      <span class="brand-mark" aria-hidden="true"><span></span></span>
+      <span class="brand-copy"><strong>StreamRadar</strong><small>STREAMING CATALOG</small></span>
+    </a>
+
+    <span class="sidebar-section-label">KATALOG</span>
+    <nav class="sidebar-nav" aria-label="Streaming-Katalog">
+      <button class="nav-link sidebar-link active" data-view="catalog-home"><span class="sidebar-icon">⌂</span><span>Entdecken</span></button>
+      <button class="nav-link sidebar-link" data-view="catalog-movies"><span class="sidebar-icon">◆</span><span>Filme</span></button>
+      <button class="nav-link sidebar-link" data-view="catalog-series"><span class="sidebar-icon">▣</span><span>Serien</span></button>
+      <button class="nav-link sidebar-link" data-view="catalog-anime"><span class="sidebar-icon">◈</span><span>Anime</span></button>
+    </nav>
+
+    <span class="sidebar-section-label provider-section-label">ANBIETER</span>
+    <nav class="sidebar-nav provider-nav" id="providerNav" aria-label="Streaming-Anbieter Österreich"></nav>
+
+    <span class="sidebar-section-label international-section-label">INTERNATIONAL</span>
+    <span class="sidebar-country-label">USA</span>
+    <nav class="sidebar-nav provider-nav international-provider-nav" id="internationalProviderNavUS" aria-label="Streaming-Anbieter USA"></nav>
+    <span class="sidebar-country-label">JAPAN</span>
+    <nav class="sidebar-nav provider-nav international-provider-nav" id="internationalProviderNavJP" aria-label="Streaming-Anbieter Japan"></nav>
+
+    <span class="sidebar-section-label">RADAR</span>
+    <nav class="sidebar-nav" aria-label="Release-Radar">
+      <button class="nav-link sidebar-link" data-view="discover"><span class="sidebar-icon">◎</span><span>Neu & aktuell</span></button>
+      <button class="nav-link sidebar-link" data-view="calendar"><span class="sidebar-icon">▦</span><span>Kalender</span></button>
+      <button class="nav-link sidebar-link" data-view="seasons"><span class="sidebar-icon">◫</span><span>Staffeln</span></button>
+      <button class="nav-link sidebar-link" data-view="episodes"><span class="sidebar-icon">◉</span><span>Episoden</span></button>
+      <button class="nav-link sidebar-link" data-view="upcoming"><span class="sidebar-icon">◷</span><span>Demnächst</span></button>
+    </nav>
+
+    <span class="sidebar-section-label">DEINE INHALTE</span>
+    <nav class="sidebar-nav" aria-label="Persönliche Navigation">
+      <button class="nav-link sidebar-link" data-view="catalog-watchlist"><span class="sidebar-icon">♡</span><span>Merkliste</span><span id="watchlistCount" class="counter">0</span></button>
+    </nav>
+
+    <div class="sidebar-spacer"></div>
+    <div class="sidebar-status" id="sidebarStatus" data-state="demo">
+      <div class="sidebar-status-head"><span class="sidebar-status-dot"></span><span id="sidebarStatusLabel">Demo-Modus</span></div>
+      <small id="sidebarStatusCopy">StreamRadar</small>
+    </div>
+    <button class="sidebar-action" id="sidebarSettings"><span class="sidebar-icon">⚙</span><span>Einstellungen</span></button>
+  </aside>
+
+  <div class="app-frame">
+    <header class="topbar">
+      <div class="topbar-context">
+        <button class="mobile-nav-toggle" id="mobileNavToggle" aria-label="Navigation öffnen">☰</button>
+        <div class="topbar-context-copy"><span id="topbarKicker">ENTDECKEN</span><strong id="topbarTitle">Dein Streaming-Katalog</strong></div>
+      </div>
+      <div class="top-actions">
+        <label class="search-box"><span aria-hidden="true">⌕</span><input id="searchInput" type="search" placeholder="Titel suchen …" autocomplete="off" /></label>
+        <button class="icon-button" id="refreshData" aria-label="Daten aktualisieren" title="Daten aktualisieren">↻</button>
+        <button class="icon-button" id="openSettings" aria-label="TMDB-Einstellungen öffnen" title="TMDB-Einstellungen">⚙</button>
+        <button class="icon-button" id="themePulse" aria-label="Akzent umschalten" title="Akzent umschalten">◉</button>
+      </div>
+    </header>
+
+    <div class="data-status-wrap"><div class="shell data-status" id="dataStatus" data-state="demo"><span class="status-dot"></span><strong id="dataStatusLabel">Demo-Modus</strong><span id="dataStatusText">TMDB noch nicht verbunden.</span><button id="statusAction" class="text-button">TMDB verbinden</button></div></div>
+
+    <main>
+      <section class="hero clean-home-hero shell">
+        <div class="clean-home-copy">
+          <div class="welcome-meta"><strong id="welcomeGreeting">Willkommen</strong><span>·</span><span id="welcomeDate">StreamRadar</span></div>
+          <span class="section-kicker">DEIN STREAMING-KATALOG · ÖSTERREICH</span>
+          <h1>Was möchtest du heute sehen?</h1>
+          <p>Filme, Serien und Anime aus deinen Streaming-Diensten – übersichtlich, ruhig und mit internationalem Blick über den österreichischen Katalog hinaus.</p>
+        </div>
+        <div class="legacy-home-hooks" aria-hidden="true">
+          <span id="heroReleaseCount">0</span><span id="radarState">Radar aktiv</span>
+          <button id="showUpcoming" tabindex="-1">Nächste 30 Tage</button><div id="homeQuickStats"></div>
+        </div>
+      </section>
+
+      <section class="catalog-surface shell" id="catalogSurface" hidden aria-label="StreamRadar Streaming-Katalog"></section>
+
+      <section class="home-dashboard shell" id="homeDashboard" aria-label="Entdecken Dashboard"><div id="homeRails"></div></section>
+
+      <section class="shell services-section" aria-labelledby="servicesTitle"><div class="section-heading compact"><div><span class="section-kicker">DEINE DIENSTE · NETWORKS · STUDIOS</span><h2 id="servicesTitle">Streaming & Herkunft</h2></div><button class="text-button" id="resetServices">Alle anzeigen</button></div><div class="service-strip" id="serviceStrip" aria-label="Streaming-Anbieter und Herkunftsmarken filtern"></div></section>
+
+      <section class="shell release-section" id="releases">
+        <div class="radar-summary" id="radarSummary" aria-label="Radar-Zusammenfassung"></div>
+        <div class="section-heading">
+          <div><span class="section-kicker" id="viewKicker">DEIN FEED</span><h2 id="viewTitle">Neu & relevant</h2><p id="resultSummary">Release-Events werden vorbereitet …</p></div>
+          <div class="filters-shell">
+            <button type="button" class="filter-toggle-button" id="toggleAdvancedFilters" aria-expanded="false" aria-controls="advancedFilters">Filter <span class="filter-count" id="activeFilterCount" hidden></span></button>
+            <div class="filters" id="advancedFilters">
+              <select id="typeFilter" aria-label="Medientyp filtern"><option value="all">Alle Medien</option><option value="series">Serien</option><option value="movie">Filme</option><option value="anime">Anime</option></select>
+              <select id="eventFilter" aria-label="Release-Typ filtern"><option value="all">Alle Release-Typen</option><option value="movie-premiere">Film-Premieren</option><option value="series-premiere">Neue Serien</option><option value="season-premiere">Neue Staffeln</option><option value="episode">Neue Episoden</option></select>
+              <select id="periodFilter" aria-label="Zeitraum filtern"><option value="all">Alle Zeiträume</option><option value="today">Heute</option><option value="week">Diese Woche</option><option value="month">Dieser Monat</option><option value="upcoming">Demnächst</option></select>
+              <select id="brandFilter" aria-label="Herkunftsmarke filtern"><option value="all">Alle Herkunftsmarken</option></select>
+              <label class="toggle-filter" id="originalsFilter"><input type="checkbox" id="originalsOnly" /><span></span> Nur Originals</label>
+            </div>
+          </div>
+        </div>
+
+        <section class="calendar-panel" id="calendarPanel" hidden aria-label="StreamRadar Release-Kalender">
+          <div class="calendar-toolbar">
+            <div class="calendar-nav-group"><button class="calendar-icon-button" id="calendarPrev" aria-label="Vorheriger Zeitraum">←</button><strong class="calendar-range-title" id="calendarRangeLabel">Kalender</strong><button class="calendar-icon-button" id="calendarNext" aria-label="Nächster Zeitraum">→</button><button class="calendar-icon-button" id="calendarToday">Heute</button></div>
+            <div class="calendar-mode-group" aria-label="Kalenderzeitraum"><button class="calendar-mode-button" data-calendar-mode="day">Tag</button><button class="calendar-mode-button" data-calendar-mode="week">Woche</button><button class="calendar-mode-button active" data-calendar-mode="month">Monat</button><button class="calendar-mode-button" data-calendar-mode="90">90 Tage</button></div>
+            <div class="calendar-extra-controls"><label class="calendar-watchlist"><input type="checkbox" id="calendarWatchlistOnly" /> Nur Merkliste</label><button class="calendar-export" id="calendarExport">Kalender exportieren (.ics)</button></div>
+          </div>
+          <div class="calendar-stats" id="calendarStats" aria-label="Kalender-Zusammenfassung"></div>
+          <div class="calendar-grid" id="calendarGrid" aria-label="Monatskalender"></div>
+          <div class="calendar-timeline" id="calendarTimeline" aria-label="Chronologische Release-Timeline"></div>
+        </section>
+
+        <div class="release-grid" id="releaseGrid"></div><div class="loading-grid" id="loadingGrid" hidden aria-label="Releases werden geladen"><span></span><span></span><span></span><span></span></div><div class="empty-state" id="emptyState" hidden><div>◎</div><h3>Keine Treffer auf dem Radar</h3><p>Ändere deine Filter oder suche nach einem anderen Titel.</p><button class="ghost-button" id="clearFilters">Filter zurücksetzen</button></div>
+      </section>
+    </main>
+
+    <footer class="shell footer"><div><strong>StreamRadar</strong><span>Personal streaming release tracker.</span></div><div class="footer-meta"><span>Region: AT · International: US / JP</span><span>Version 0.5.0</span><span>Daten: TMDB · JustWatch · TVmaze Web Schedule</span></div></footer>
+  </div>
+
+  <dialog id="detailDialog" class="detail-dialog"><button class="dialog-close" id="dialogClose" aria-label="Detailansicht schließen">×</button><div id="dialogContent"></div></dialog>
+  <dialog id="settingsDialog" class="settings-dialog"><button class="dialog-close" id="settingsClose" aria-label="Einstellungen schließen">×</button><div class="settings-content"><span class="section-kicker">DATENQUELLE</span><h2>TMDB verbinden</h2><p>Trage deinen <strong>API Read Access Token</strong> von TMDB ein. Er wird ausschließlich lokal gespeichert und niemals in dieses GitHub-Repository geschrieben.</p><label class="token-field"><span>API Read Access Token</span><input type="password" id="tmdbToken" placeholder="eyJhbGciOiJIUzI1NiJ9…" autocomplete="off" spellcheck="false" /></label><div class="settings-status" id="settingsStatus">Noch nicht verbunden.</div><div class="settings-actions"><button class="primary-button" id="saveToken">Verbinden & laden</button><button class="ghost-button" id="clearToken">Token entfernen</button></div><div class="settings-note"><strong>v0.5.0:</strong> Cleaner Catalog Experience mit größeren Postern und internationalen US-/JP-Anbietern.</div></div></dialog>
+
+  <script src="js/original-overrides.js" defer></script><script src="js/tmdb.js" defer></script><script src="js/tvmaze.js" defer></script><script src="js/app.js" defer></script><script src="js/calendar.js" defer></script><script src="js/stability.js" defer></script><script src="js/polish.js" defer></script><script src="js/desktop.js" defer></script><script src="js/ui.js" defer></script><script src="js/catalog.js" defer></script>
+</body>
+</html>
