@@ -1,0 +1,16 @@
+[package]
+name = "streamradar"
+version = "0.2.1"
+description = "StreamRadar - Streaming Release Tracker"
+authors = ["StreamRadar Project"]
+edition = "2021"
+
+[lib]
+name = "streamradar_lib"
+crate-type = ["staticlib", "cdylib", "rlib"]
+
+[build-dependencies]
+tauri-build = { version = "2", features = [] }
+
+[dependencies]
+tauri = { version = "2", features = [] }
