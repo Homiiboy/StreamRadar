@@ -24,6 +24,18 @@ jobs:
           cache: npm
       - name: Apply v0.5.0 clean catalog redesign
         run: python scripts/prepare-v050.py
+      - name: Harden removed hero action binding
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+          path = Path('js/app.js')
+          text = path.read_text(encoding='utf-8')
+          old = "$('[data-jump=\"releases\"]').onclick = () => $('#releases').scrollIntoView({ behavior:'smooth' });"
+          new = "const jumpToReleases = $('[data-jump=\"releases\"]'); if (jumpToReleases) jumpToReleases.onclick = () => $('#releases').scrollIntoView({ behavior:'smooth' });"
+          if old not in text:
+              raise SystemExit('Legacy radar jump binding marker missing')
+          path.write_text(text.replace(old, new, 1), encoding='utf-8')
+          PY
       - name: Refresh locked Node metadata
         run: npm install --package-lock-only --ignore-scripts
       - name: Install locked dependencies
@@ -39,6 +51,7 @@ jobs:
           grep -qx '0.5.0' VERSION
           grep -q 'clean-home-hero' index.html
           ! grep -q 'class="radar-card"' index.html
+          grep -q 'jumpToReleases' js/app.js
           grep -q 'internationalProviderNavUS' index.html
           grep -q 'internationalProviderNavJP' index.html
           grep -q "name: 'Sky / WOW'" js/tmdb.js
