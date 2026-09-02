@@ -1,40 +1,91 @@
 # StreamRadar
 
-StreamRadar ist ein persönlicher Streaming-Katalog und Release-Radar für Filme, Serien und Anime – mit anbieter-spezifischen Katalogen, Releases, Staffeln, Episoden und Kalender für Österreich.
+StreamRadar ist ein persönlicher Streaming-Katalog und Release-Radar für Filme, Serien und Anime. Die App kombiniert anbieter-spezifische Kataloge, Release Intelligence, Staffel-/Episodeninformationen, Kalender, Merkliste und lokale Personalisierung in einer Windows-Desktop-App auf Basis von Tauri v2.
 
-## Aktuelle Version: v0.5.0
+## Aktuelle Version: v0.5.2
 
-**v0.5.0 – Clean Catalog & International Providers** macht StreamRadar ruhiger, übersichtlicher und internationaler: größere Poster, eine stark vereinfachte Startseite sowie getrennte Streaming-Kataloge für Österreich, USA und Japan.
+**v0.5.2 – Themes & Visual Personalization** erweitert das in v0.5.1 eingeführte Theme-System auf sieben deutlich unterschiedliche Designs. Die Oberfläche kann direkt in den Einstellungen umgeschaltet werden; die Auswahl bleibt lokal gespeichert.
+
+### Neu in v0.5.2
+
+- sieben auswählbare Designs statt vier
+- neue Themes **Netflix**, **Cyberpunk** und **Apple TV Glass**
+- Netflix: Schwarz/Rot, kompaktere Flächen und stärkerer Poster-Fokus
+- Cyberpunk: Neon-Cyan/Magenta, schärfere Kanten und futuristische Raster-/Glow-Akzente
+- Apple TV Glass: größere Radien, Frosted Glass, Blur und transparentere Oberflächen
+- bestehende Designs **Radar**, **Cinema**, **Midnight** und **OLED** bleiben erhalten
+- Theme-Auswahl wird über `localStorage` gespeichert und nach einem Neustart wiederhergestellt
+- Palette-Button in der Topbar schaltet zyklisch durch alle Designs
+- Browser-Regressionstests prüfen alle sieben Themes, direkte Auswahl und Persistenz
+- Release-/Build-Konfiguration auf v0.5.2 aktualisiert
 
 ## Download
 
 ### Windows x64
 
-[**StreamRadar v0.5.0 als MSI herunterladen**](downloads/StreamRadar_0.5.0_x64_de-DE.msi)
+[**StreamRadar v0.5.2 als MSI herunterladen**](downloads/StreamRadar_0.5.2_x64_de-DE.msi)
 
-Weitere Builds und die SHA-256-Prüfsumme liegen im Ordner [`downloads/`](downloads/).
+Alle noch im Repository verfügbaren MSI-Versionen und die SHA-256-Prüfsumme des neuesten Builds liegen im Ordner [`downloads/`](downloads/).
 
-Der Installer ist für die persönliche Nutzung weiterhin nicht code-signiert. Windows kann deshalb beim Öffnen einen Hinweis auf einen unbekannten Herausgeber anzeigen.
+> Der v0.5.2-Link ist verfügbar, sobald der zugehörige Windows-GitHub-Actions-Build erfolgreich abgeschlossen und die MSI veröffentlicht wurde.
 
-## Neu in v0.5.0
+Der Installer ist für die persönliche Nutzung nicht code-signiert. Windows kann deshalb beim Öffnen einen Hinweis auf einen unbekannten Herausgeber anzeigen.
 
-- cleaner Dark-UI-Look mit weniger Glow, Rahmen und visueller Unruhe
-- alte Radar-Grafik auf der Startseite entfernt; direkter Einstieg in den Streaming-Katalog
-- deutlich größere Poster: 4 pro normaler Desktop-Breite, 5 auf sehr breiten Displays, 3 auf kleineren Desktops und 2 mobil
-- österreichische Anbieter ergänzt bzw. sichtbar gemacht: **Sky / WOW** und **discovery+**
-- neuer Sidebar-Bereich **International** mit getrennten Katalogen für **USA** und **Japan**
-- USA: Hulu, Peacock, AMC+, Starz, Tubi und The Roku Channel
-- Japan: d Anime Store, ABEMA und U-NEXT
-- internationale Providerseiten zeigen ihre echte Watch-Region und weisen darauf hin, dass dies keine Aussage über österreichische Verfügbarkeit ist
-- Peacock zeigt die zugehörigen Networks NBC, Bravo, USA Network, Syfy, Telemundo und Universal Kids
-- discovery+ zeigt Discovery Channel, TLC, HGTV, Food Network, Animal Planet und Investigation Discovery
-- Release-Radar und Kalender bleiben weiterhin ausschließlich auf Österreich ausgerichtet
+## Designs
+
+Unter **Einstellungen → Allgemein → Design** stehen aktuell folgende Themes zur Verfügung:
+
+| Design | Charakter |
+| --- | --- |
+| **Radar** | ursprünglicher StreamRadar-Look mit Mint-Akzent |
+| **Cinema** | dunkler Kino-Look mit warmem Rot |
+| **Midnight** | tiefes Navy, Blau/Violett und weicherer Glass-Look |
+| **OLED** | nahezu reines Schwarz, reduziert und kontrastreich |
+| **Netflix** | Schwarz/Rot, kompakt und stark auf Content-Poster fokussiert |
+| **Cyberpunk** | Neon-Cyan/Magenta, Grid, Glow und kantigere Geometrie |
+| **Apple TV Glass** | Frosted Glass, große Radien, Blur und transparente Flächen |
+
+Die Designs verändern nur die visuelle Darstellung. Katalog-, Radar-, Kalender-, Provider- und Merkliste-Daten bleiben identisch.
+
+## Releases
+
+Die komplette StreamRadar-Historie seit dem ersten MVP:
+
+| Version | Schwerpunkt | Windows MSI |
+| --- | --- | --- |
+| **v0.5.2** | Themes & Visual Personalization | [MSI](downloads/StreamRadar_0.5.2_x64_de-DE.msi) |
+| **v0.5.1** | Selectable Themes | [MSI](downloads/StreamRadar_0.5.1_x64_de-DE.msi) |
+| **v0.5.0** | Clean Catalog & International Providers | [MSI](downloads/StreamRadar_0.5.0_x64_de-DE.msi) |
+| **v0.4.1** | Provider Sidebar Fixes / Crunchyroll | [MSI](downloads/StreamRadar_0.4.1_x64_de-DE.msi) |
+| **v0.4.0** | Streaming Catalog & Provider Experience | [MSI](downloads/StreamRadar_0.4.0_x64_de-DE.msi) |
+| **v0.3.0** | Update Center & Desktop Integration | [MSI](downloads/StreamRadar_0.3.0_x64_de-DE.msi) |
+| **v0.2.2** | Film Radar | [MSI](downloads/StreamRadar_0.2.2_x64_de-DE.msi) |
+| **v0.2.1** | Browser-QA & Runtime-Struktur | [MSI](downloads/StreamRadar_0.2.1_x64_de-DE.msi) |
+| **v0.2.0** | Personalization Center | [MSI](downloads/StreamRadar_0.2.0_x64_de-DE.msi) |
+| **v0.1.2** | Premium Details & Global Search | [MSI](downloads/StreamRadar_0.1.2_x64_de-DE.msi) |
+| **v0.1.1** | Desktop Sidebar & Home Rows | [MSI](downloads/StreamRadar_0.1.1_x64_de-DE.msi) |
+| **v0.1.0** | First Complete Radar / erste Tauri-MSI | [MSI](downloads/StreamRadar_0.1.0_x64_de-DE.msi) |
+| **v0.0.10** | Stabilität, Filter, Cache-Härtung | – |
+| **v0.0.9** | Offline-Cache, Meine Anbieter, Sortierung | – |
+| **v0.0.8** | Kalender, Timeline und iCalendar-Export | – |
+| **v0.0.7** | Origin Intelligence | – |
+| **v0.0.6** | Staffel-/Episoden-Radar via TVmaze | – |
+| **v0.0.5** | Release Intelligence | – |
+| **v0.0.4** | Original-/Network-Logos | – |
+| **v0.0.3** | Original-Erkennung, TVmaze und SemVer | – |
+| **v0.0.2** | erste TMDB-/JustWatch-Live-Daten | – |
+| **v0.0.1** | erstes statisches StreamRadar-MVP | – |
+
+Ausführliche Änderungen pro Version stehen in [`CHANGELOG.md`](CHANGELOG.md).
+
+Hinweis: Die historischen Installer liegen im Repository unter `downloads/`. Der separate GitHub-**Releases**-Bereich war bisher nicht gepflegt; die vollständige Projekt-Historie wird deshalb in dieser Tabelle und im Changelog dokumentiert.
 
 ## Funktionsumfang
 
 StreamRadar kombiniert:
 
-- vollständiger TMDB/JustWatch-Streaming-Katalog pro österreichischem Watch-Provider
+- vollständigen TMDB/JustWatch-Streaming-Katalog pro Watch-Provider
+- getrennte Katalogregionen für Österreich, USA und Japan
 - TMDB-Live-Daten für zeitbasierte Release Intelligence
 - TVmaze Web Schedule für neue Episoden und Staffelstarts
 - Release Intelligence für Film-Premieren, Serienstarts, Staffelstarts und Episoden
@@ -44,53 +95,30 @@ StreamRadar kombiniert:
 - chronologische Release-Timeline
 - `.ics`-/iCalendar-Export
 - persönliche Anbieter über **Meine Anbieter**
-- persistente Sortierung
+- persistente Sortierung und Personalisierung
 - lokale Merkliste mit JSON-Backup/-Import
 - lokalen Radar-Cache mit Offline-Fallback
+- sieben lokal gespeicherte UI-Themes
 - Tauri-v2-Desktop-App für Windows
 - integriertes Update-Center mit veröffentlichtem MSI-Versionscheck
-- gespeicherter nativer Fensterzustand und externe Links über den Windows-Standardbrowser
+- gespeicherten nativen Fensterzustand und externe Links über den Windows-Standardbrowser
 - MSI-Installer für Windows x64
 
-## Windows Desktop / MSI
+## Katalogregionen und Anbieter
 
-StreamRadar verwendet Tauri v2. Die HTML/CSS/JavaScript-Oberfläche wird als native Windows-Anwendung verpackt und über WebView2 dargestellt.
+### Österreich
 
-Der GitHub-Workflow **Build StreamRadar Windows MSI** läuft auf `windows-latest`, baut die Anwendung, verifiziert die MSI und veröffentlicht sie danach unter:
+Der österreichische Katalog ist die primäre Region und umfasst unter anderem Netflix, Prime Video, Disney+, Apple TV+, Paramount+, Crunchyroll, Sky / WOW und discovery+.
 
-```text
-downloads/StreamRadar_0.4.1_x64_de-DE.msi
-```
+### USA
 
-Beim finalen Main-Build wird außerdem automatisch die SHA-256-Prüfsumme in `downloads/README.md` eingetragen.
+Der internationale US-Bereich umfasst unter anderem Hulu, Peacock, AMC+, Starz, Tubi und The Roku Channel. Peacock besitzt zusätzlich Network-Bereiche für NBC, Bravo, USA Network, Syfy, Telemundo und Universal Kids.
 
-### Desktop-App selbst bauen
+### Japan
 
-Voraussetzungen:
+Der Japan-Bereich umfasst unter anderem d Anime Store, ABEMA und U-NEXT.
 
-- Windows
-- Node.js 22+
-- Rust stable
-- Microsoft C++ Build Tools
-- WebView2
-- WiX/VBScript-Voraussetzungen für Tauri-MSI
-
-Dann:
-
-```bash
-npm ci
-npm run desktop:build
-```
-
-Das Build-Skript packt die statische Oberfläche nach `dist/`, generiert die Windows-Icons aus `assets/streamradar-icon.svg` und erzeugt anschließend das MSI.
-
-## Datenquellen
-
-- **TMDB** – Titel, Bilder, Release-Dates, Networks, Produktionsfirmen, Staffeln, Logos und Watch-Provider
-- **JustWatch via TMDB** – Streaming-Verfügbarkeit in Österreich
-- **TVmaze** – Web-/Streaming-Schedule und Episodeninformationen
-
-Der TMDB API Read Access Token wird ausschließlich lokal gespeichert und niemals in das Repository geschrieben.
+Internationale Providerseiten verwenden ihre jeweilige echte Watch-Region. Das ist keine Aussage darüber, ob derselbe Titel in Österreich verfügbar ist. **Release-Radar und Kalender bleiben auf Österreich ausgerichtet.**
 
 ## Navigation
 
@@ -102,7 +130,12 @@ KATALOG
   Anime
 
 ANBIETER
+  Österreich
   Netflix / Prime Video / Disney+ / Apple TV+ / ...
+
+INTERNATIONAL
+  USA
+  Japan
 
 RADAR
   Neu & aktuell
@@ -132,9 +165,62 @@ Die Monatsansicht kombiniert Monatsraster und Timeline. Die übrigen Modi fokuss
 
 ## Personalisierung und Offline-Nutzung
 
-Unter ⚙ können persönliche Anbieter ausgewählt werden. **Meine Anbieter** filtert Feed, Home-Rows, Kalender und Timeline auf diese Dienste.
+Unter ⚙ können persönliche Anbieter, Inhaltspräferenzen, Informationsdichte, Startansicht und Design gewählt werden. **Meine Anbieter** filtert Feed, Home-Rows, Kalender und Timeline auf die ausgewählten Dienste.
 
 Der letzte vollständige Radar wird lokal gepuffert. Ein frischer Cache wird beim Start sofort angezeigt und danach mit TMDB/TVmaze aktualisiert. Bei Netzwerk- oder API-Problemen kann der letzte gespeicherte Datenstand weiterverwendet werden.
+
+Einstellungen, Theme, Cache und Merkliste werden aktuell lokal über `localStorage` gespeichert.
+
+## Datenquellen
+
+- **TMDB** – Titel, Bilder, Release-Dates, Networks, Produktionsfirmen, Staffeln, Logos und Watch-Provider
+- **JustWatch via TMDB** – Watch-Provider-Verfügbarkeit pro unterstützter Region
+- **TVmaze** – Web-/Streaming-Schedule und Episodeninformationen
+
+Der TMDB API Read Access Token wird ausschließlich lokal gespeichert und niemals in das Repository geschrieben oder in Backups exportiert.
+
+## Windows Desktop / MSI
+
+StreamRadar verwendet Tauri v2. Die HTML/CSS/JavaScript-Oberfläche wird als native Windows-Anwendung verpackt und über WebView2 dargestellt.
+
+Der GitHub-Workflow **Build StreamRadar Windows MSI** läuft auf `windows-latest`, prüft die Desktop-Konfiguration, baut die Anwendung, verifiziert die MSI und veröffentlicht den finalen Main-Build anschließend im Ordner `downloads/`.
+
+Beim Publish wird außerdem die SHA-256-Prüfsumme des aktuellen Installers in `downloads/README.md` eingetragen.
+
+### Desktop-App selbst bauen
+
+Voraussetzungen:
+
+- Windows
+- Node.js 22+
+- Rust stable
+- Microsoft C++ Build Tools
+- WebView2
+- WiX/VBScript-Voraussetzungen für Tauri-MSI
+
+Dann:
+
+```bash
+npm ci
+npm run desktop:build
+```
+
+Das Build-Skript packt die statische Oberfläche nach `dist/`, generiert die Windows-Icons aus `assets/streamradar-icon.svg` und erzeugt anschließend das MSI.
+
+## Qualitätssicherung
+
+Bei Änderungen auf `main` laufen unter anderem:
+
+- JavaScript-Syntaxchecks
+- NPM-Audit auf High-Severity-Probleme
+- Versions- und Release-Konsistenzchecks
+- Runtime-/Packaging-Prüfungen
+- Katalog-/Provider-Baseline-Checks
+- Playwright-Browser-Regressionstests
+- Theme-Auswahl- und Persistenztests
+- echter Windows-x64-MSI-Build
+
+Playwright installiert Chromium auf GitHub Actions bei Bedarf automatisch, bevor die Browser-Tests gestartet werden.
 
 ## Projektstruktur
 
@@ -145,10 +231,7 @@ StreamRadar/
 │   └── build-msi.yml
 ├── downloads/
 │   ├── README.md
-│   ├── StreamRadar_0.1.0_x64_de-DE.msi
-│   ├── StreamRadar_0.1.1_x64_de-DE.msi
-│   ├── StreamRadar_0.1.2_x64_de-DE.msi
-│   └── StreamRadar_0.2.0_x64_de-DE.msi
+│   └── StreamRadar_<version>_x64_de-DE.msi
 ├── assets/
 │   └── streamradar-icon.svg
 ├── OldCss/
@@ -158,7 +241,8 @@ StreamRadar/
 │   ├── README.md
 │   └── historische UI-JavaScript-Snapshots
 ├── scripts/
-│   └── build-desktop.mjs
+│   ├── build-desktop.mjs
+│   └── test-e2e.mjs
 ├── src-tauri/
 │   ├── capabilities/default.json
 │   ├── src/lib.rs
@@ -166,8 +250,6 @@ StreamRadar/
 │   ├── build.rs
 │   ├── Cargo.toml
 │   └── tauri.conf.json
-├── index.html
-├── styles.css
 ├── js/
 │   ├── original-overrides.js
 │   ├── tmdb.js
@@ -178,47 +260,41 @@ StreamRadar/
 │   ├── polish.js
 │   ├── desktop.js
 │   ├── ui.js
-│   └── catalog.js
+│   ├── catalog.js
+│   └── themes.js
 ├── tests/
 │   ├── playwright.config.js
-│   └── e2e/streamradar.spec.js
+│   └── e2e/
+│       ├── streamradar.spec.js
+│       └── themes.spec.js
+├── index.html
+├── styles.css
+├── themes.css
 ├── package.json
+├── package-lock.json
 ├── VERSION
 ├── CHANGELOG.md
 └── README.md
 ```
 
-## Asset-Regel für weitere Updates
+## CSS-/Runtime-Regel
 
-Ab v0.1.2 gibt es keine versionsbezogenen Runtime-Dateien wie `v013.css` oder `ui013.js` mehr im Repository-Root.
+Die Kernoberfläche liegt in `styles.css`. Das Theme-System ist seit v0.5.1 als zusätzliche, bewusst isolierte Schicht in `themes.css` + `js/themes.js` aufgebaut. Historische Styles unter `OldCss/` und historische UI-Dateien unter `OldUi/` werden nicht mitgeladen.
 
-Für v0.2.2 und spätere Releases gilt:
-
-1. Die aktive Oberfläche wird direkt in `styles.css` weiterentwickelt.
-2. Die aktive UI-Logik wird direkt in `js/ui.js` weiterentwickelt.
-3. Vor größeren Änderungen kann der bisherige Stand optional als Snapshot in `OldCss/` bzw. `OldUi/` archiviert werden.
-4. `index.html` und der Desktop-Build laden weiterhin ausschließlich `styles.css` sowie die Runtime-Dateien unter `js/`.
-5. Die Archive werden niemals mitgeladen und beeinflussen die aktuelle App nicht.
-
-Damit bleiben die Runtime-Dateinamen stabil, während die Historie trotzdem nachvollziehbar bleibt.
+`themes.css` kann technisch vollständig in `styles.css` integriert werden. Solange die Theme-Schicht noch stark weiterentwickelt wird, ist die getrennte Quelldatei jedoch leichter zu warten und reduziert das Risiko, den großen konsolidierten Basis-Stylesheet bei Theme-Änderungen zu beschädigen. Für den späteren Cleanup kann die Theme-Schicht ohne Änderung der gespeicherten Theme-IDs konsolidiert werden.
 
 ## Versionierung
 
-StreamRadar verwendet Semantic Versioning (`MAJOR.MINOR.PATCH`). v0.1.2 ist ein kompatibler UI/UX-Patch auf dem ersten vollständigen v0.1.0-Desktop-Meilenstein.
+StreamRadar verwendet Semantic Versioning (`MAJOR.MINOR.PATCH`).
+
+- **PATCH**: kompatible Fixes, UI-Polish und kleinere Erweiterungen
+- **MINOR**: größere neue Funktionsbereiche
+- **MAJOR**: grundlegende inkompatible Architektur-/Produktänderungen
 
 ## Grenzen des aktuellen Builds
 
-- Einstellungen, Cache und Merkliste bleiben lokal und werden nicht zwischen Geräten synchronisiert.
+- Einstellungen, Theme, Cache und Merkliste bleiben lokal und werden nicht zwischen Geräten synchronisiert.
 - Persistenz läuft weiterhin über `localStorage`; SQLite ist für eine spätere Desktop-Ausbaustufe vorgesehen.
 - Episoden im 90-Tage-Fenster können wegen des kürzeren TVmaze-Schedule-Horizonts weniger vollständig sein.
 - Der MSI-Installer ist nicht code-signiert.
-- Automatische App-Updates sind noch nicht aktiviert.
-
-## Status
-
-`v0.4.0` – Streaming Catalog & Provider Experience
-
-
-### Film-Radar
-
-StreamRadar v0.2.2 bietet einen eigenen **Filme**-Bereich. Film-Releases bleiben gleichzeitig Bestandteil des Release-Kalenders und der 90-Tage-Timeline.
+- Automatische App-Updates sind noch nicht aktiviert; das Update-Center weist auf neuere MSI-Versionen hin.
