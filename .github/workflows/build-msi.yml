@@ -49,11 +49,12 @@ jobs:
           if ((Get-Content "VERSION" -Raw).Trim() -ne "0.5.2") { throw "Repository version mismatch." }
           if (-not (Test-Path "js/catalog.js")) { throw "Catalog runtime missing." }
           if (-not (Test-Path "js/themes.js")) { throw "Theme runtime missing." }
-          if (-not (Test-Path "themes.css")) { throw "Theme stylesheet missing." }
           if (-not (Select-String -Path "js/original-overrides.js" -Pattern 'js/themes.js' -Quiet)) { throw "Theme runtime bootstrap missing." }
-          if (-not (Select-String -Path "js/original-overrides.js" -Pattern 'themes.css' -Quiet)) { throw "Theme stylesheet bootstrap missing." }
           if (-not (Select-String -Path "scripts/build-desktop.mjs" -Pattern 'js/themes.js' -Quiet)) { throw "Theme runtime is not packed by desktop build." }
-          if (-not (Select-String -Path "scripts/build-desktop.mjs" -Pattern 'themes.css' -Quiet)) { throw "Theme stylesheet is not packed by desktop build." }
+          $themeCss = if (Test-Path "themes.css") { "themes.css" } else { "styles.css" }
+          if (-not (Select-String -Path $themeCss -Pattern 'data-streamradar-theme="netflix"' -Quiet)) { throw "Netflix theme missing." }
+          if (-not (Select-String -Path $themeCss -Pattern 'data-streamradar-theme="cyberpunk"' -Quiet)) { throw "Cyberpunk theme missing." }
+          if (-not (Select-String -Path $themeCss -Pattern 'data-streamradar-theme="glass"' -Quiet)) { throw "Glass theme missing." }
           if (-not (Select-String -Path "index.html" -Pattern 'internationalProviderNavUS' -Quiet)) { throw "US international provider navigation missing." }
           if (-not (Select-String -Path "index.html" -Pattern 'internationalProviderNavJP' -Quiet)) { throw "Japan international provider navigation missing." }
           if (-not (Select-String -Path "js/tmdb.js" -Pattern 'getAllProviderMaps' -Quiet)) { throw "Multi-region TMDB provider API missing." }
@@ -74,9 +75,13 @@ jobs:
           if (-not $msi) { throw "No MSI installer was generated." }
           if (-not (Test-Path "dist/js/catalog.js")) { throw "Catalog runtime missing from desktop dist." }
           if (-not (Test-Path "dist/js/themes.js")) { throw "Theme runtime missing from desktop dist." }
-          if (-not (Test-Path "dist/themes.css")) { throw "Theme stylesheet missing from desktop dist." }
+          if (-not (Test-Path "dist/styles.css")) { throw "Main stylesheet missing from desktop dist." }
           if (-not (Select-String -Path "dist/index.html" -Pattern 'internationalProviderNavUS' -Quiet)) { throw "International provider UI missing from desktop dist." }
           if (-not (Select-String -Path "dist/js/themes.js" -Pattern "ORDER = \['radar', 'cinema', 'midnight', 'oled', 'netflix', 'cyberpunk', 'glass'\]" -Quiet)) { throw "Expected seven theme choices missing from desktop dist." }
+          $themeCss = if (Select-String -Path "dist/styles.css" -Pattern 'data-streamradar-theme="netflix"' -Quiet) { "dist/styles.css" } else { "dist/themes.css" }
+          if (-not (Test-Path $themeCss)) { throw "Theme styles missing from desktop dist." }
+          if (-not (Select-String -Path $themeCss -Pattern 'data-streamradar-theme="cyberpunk"' -Quiet)) { throw "Cyberpunk theme missing from desktop dist." }
+          if (-not (Select-String -Path $themeCss -Pattern 'data-streamradar-theme="glass"' -Quiet)) { throw "Glass theme missing from desktop dist." }
           $msi | ForEach-Object { Write-Host "MSI: $($_.FullName) ($([math]::Round($_.Length / 1MB, 2)) MB)" }
 
       - name: Upload MSI installer
