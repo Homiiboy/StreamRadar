@@ -105,12 +105,26 @@ jobs:
             index_file="$(mktemp)"
             rm -f "$index_file"
             GIT_INDEX_FILE="$index_file" git read-tree "$original"
-            GIT_INDEX_FILE="$index_file" git rm -r --cached --ignore-unmatch .github/workflows >/dev/null 2>&1 || true
-            GIT_INDEX_FILE="$index_file" git rm --cached --ignore-unmatch .github/release-backfill-trigger >/dev/null 2>&1 || true
+
+            while IFS= read -r path; do
+              [[ -z "$path" ]] && continue
+              GIT_INDEX_FILE="$index_file" git update-index --force-remove -- "$path"
+            done < <(GIT_INDEX_FILE="$index_file" git ls-files '.github/workflows/*')
+
+            if GIT_INDEX_FILE="$index_file" git ls-files --error-unmatch .github/release-backfill-trigger >/dev/null 2>&1; then
+              GIT_INDEX_FILE="$index_file" git update-index --force-remove -- .github/release-backfill-trigger
+            fi
+
             tree="$(GIT_INDEX_FILE="$index_file" git write-tree)"
             rm -f "$index_file"
 
             snapshot="$(printf 'StreamRadar v%s release snapshot\n\nBased on original commit %s. CI workflow files are intentionally omitted from this release-only snapshot.\n' "$version" "$original" | git commit-tree "$tree")"
+
+            if git ls-tree -r --name-only "$snapshot" | grep -q '^\.github/workflows/'; then
+              echo "Snapshot for v$version still contains workflow files; refusing to publish." >&2
+              exit 1
+            fi
+
             printf '%s' "$snapshot"
           }
 
