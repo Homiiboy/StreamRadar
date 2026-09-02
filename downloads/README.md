@@ -11,7 +11,7 @@ Hier liegen die direkt installierbaren Windows-Builds von StreamRadar.
 - Version: `0.5.2`
 - Plattform: Windows x64
 - Installer: MSI (`de-DE`)
-- SHA-256: `f4b4df89fde5bc20b003372b0db3081bd214da2b09d13ad280ca4db9350a362f`
+- SHA-256: `e4aaf3144bdcdd90c0c83cb83f37fa2612a62b6de8126705088e842739b933b8`
 
 Der Installer ist aktuell nicht code-signiert. Windows kann deshalb beim Öffnen einen Hinweis auf einen unbekannten Herausgeber anzeigen.
 
