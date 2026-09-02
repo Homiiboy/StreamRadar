@@ -26,9 +26,7 @@ StreamRadar ist ein persönlicher Streaming-Katalog und Release-Radar für Filme
 
 [**StreamRadar v0.5.2 als MSI herunterladen**](downloads/StreamRadar_0.5.2_x64_de-DE.msi)
 
-Alle noch im Repository verfügbaren MSI-Versionen und die SHA-256-Prüfsumme des neuesten Builds liegen im Ordner [`downloads/`](downloads/).
-
-> Der v0.5.2-Link ist verfügbar, sobald der zugehörige Windows-GitHub-Actions-Build erfolgreich abgeschlossen und die MSI veröffentlicht wurde.
+Alle noch im Repository verfügbaren MSI-Versionen und die SHA-256-Prüfsumme des neuesten Builds liegen im Ordner [`downloads/`](downloads/). Zusätzlich ist v0.5.2 inklusive MSI im nativen [GitHub-Releases-Bereich](../../releases) veröffentlicht.
 
 Der Installer ist für die persönliche Nutzung nicht code-signiert. Windows kann deshalb beim Öffnen einen Hinweis auf einen unbekannten Herausgeber anzeigen.
 
@@ -79,7 +77,7 @@ Die komplette StreamRadar-Historie seit dem ersten MVP:
 
 Ausführliche Änderungen pro Version stehen in [`CHANGELOG.md`](CHANGELOG.md).
 
-Hinweis: Die historischen Installer liegen im Repository unter `downloads/`. Der separate GitHub-**Releases**-Bereich war bisher nicht gepflegt; die vollständige Projekt-Historie wird deshalb in dieser Tabelle und im Changelog dokumentiert.
+Alle **22 Versionen von v0.0.1 bis v0.5.2** sind zusätzlich als native [GitHub Releases](../../releases) veröffentlicht. Die Windows-Versionen ab v0.1.0 enthalten jeweils die zugehörige historische MSI als Release-Asset; die frühen v0.0.x-Versionen waren Web-/Runtime-Releases ohne MSI. Die Installer bleiben parallel im Repository-Ordner `downloads/` erhalten.
 
 ## Funktionsumfang
 
