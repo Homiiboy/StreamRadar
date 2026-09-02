@@ -1,8 +1,8 @@
-/* StreamRadar v0.5.1 — selectable visual themes */
+/* StreamRadar v0.5.2 — selectable visual themes */
 (() => {
-  const VERSION = '0.5.1';
+  const VERSION = '0.5.2';
   const STORAGE_KEY = 'streamradar-theme-v1';
-  const ORDER = ['radar', 'cinema', 'midnight', 'oled'];
+  const ORDER = ['radar', 'cinema', 'midnight', 'oled', 'netflix', 'cyberpunk', 'glass'];
   const THEMES = Object.freeze({
     radar: {
       name: 'Radar',
@@ -23,6 +23,21 @@
       name: 'OLED',
       description: 'Nahezu reines Schwarz, reduziert und besonders ruhig.',
       metaColor: '#000000'
+    },
+    netflix: {
+      name: 'Netflix',
+      description: 'Streaming-Look in Schwarz und Rot mit kompakten Flächen und starkem Fokus auf Poster.',
+      metaColor: '#080808'
+    },
+    cyberpunk: {
+      name: 'Cyberpunk',
+      description: 'Neon-Cyan, Magenta, härtere Kanten und futuristische Akzente.',
+      metaColor: '#02070a'
+    },
+    glass: {
+      name: 'Apple TV Glass',
+      description: 'Große Radien, transparente Flächen und ein ruhiger Frosted-Glass-Look.',
+      metaColor: '#09101b'
     }
   });
 
