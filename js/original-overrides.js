@@ -23,4 +23,20 @@
   }
 
   window.StreamRadarOriginalOverrides = { EXACT, TITLE_RULES, getOverride };
+
+  // v0.5.1 theme layer is loaded here so existing HTML remains backward-compatible.
+  if (!document.querySelector('link[data-streamradar-themes]')) {
+    const link = document.createElement('link');
+    link.rel = 'stylesheet';
+    link.href = 'themes.css';
+    link.dataset.streamradarThemes = 'true';
+    document.head.appendChild(link);
+  }
+  if (!document.querySelector('script[data-streamradar-themes]')) {
+    const script = document.createElement('script');
+    script.src = 'js/themes.js';
+    script.defer = true;
+    script.dataset.streamradarThemes = 'true';
+    document.head.appendChild(script);
+  }
 })();
