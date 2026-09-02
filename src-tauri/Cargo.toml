@@ -1,6 +1,6 @@
 [package]
 name = "streamradar"
-version = "0.5.1"
+version = "0.5.2"
 description = "StreamRadar - Streaming Release Tracker"
 authors = ["StreamRadar Project"]
 edition = "2021"
