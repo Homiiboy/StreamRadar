@@ -54,7 +54,7 @@ jobs:
           if (-not (Select-String -Path "index.html" -Pattern 'internationalProviderNavJP' -Quiet)) { throw "Japan international provider navigation missing." }
           if (-not (Select-String -Path "js/tmdb.js" -Pattern 'getAllProviderMaps' -Quiet)) { throw "Multi-region TMDB provider API missing." }
           if (-not (Select-String -Path "js/tmdb.js" -Pattern "name: 'Sky / WOW'" -Quiet)) { throw "Sky / WOW provider missing." }
-          if (-not (Select-String -Path "js/tmdb.js" -Pattern "name: 'discovery+'" -Quiet)) { throw "discovery+ provider missing." }
+          if (-not (Select-String -Path "js/tmdb.js" -Pattern "name: 'discovery\+'" -Quiet)) { throw "discovery+ provider missing." }
           if (-not (Select-String -Path "js/tmdb.js" -Pattern "name: 'Peacock', region:'US'" -Quiet)) { throw "Peacock US provider missing." }
           if (-not (Select-String -Path "js/tmdb.js" -Pattern "name: 'd Anime Store', region:'JP'" -Quiet)) { throw "d Anime Store JP provider missing." }
           if (-not (Select-String -Path "styles.css" -Pattern 'StreamRadar v0.5.0 — Clean Catalog & International Providers' -Quiet)) { throw "v0.5.0 clean catalog styles missing." }
