@@ -51,3 +51,34 @@ test('topbar palette button cycles through complete themes', async ({ page }) =>
     await expect(page.locator('html')).toHaveAttribute('data-streamradar-theme', theme);
   }
 });
+
+test('provider band stays compact and never covers the poster artwork', async ({ page }) => {
+  await boot(page);
+
+  const art = page.locator('.catalog-art').first();
+  const band = art.locator('.catalog-provider-band');
+  await expect(art).toBeVisible();
+  await expect(band).toBeVisible();
+
+  const geometry = await page.evaluate(() => {
+    const artEl = document.querySelector('.catalog-art');
+    const bandEl = artEl?.querySelector('.catalog-provider-band');
+    if (!artEl || !bandEl) return null;
+    const artRect = artEl.getBoundingClientRect();
+    const bandRect = bandEl.getBoundingClientRect();
+    return {
+      artHeight: artRect.height,
+      bandHeight: bandRect.height,
+      gapToBottom: Math.abs(artRect.bottom - bandRect.bottom),
+      gapToTop: bandRect.top - artRect.top
+    };
+  });
+
+  expect(geometry).not.toBeNull();
+  expect(geometry.artHeight).toBeGreaterThan(250);
+  expect(geometry.bandHeight).toBeLessThan(80);
+  expect(geometry.bandHeight / geometry.artHeight).toBeLessThan(0.22);
+  expect(geometry.gapToBottom).toBeLessThan(20);
+  expect(geometry.gapToTop).toBeGreaterThan(geometry.artHeight * 0.65);
+});
+

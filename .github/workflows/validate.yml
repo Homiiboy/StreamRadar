@@ -39,15 +39,16 @@ jobs:
           node --check scripts/build-desktop.mjs
           node --check scripts/test-e2e.mjs
 
-      - name: Check v0.5.2 release surface
+      - name: Check v0.5.3 release surface
         run: |
-          grep -qx '0.5.2' VERSION
-          grep -q '"version": "0.5.2"' package.json
-          grep -q '"version": "0.5.2"' package-lock.json
-          grep -q '"version": "0.5.2"' src-tauri/tauri.conf.json
-          grep -q 'version = "0.5.2"' src-tauri/Cargo.toml
-          grep -q "const VERSION = '0.5.2'" js/themes.js
-          grep -q 'v0.5.2' README.md
+          grep -qx '0.5.3' VERSION
+          grep -q '"version": "0.5.3"' package.json
+          grep -q '"version": "0.5.3"' package-lock.json
+          grep -q '"version": "0.5.3"' src-tauri/tauri.conf.json
+          grep -q 'version = "0.5.3"' src-tauri/Cargo.toml
+          grep -q "const VERSION = '0.5.3'" js/themes.js
+          grep -q 'v0.5.3' README.md
+          grep -q '\[0.5.3\]' CHANGELOG.md
 
       - name: Check runtime JavaScript layout
         run: |
@@ -75,6 +76,16 @@ jobs:
           done
           grep -q 'toHaveCount(7)' tests/e2e/themes.spec.js
 
+      - name: Check poster visibility regression fix
+        run: |
+          grep -q 'StreamRadar v0.5.3 — poster overlay geometry regression fix' styles.css
+          grep -q 'top:auto!important;bottom:9px!important;min-height:38px' styles.css
+          grep -q 'right:9px!important;bottom:auto!important;background' styles.css
+          grep -q 'left:9px!important;bottom:auto!important;background' styles.css
+          grep -q 'provider band stays compact and never covers the poster artwork' tests/e2e/themes.spec.js
+          grep -q 'bandHeight / geometry.artHeight' tests/e2e/themes.spec.js
+          grep -q 'gapToBottom' tests/e2e/themes.spec.js
+
       - name: Check catalog and international provider baseline
         run: |
           grep -q 'class="hero clean-home-hero shell"' index.html
@@ -91,13 +102,14 @@ jobs:
       - name: Build desktop frontend package
         run: npm run build:web
 
-      - name: Verify packed theme layer
+      - name: Verify packed theme and poster layer
         run: |
           test -s dist/styles.css
           test -s dist/js/themes.js
           test -s dist/js/catalog.js
           grep -q 'streamradar-theme-v1' dist/js/themes.js
           grep -q "ORDER = \['radar', 'cinema', 'midnight', 'oled', 'netflix', 'cyberpunk', 'glass'\]" dist/js/themes.js
+          grep -q 'top:auto!important;bottom:9px!important;min-height:38px' dist/styles.css
           if grep -q 'data-streamradar-theme="netflix"' dist/styles.css; then
             THEME_CSS="dist/styles.css"
           else
@@ -107,6 +119,12 @@ jobs:
           grep -q 'data-streamradar-theme="netflix"' "$THEME_CSS"
           grep -q 'data-streamradar-theme="cyberpunk"' "$THEME_CSS"
           grep -q 'data-streamradar-theme="glass"' "$THEME_CSS"
+
+      - name: Check repository hygiene
+        run: |
+          test ! -e scripts/prepare-v053.py
+          test ! -e .github/workflows/prepare-v053.yml
+          if grep -R -nE '^(<<<<<<<|=======|>>>>>>>)' --exclude-dir=.git --exclude-dir=dist --exclude-dir=node_modules .; then exit 1; fi
 
       - name: Run browser regression tests
         run: npm run test:e2e

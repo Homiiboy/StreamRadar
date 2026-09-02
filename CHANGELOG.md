@@ -2,6 +2,17 @@
 
 Alle relevanten Änderungen an StreamRadar werden hier ab der ersten Version nach Semantic Versioning dokumentiert.
 
+## [0.5.3] - 2026-09-02
+
+### Fixed
+- Katalog-Poster werden wieder vollständig sichtbar dargestellt.
+- Das Anbieter-Band (`JETZT AUF …`) setzt die alte obere Position explizit zurück und bleibt als kompakte Leiste am unteren Posterrand.
+- Merkliste- und Bewertungs-Badges erhalten eindeutige Positionsachsen, damit alte `bottom`-Regeln keine unerwartete Streckung verursachen.
+
+### Quality
+- Neuer Playwright-Regressionstest misst die reale Anbieter-Band-Höhe relativ zum Poster und verhindert ein erneutes Vollflächen-Overlay.
+- Release-, Tauri-, Rust-, Package- und MSI-Konfiguration auf `0.5.3` angehoben.
+
 ## [0.5.2] - 2026-09-02
 
 ### Added
