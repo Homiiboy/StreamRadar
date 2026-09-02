@@ -75,19 +75,15 @@ jobs:
             if [[ -z "$target" ]]; then
               target="$(git log --all --reverse --format='%H' --grep="$version" | head -n 1 || true)"
             fi
-
             if [[ -z "$target" && "$version" == "0.0.1" ]]; then
               target="$(git rev-list --max-parents=0 HEAD | head -n 1)"
             fi
-
             if [[ -z "$target" && "$version" == "0.0.2" ]]; then
               target="$(git rev-list --reverse HEAD | sed -n '2p')"
             fi
-
             if [[ -z "$target" ]]; then
               target="$(git rev-parse HEAD)"
             fi
-
             printf '%s' "$target"
           }
 
@@ -99,7 +95,6 @@ jobs:
               found && /^## \\[/ { exit }
               found { print }
             ' CHANGELOG.md > "$notes_file"
-
             if [[ ! -s "$notes_file" ]]; then
               printf 'StreamRadar v%s\n' "$version" > "$notes_file"
             fi
@@ -114,24 +109,9 @@ jobs:
 
             if [[ -f "$asset" ]]; then
               hash="$(sha256sum "$asset" | awk '{print $1}')"
-              cat >> "$notes_file" <<EOF
-
-### Windows x64
-
-- MSI installer attached below
-- File: \`StreamRadar_${version}_x64_de-DE.msi\`
-- SHA-256: \`${hash}\`
-- Installer language: \`de-DE\`
-
-> The installer is currently unsigned, so Windows may display an unknown publisher warning.
-EOF
+              printf '\n### Windows x64\n\n- MSI installer attached below\n- File: `StreamRadar_%s_x64_de-DE.msi`\n- SHA-256: `%s`\n- Installer language: `de-DE`\n\n> The installer is currently unsigned, so Windows may display an unknown publisher warning.\n' "$version" "$hash" >> "$notes_file"
             else
-              cat >> "$notes_file" <<EOF
-
-### Distribution
-
-This was an early web/runtime release. No Windows MSI was published for this version.
-EOF
+              printf '\n### Distribution\n\nThis was an early web/runtime release. No Windows MSI was published for this version.\n' >> "$notes_file"
             fi
 
             if gh release view "$tag" >/dev/null 2>&1; then
