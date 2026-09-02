@@ -43,26 +43,31 @@ jobs:
       - name: Audit high severity dependencies
         run: npm audit --audit-level=high
 
-      - name: Verify v0.5.2 theme and desktop configuration
+      - name: Verify v0.5.3 poster and desktop configuration
         shell: pwsh
         run: |
-          if ((Get-Content "VERSION" -Raw).Trim() -ne "0.5.2") { throw "Repository version mismatch." }
+          if ((Get-Content "VERSION" -Raw).Trim() -ne "0.5.3") { throw "Repository version mismatch." }
           if (-not (Test-Path "js/catalog.js")) { throw "Catalog runtime missing." }
           if (-not (Test-Path "js/themes.js")) { throw "Theme runtime missing." }
+          if (-not (Select-String -Path "js/themes.js" -SimpleMatch -Pattern "const VERSION = '0.5.3'" -Quiet)) { throw "Theme runtime version mismatch." }
           if (-not (Select-String -Path "js/original-overrides.js" -Pattern 'js/themes.js' -Quiet)) { throw "Theme runtime bootstrap missing." }
           if (-not (Select-String -Path "scripts/build-desktop.mjs" -Pattern 'js/themes.js' -Quiet)) { throw "Theme runtime is not packed by desktop build." }
           $themeCss = if (Test-Path "themes.css") { "themes.css" } else { "styles.css" }
           if (-not (Select-String -Path $themeCss -Pattern 'data-streamradar-theme="netflix"' -Quiet)) { throw "Netflix theme missing." }
           if (-not (Select-String -Path $themeCss -Pattern 'data-streamradar-theme="cyberpunk"' -Quiet)) { throw "Cyberpunk theme missing." }
           if (-not (Select-String -Path $themeCss -Pattern 'data-streamradar-theme="glass"' -Quiet)) { throw "Glass theme missing." }
+          if (-not (Select-String -Path "styles.css" -SimpleMatch -Pattern 'top:auto!important;bottom:9px!important;min-height:38px' -Quiet)) { throw "Provider band poster geometry fix missing." }
+          if (-not (Select-String -Path "styles.css" -SimpleMatch -Pattern 'right:9px!important;bottom:auto!important;background' -Quiet)) { throw "Catalog save positioning fix missing." }
+          if (-not (Select-String -Path "styles.css" -SimpleMatch -Pattern 'left:9px!important;bottom:auto!important;background' -Quiet)) { throw "Catalog rating positioning fix missing." }
+          if (-not (Select-String -Path "tests/e2e/themes.spec.js" -SimpleMatch -Pattern 'provider band stays compact and never covers the poster artwork' -Quiet)) { throw "Poster geometry regression test missing." }
           if (-not (Select-String -Path "index.html" -Pattern 'internationalProviderNavUS' -Quiet)) { throw "US international provider navigation missing." }
           if (-not (Select-String -Path "index.html" -Pattern 'internationalProviderNavJP' -Quiet)) { throw "Japan international provider navigation missing." }
           if (-not (Select-String -Path "js/tmdb.js" -Pattern 'getAllProviderMaps' -Quiet)) { throw "Multi-region TMDB provider API missing." }
-          if (-not (Select-String -Path "src-tauri/Cargo.toml" -Pattern 'version = "0.5.2"' -Quiet)) { throw "Rust version mismatch." }
+          if (-not (Select-String -Path "src-tauri/Cargo.toml" -SimpleMatch -Pattern 'version = "0.5.3"' -Quiet)) { throw "Rust version mismatch." }
           if (-not (Select-String -Path "src-tauri/Cargo.toml" -Pattern "tauri-plugin-opener" -Quiet)) { throw "Opener plugin missing." }
           if (-not (Select-String -Path "src-tauri/Cargo.toml" -Pattern "tauri-plugin-window-state" -Quiet)) { throw "Window state plugin missing." }
           $config = Get-Content "src-tauri/tauri.conf.json" -Raw | ConvertFrom-Json
-          if ($config.version -ne "0.5.2") { throw "Tauri version mismatch." }
+          if ($config.version -ne "0.5.3") { throw "Tauri version mismatch." }
           if (-not $config.app.withGlobalTauri) { throw "withGlobalTauri must be enabled for the vanilla desktop bridge." }
 
       - name: Build StreamRadar MSI
@@ -76,6 +81,7 @@ jobs:
           if (-not (Test-Path "dist/js/catalog.js")) { throw "Catalog runtime missing from desktop dist." }
           if (-not (Test-Path "dist/js/themes.js")) { throw "Theme runtime missing from desktop dist." }
           if (-not (Test-Path "dist/styles.css")) { throw "Main stylesheet missing from desktop dist." }
+          if (-not (Select-String -Path "dist/styles.css" -SimpleMatch -Pattern 'top:auto!important;bottom:9px!important;min-height:38px' -Quiet)) { throw "Poster visibility fix missing from desktop dist." }
           if (-not (Select-String -Path "dist/index.html" -Pattern 'internationalProviderNavUS' -Quiet)) { throw "International provider UI missing from desktop dist." }
           if (-not (Select-String -Path "dist/js/themes.js" -Pattern "ORDER = \['radar', 'cinema', 'midnight', 'oled', 'netflix', 'cyberpunk', 'glass'\]" -Quiet)) { throw "Expected seven theme choices missing from desktop dist." }
           $themeCss = if (Select-String -Path "dist/styles.css" -Pattern 'data-streamradar-theme="netflix"' -Quiet) { "dist/styles.css" } else { "dist/themes.css" }
@@ -87,7 +93,7 @@ jobs:
       - name: Upload MSI installer
         uses: actions/upload-artifact@v4
         with:
-          name: StreamRadar-v0.5.2-Windows-x64-MSI
+          name: StreamRadar-v0.5.3-Windows-x64-MSI
           path: src-tauri/target/release/bundle/msi/*.msi
           if-no-files-found: error
           retention-days: 30
@@ -95,7 +101,7 @@ jobs:
       - name: Upload Windows executable
         uses: actions/upload-artifact@v4
         with:
-          name: StreamRadar-v0.5.2-Windows-x64-EXE
+          name: StreamRadar-v0.5.3-Windows-x64-EXE
           path: src-tauri/target/release/streamradar.exe
           if-no-files-found: error
           retention-days: 30
@@ -107,7 +113,7 @@ jobs:
           New-Item -ItemType Directory -Force -Path "downloads" | Out-Null
           $msi = Get-ChildItem -Path "src-tauri/target/release/bundle/msi" -Filter "*.msi" -File | Select-Object -First 1
           if (-not $msi) { throw "No MSI found for repository publishing." }
-          $destination = "downloads/StreamRadar_0.5.2_x64_de-DE.msi"
+          $destination = "downloads/StreamRadar_0.5.3_x64_de-DE.msi"
           Copy-Item $msi.FullName $destination -Force
           $hash = (Get-FileHash $destination -Algorithm SHA256).Hash.ToLowerInvariant()
           @"
@@ -117,11 +123,11 @@ jobs:
 
           ## Aktuelle Windows-Version
 
-          ### StreamRadar v0.5.2 – Windows x64
+          ### StreamRadar v0.5.3 – Windows x64
 
-          [**StreamRadar_0.5.2_x64_de-DE.msi herunterladen**](StreamRadar_0.5.2_x64_de-DE.msi)
+          [**StreamRadar_0.5.3_x64_de-DE.msi herunterladen**](StreamRadar_0.5.3_x64_de-DE.msi)
 
-          - Version: ``0.5.2``
+          - Version: ``0.5.3``
           - Plattform: Windows x64
           - Installer: MSI (``de-DE``)
           - SHA-256: ``$hash``
@@ -130,6 +136,7 @@ jobs:
 
           ## Verfügbare Windows-Releases
 
+          - [StreamRadar v0.5.3](StreamRadar_0.5.3_x64_de-DE.msi) — Poster Visibility Fix
           - [StreamRadar v0.5.2](StreamRadar_0.5.2_x64_de-DE.msi) — Themes & Visual Personalization
           - [StreamRadar v0.5.1](StreamRadar_0.5.1_x64_de-DE.msi) — Selectable Themes
           - [StreamRadar v0.5.0](StreamRadar_0.5.0_x64_de-DE.msi) — Clean Catalog & International Providers
@@ -152,5 +159,5 @@ jobs:
             Write-Host "Repository MSI is already current."
             exit 0
           }
-          git commit -m "chore: publish StreamRadar v0.5.2 MSI [skip ci]"
+          git commit -m "chore: publish StreamRadar v0.5.3 MSI [skip ci]"
           git push origin HEAD:main
