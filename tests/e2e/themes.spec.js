@@ -3,9 +3,10 @@ import { test, expect } from '@playwright/test';
 async function boot(page) {
   await page.addInitScript(() => {
     localStorage.setItem('streamradar-onboarding-v2-complete', 'true');
-    localStorage.removeItem('streamradar-theme-v1');
   });
   await page.goto('/');
+  await page.evaluate(() => localStorage.removeItem('streamradar-theme-v1'));
+  await page.reload();
   await expect.poll(() => page.evaluate(() => Boolean(window.StreamRadarThemes))).toBe(true);
 }
 
@@ -23,6 +24,7 @@ test('offers four selectable designs and persists the choice', async ({ page }) 
 
   await page.reload();
   await expect(page.locator('html')).toHaveAttribute('data-streamradar-theme', 'midnight');
+  await expect.poll(() => page.evaluate(() => localStorage.getItem('streamradar-theme-v1'))).toBe('midnight');
 });
 
 test('topbar palette button cycles through complete themes', async ({ page }) => {
