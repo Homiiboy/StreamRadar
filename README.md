@@ -16,6 +16,7 @@ StreamRadar ist ein persönlicher Streaming-Katalog und Release-Radar für Filme
 - bestehende Designs **Radar**, **Cinema**, **Midnight** und **OLED** bleiben erhalten
 - Theme-Auswahl wird über `localStorage` gespeichert und nach einem Neustart wiederhergestellt
 - Palette-Button in der Topbar schaltet zyklisch durch alle Designs
+- alle Theme-Styles wurden in die zentrale `styles.css` integriert; eine separate `themes.css` ist nicht mehr nötig
 - Browser-Regressionstests prüfen alle sieben Themes, direkte Auswahl und Persistenz
 - Release-/Build-Konfiguration auf v0.5.2 aktualisiert
 
@@ -269,7 +270,6 @@ StreamRadar/
 │       └── themes.spec.js
 ├── index.html
 ├── styles.css
-├── themes.css
 ├── package.json
 ├── package-lock.json
 ├── VERSION
@@ -279,9 +279,9 @@ StreamRadar/
 
 ## CSS-/Runtime-Regel
 
-Die Kernoberfläche liegt in `styles.css`. Das Theme-System ist seit v0.5.1 als zusätzliche, bewusst isolierte Schicht in `themes.css` + `js/themes.js` aufgebaut. Historische Styles unter `OldCss/` und historische UI-Dateien unter `OldUi/` werden nicht mitgeladen.
+Seit v0.5.2 liegt die **gesamte aktive CSS-Oberfläche einschließlich aller sieben Themes in `styles.css`**. `js/themes.js` übernimmt ausschließlich Auswahl, Persistenz, Theme-Metadaten und den Palette-Umschalter. Dadurch gibt es im normalen v0.5.2-Build nur noch ein zentrales Stylesheet und keine separate aktive `themes.css` mehr.
 
-`themes.css` kann technisch vollständig in `styles.css` integriert werden. Solange die Theme-Schicht noch stark weiterentwickelt wird, ist die getrennte Quelldatei jedoch leichter zu warten und reduziert das Risiko, den großen konsolidierten Basis-Stylesheet bei Theme-Änderungen zu beschädigen. Für den späteren Cleanup kann die Theme-Schicht ohne Änderung der gespeicherten Theme-IDs konsolidiert werden.
+`js/original-overrides.js` enthält lediglich einen kleinen Rückwärtskompatibilitäts-Fallback für ältere Checkouts, in denen die Theme-Regeln noch in `themes.css` lagen. Historische Styles unter `OldCss/` und historische UI-Dateien unter `OldUi/` werden nicht mitgeladen.
 
 ## Versionierung
 
