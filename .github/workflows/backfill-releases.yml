@@ -109,14 +109,10 @@ jobs:
               continue
             fi
 
-            if ! git rev-parse -q --verify "refs/tags/$tag" >/dev/null; then
-              target="$(target_for "$version")"
-              echo "Creating $tag at $target"
-              git tag "$tag" "$target"
-              git push origin "refs/tags/$tag"
-            fi
+            target="$(target_for "$version")"
+            echo "Creating $tag at $target"
 
-            args=("$tag" --verify-tag --title "$title" --notes-file "$notes_file")
+            args=("$tag" --target "$target" --title "$title" --notes-file "$notes_file")
             if [[ "$version" == "0.5.2" ]]; then
               args+=(--latest)
             fi
