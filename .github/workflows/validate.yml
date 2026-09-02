@@ -37,15 +37,17 @@ jobs:
           node --check tests/playwright.config.js
           for file in tests/e2e/*.js; do node --check "$file"; done
           node --check scripts/build-desktop.mjs
+          node --check scripts/test-e2e.mjs
 
-      - name: Check v0.5.1 release surface
+      - name: Check v0.5.2 release surface
         run: |
-          grep -qx '0.5.1' VERSION
-          grep -q '"version": "0.5.1"' package.json
-          grep -q '"version": "0.5.1"' src-tauri/tauri.conf.json
-          grep -q 'version = "0.5.1"' src-tauri/Cargo.toml
-          grep -q "const VERSION = '0.5.1'" js/themes.js
-          grep -q 'StreamRadar v0.5.1' themes.css
+          grep -qx '0.5.2' VERSION
+          grep -q '"version": "0.5.2"' package.json
+          grep -q '"version": "0.5.2"' src-tauri/tauri.conf.json
+          grep -q 'version = "0.5.2"' src-tauri/Cargo.toml
+          grep -q "const VERSION = '0.5.2'" js/themes.js
+          grep -q 'StreamRadar v0.5.2' themes.css
+          grep -q 'v0.5.2' README.md
 
       - name: Check runtime JavaScript layout
         run: |
@@ -62,16 +64,17 @@ jobs:
       - name: Check selectable themes
         run: |
           test -s themes.css
-          grep -q "ORDER = \['radar', 'cinema', 'midnight', 'oled'\]" js/themes.js
+          grep -q "ORDER = \['radar', 'cinema', 'midnight', 'oled', 'netflix', 'cyberpunk', 'glass'\]" js/themes.js
           grep -q 'streamradar-theme-v1' js/themes.js
           grep -q 'data-theme-option' js/themes.js
           grep -q 'themes.css' js/original-overrides.js
           grep -q 'js/themes.js' js/original-overrides.js
           grep -q 'themes.css' scripts/build-desktop.mjs
           grep -q 'js/themes.js' scripts/build-desktop.mjs
-          grep -q 'data-streamradar-theme="cinema"' themes.css
-          grep -q 'data-streamradar-theme="midnight"' themes.css
-          grep -q 'data-streamradar-theme="oled"' themes.css
+          for theme in cinema midnight oled netflix cyberpunk glass; do
+            grep -q "data-streamradar-theme=\"$theme\"" themes.css
+          done
+          grep -q 'toHaveCount(7)' tests/e2e/themes.spec.js
 
       - name: Check catalog and international provider baseline
         run: |
@@ -95,6 +98,7 @@ jobs:
           test -s dist/js/themes.js
           test -s dist/js/catalog.js
           grep -q 'streamradar-theme-v1' dist/js/themes.js
+          grep -q "ORDER = \['radar', 'cinema', 'midnight', 'oled', 'netflix', 'cyberpunk', 'glass'\]" dist/js/themes.js
 
       - name: Run browser regression tests
         run: npm run test:e2e
