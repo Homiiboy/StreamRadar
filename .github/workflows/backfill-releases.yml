@@ -1,0 +1,162 @@
+name: Backfill StreamRadar GitHub Releases
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  backfill:
+    if: github.actor != 'github-actions[bot]'
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout full history
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          fetch-tags: true
+
+      - name: Create historical tags and releases
+        shell: bash
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          git fetch --tags --force
+
+          versions=(
+            0.0.1 0.0.2 0.0.3 0.0.4 0.0.5 0.0.6 0.0.7 0.0.8 0.0.9 0.0.10
+            0.1.0 0.1.1 0.1.2 0.2.0 0.2.1 0.2.2 0.3.0 0.4.0 0.4.1 0.5.0 0.5.1 0.5.2
+          )
+
+          summary_for() {
+            case "$1" in
+              0.0.1) echo "Initial static MVP" ;;
+              0.0.2) echo "TMDB and JustWatch live data" ;;
+              0.0.3) echo "Origin detection, TVmaze and SemVer" ;;
+              0.0.4) echo "Original and network logos" ;;
+              0.0.5) echo "Release Intelligence" ;;
+              0.0.6) echo "Season and episode radar" ;;
+              0.0.7) echo "Origin Intelligence" ;;
+              0.0.8) echo "Calendar, timeline and iCalendar export" ;;
+              0.0.9) echo "Offline cache, providers and sorting" ;;
+              0.0.10) echo "Stability, filters and cache hardening" ;;
+              0.1.0) echo "First Complete Radar and first Windows MSI" ;;
+              0.1.1) echo "Desktop sidebar and Home rows" ;;
+              0.1.2) echo "Premium details and global search" ;;
+              0.2.0) echo "Personalization Center" ;;
+              0.2.1) echo "Browser QA and runtime structure" ;;
+              0.2.2) echo "Film Radar" ;;
+              0.3.0) echo "Update Center and desktop integration" ;;
+              0.4.0) echo "Streaming catalog and provider experience" ;;
+              0.4.1) echo "Provider sidebar fixes and Crunchyroll" ;;
+              0.5.0) echo "Clean catalog and international providers" ;;
+              0.5.1) echo "Selectable themes" ;;
+              0.5.2) echo "Themes and visual personalization" ;;
+              *) echo "StreamRadar release" ;;
+            esac
+          }
+
+          target_for() {
+            version="$1"
+            target=""
+
+            while IFS= read -r sha; do
+              value="$(git show "${sha}:VERSION" 2>/dev/null | tr -d '\r\n' || true)"
+              if [[ "$value" == "$version" ]]; then
+                target="$sha"
+                break
+              fi
+            done < <(git log --reverse --format='%H' -- VERSION)
+
+            if [[ -z "$target" ]]; then
+              target="$(git log --all --reverse --format='%H' --grep="$version" | head -n 1 || true)"
+            fi
+
+            if [[ -z "$target" && "$version" == "0.0.1" ]]; then
+              target="$(git rev-list --max-parents=0 HEAD | head -n 1)"
+            fi
+
+            if [[ -z "$target" && "$version" == "0.0.2" ]]; then
+              target="$(git rev-list --reverse HEAD | sed -n '2p')"
+            fi
+
+            if [[ -z "$target" ]]; then
+              target="$(git rev-parse HEAD)"
+            fi
+
+            printf '%s' "$target"
+          }
+
+          notes_for() {
+            version="$1"
+            notes_file="$2"
+            awk -v version="$version" '
+              $0 ~ "^## \\[" version "\\]" { found=1; next }
+              found && /^## \\[/ { exit }
+              found { print }
+            ' CHANGELOG.md > "$notes_file"
+
+            if [[ ! -s "$notes_file" ]]; then
+              printf 'StreamRadar v%s\n' "$version" > "$notes_file"
+            fi
+          }
+
+          for version in "${versions[@]}"; do
+            tag="v${version}"
+            title="StreamRadar v${version} – $(summary_for "$version")"
+            notes_file="$(mktemp)"
+            notes_for "$version" "$notes_file"
+            asset="downloads/StreamRadar_${version}_x64_de-DE.msi"
+
+            if [[ -f "$asset" ]]; then
+              hash="$(sha256sum "$asset" | awk '{print $1}')"
+              cat >> "$notes_file" <<EOF
+
+### Windows x64
+
+- MSI installer attached below
+- File: \`StreamRadar_${version}_x64_de-DE.msi\`
+- SHA-256: \`${hash}\`
+- Installer language: \`de-DE\`
+
+> The installer is currently unsigned, so Windows may display an unknown publisher warning.
+EOF
+            else
+              cat >> "$notes_file" <<EOF
+
+### Distribution
+
+This was an early web/runtime release. No Windows MSI was published for this version.
+EOF
+            fi
+
+            if gh release view "$tag" >/dev/null 2>&1; then
+              echo "$tag already has a GitHub Release; skipping."
+              rm -f "$notes_file"
+              continue
+            fi
+
+            if ! git rev-parse -q --verify "refs/tags/$tag" >/dev/null; then
+              target="$(target_for "$version")"
+              echo "Creating $tag at $target"
+              git tag "$tag" "$target"
+              git push origin "refs/tags/$tag"
+            fi
+
+            args=("$tag" --verify-tag --title "$title" --notes-file "$notes_file")
+            if [[ "$version" == "0.5.2" ]]; then
+              args+=(--latest)
+            fi
+            if [[ -f "$asset" ]]; then
+              args+=("$asset#StreamRadar ${version} Windows x64 MSI")
+            fi
+
+            gh release create "${args[@]}"
+            rm -f "$notes_file"
+          done
+
+          echo "Created StreamRadar GitHub Releases from v0.0.1 through v0.5.2."
