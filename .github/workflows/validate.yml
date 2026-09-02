@@ -43,10 +43,10 @@ jobs:
         run: |
           grep -qx '0.5.2' VERSION
           grep -q '"version": "0.5.2"' package.json
+          grep -q '"version": "0.5.2"' package-lock.json
           grep -q '"version": "0.5.2"' src-tauri/tauri.conf.json
           grep -q 'version = "0.5.2"' src-tauri/Cargo.toml
           grep -q "const VERSION = '0.5.2'" js/themes.js
-          grep -q 'StreamRadar v0.5.2' themes.css
           grep -q 'v0.5.2' README.md
 
       - name: Check runtime JavaScript layout
@@ -63,16 +63,15 @@ jobs:
 
       - name: Check selectable themes
         run: |
-          test -s themes.css
+          THEME_CSS="styles.css"
+          if [ -s themes.css ]; then THEME_CSS="themes.css"; fi
           grep -q "ORDER = \['radar', 'cinema', 'midnight', 'oled', 'netflix', 'cyberpunk', 'glass'\]" js/themes.js
           grep -q 'streamradar-theme-v1' js/themes.js
           grep -q 'data-theme-option' js/themes.js
-          grep -q 'themes.css' js/original-overrides.js
           grep -q 'js/themes.js' js/original-overrides.js
-          grep -q 'themes.css' scripts/build-desktop.mjs
           grep -q 'js/themes.js' scripts/build-desktop.mjs
           for theme in cinema midnight oled netflix cyberpunk glass; do
-            grep -q "data-streamradar-theme=\"$theme\"" themes.css
+            grep -q "data-streamradar-theme=\"$theme\"" "$THEME_CSS"
           done
           grep -q 'toHaveCount(7)' tests/e2e/themes.spec.js
 
@@ -94,11 +93,20 @@ jobs:
 
       - name: Verify packed theme layer
         run: |
-          test -s dist/themes.css
+          test -s dist/styles.css
           test -s dist/js/themes.js
           test -s dist/js/catalog.js
           grep -q 'streamradar-theme-v1' dist/js/themes.js
           grep -q "ORDER = \['radar', 'cinema', 'midnight', 'oled', 'netflix', 'cyberpunk', 'glass'\]" dist/js/themes.js
+          if grep -q 'data-streamradar-theme="netflix"' dist/styles.css; then
+            THEME_CSS="dist/styles.css"
+          else
+            test -s dist/themes.css
+            THEME_CSS="dist/themes.css"
+          fi
+          grep -q 'data-streamradar-theme="netflix"' "$THEME_CSS"
+          grep -q 'data-streamradar-theme="cyberpunk"' "$THEME_CSS"
+          grep -q 'data-streamradar-theme="glass"' "$THEME_CSS"
 
       - name: Run browser regression tests
         run: npm run test:e2e
